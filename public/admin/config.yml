@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: username-githubmu/portofolio-ku # Ganti dengan username/repo kamu nanti
+  repo: fajriawwaluddin/portofolio-EI # Repo GitHub kamu
   branch: main
 
 media_folder: "public/images"
