@@ -1,0 +1,44 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { articles } from '../../data/portfolio.ts';
+
+export function getStaticPaths() {
+  return articles.map(article => ({
+    params: { slug: article.slug },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+---
+
+<MainLayout title={`${article.title} - Fajri Awwaluddin`}>
+  <article class="max-w-3xl mx-auto py-24 px-8">
+    <a href="/articles" class="inline-flex items-center gap-2 text-slate-500 dark:text-neutral-400 hover:text-[#E9582A] dark:hover:text-[#E9582A] font-bold text-sm mb-8 transition-colors">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+      Back to Articles
+    </a>
+    
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="bg-[#2a85ff] text-white text-[12px] font-bold px-3 py-1 rounded-[4px] tracking-wider">
+          {article.category}
+        </span>
+        <span class="text-slate-400 dark:text-slate-500 text-sm font-bold">{article.date}</span>
+      </div>
+      <h1 class="text-[36px] md:text-[44px] font-extrabold text-slate-900 dark:text-white leading-[1.1] tracking-tight">{article.title}</h1>
+    </div>
+
+    {article.image && (
+      <div class="w-full h-[300px] md:h-[400px] rounded-3xl overflow-hidden mb-12 shadow-lg">
+        <img src={article.image} alt={article.title} class="w-full h-full object-cover" />
+      </div>
+    )}
+
+    <div class="prose prose-lg prose-slate dark:prose-invert prose-a:text-blue-600 dark:prose-a:text-blue-400 hover:prose-a:text-blue-500 max-w-none">
+      {article.content.split('\n').map((paragraph) => (
+        paragraph.trim() ? <p class="mb-6 text-slate-700 dark:text-slate-300 leading-relaxed">{paragraph}</p> : <br/>
+      ))}
+    </div>
+  </article>
+</MainLayout>

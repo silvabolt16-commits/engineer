@@ -1,0 +1,74 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { projects } from '../../data/portfolio.ts';
+
+export function getStaticPaths() {
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+---
+
+<MainLayout title={`${project.title} - Fajri Awwaluddin`}>
+  <!-- Header Section -->
+  <div class="bg-gradient-to-br from-indigo-900 to-slate-900 pt-32 pb-20 px-8 text-white">
+    <div class="max-w-[1000px] mx-auto">
+      <div class="inline-block bg-[#8b5cf6] text-white text-[12px] font-bold px-3 py-1.5 rounded-[4px] tracking-widest uppercase mb-6">
+        {project.tech}
+      </div>
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">{project.title}</h1>
+      <p class="text-xl text-slate-300 font-medium mb-8 max-w-2xl leading-relaxed">{project.description}</p>
+      
+      <div class="flex gap-3 flex-wrap">
+        {project.tags.map(tag => (
+          <span class="text-[13px] font-bold text-indigo-200 border border-indigo-400/30 bg-white/5 px-3 py-1 rounded-full backdrop-blur-sm">{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Section -->
+  <div class="max-w-[1000px] mx-auto px-8 py-16">
+    
+    <!-- Hero Image / Main Photo -->
+    {project.photos.length > 0 && (
+      <div class="w-full rounded-2xl overflow-hidden shadow-2xl mb-16 border border-slate-200">
+        <img src={project.photos[0]} alt={project.title} class="w-full h-auto max-h-[500px] object-cover" />
+      </div>
+    )}
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
+      <!-- Main Content -->
+      <div class="md:col-span-2">
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">About Project</h2>
+        <div class="prose prose-lg prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-neutral-400 leading-relaxed">
+          {project.content.split('\n').map((paragraph) => (
+            <p class="mb-4">{paragraph}</p>
+          ))}
+        </div>
+      </div>
+      
+      <!-- Sidebar -->
+      <div class="md:col-span-1">
+        <div class="bg-slate-50 dark:bg-[#111] border border-slate-200 dark:border-white/10 p-6 rounded-2xl">
+          <h3 class="text-sm font-bold text-slate-400 dark:text-neutral-500 mb-2 uppercase tracking-widest">Project Links</h3>
+          <a href={project.link} target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-full bg-[#1b85ff] hover:bg-[#0070f3] text-white font-bold py-3 px-4 rounded-xl transition-all shadow-sm">
+            View Repository
+          </a>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- Back button -->
+  <section class="py-12 max-w-[1000px] mx-auto px-8 relative">
+    <a href="/projects" class="inline-flex items-center gap-2 text-slate-500 dark:text-neutral-400 hover:text-[#E9582A] dark:hover:text-[#E9582A] font-bold text-sm mb-8 transition-colors">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+      Back to Projects
+    </a>
+  </section>
+</MainLayout>

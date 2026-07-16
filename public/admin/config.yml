@@ -1,0 +1,39 @@
+backend:
+  name: github
+  repo: username-githubmu/portofolio-ku # Ganti dengan username/repo kamu nanti
+  branch: main
+
+media_folder: "public/images"
+public_folder: "/images"
+
+collections:
+  - name: "profile"
+    label: "Biodata & Kontak"
+    folder: "src/content/profile"
+    create: true
+    fields:
+      - { label: "Nama Lengkap", name: "name", widget: "string" }
+      - { label: "Jabatan", name: "role", widget: "string" }
+      - { label: "No HP", name: "phone", widget: "string" }
+      - { label: "Email", name: "email", widget: "string" }
+      - { label: "LinkedIn", name: "linkedin", widget: "string" }
+      - { label: "Profil Singkat", name: "body", widget: "markdown" }
+
+  - name: "experience"
+    label: "Riwayat Kerja"
+    folder: "src/content/experience"
+    create: true
+    fields:
+      - { label: "Perusahaan", name: "company", widget: "string" }
+      - { label: "Posisi", name: "position", widget: "string" }
+      - { label: "Durasi", name: "duration", widget: "string" }
+      - { label: "Tugas & Pencapaian", name: "body", widget: "markdown" }
+
+  - name: "projects"
+    label: "Daftar Proyek"
+    folder: "src/content/projects"
+    create: true
+    fields:
+      - { label: "Judul Proyek", name: "title", widget: "string" }
+      - { label: "Deskripsi", name: "description", widget: "string" }
+      - { label: "Link Proyek", name: "link", widget: "string" }
