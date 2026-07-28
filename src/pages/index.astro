@@ -1,28 +1,16 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import profile from '../content/profile.json';
-import { db } from '../firebase/client';
-import { collection, getDocs } from 'firebase/firestore';
+import { getCollection } from '../firebase/content';
 
-// Helper function untuk mengambil data dari Firestore
-async function fetchCollection(colName) {
-  try {
-    const snapshot = await getDocs(collection(db, colName));
-    return snapshot.docs.map(doc => ({ id: doc.id, data: doc.data(), body: doc.data().body || '' }));
-  } catch (error) {
-    console.error(`Error fetching ${colName}:`, error);
-    return [];
-  }
-}
-
-let experiences = await fetchCollection('experiences');
+let experiences = await getCollection('experiences');
 experiences = experiences.sort((a, b) => parseInt(b.data.duration || '0') - parseInt(a.data.duration || '0'));
 
-let projects = await fetchCollection('projects');
-let certificates = await fetchCollection('certificates');
-let achievements = await fetchCollection('achievements');
+let projects = await getCollection('projects');
+let certificates = await getCollection('certificates');
+let achievements = await getCollection('achievements');
 
-let articles = await fetchCollection('articles');
+let articles = await getCollection('articles');
 articles = articles.sort((a, b) => new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime());
 
 // Gandakan 4 kali agar efek infinite scroll (marquee) mulus di layar ultra-wide
