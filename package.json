@@ -11,22 +11,20 @@
     "preview": "astro preview"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.9",
     "@astrojs/cloudflare": "latest",
     "@astrojs/node": "^11.0.2",
     "@astrojs/sitemap": "^3.2.1",
+    "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.0.9",
-    "firebase": "latest",
-    "marked": "latest",
-    "tailwindcss": "^4.3.2"
-  },
-  "devDependencies": {
-    "@astrojs/check": "^0.9.9",
-    "@tailwindcss/typography": "^0.5.20",
     "dotenv": "latest",
+    "firebase": "latest",
     "firebase-admin": "latest",
     "gray-matter": "latest",
+    "marked": "latest",
     "mime-types": "latest",
+    "tailwindcss": "^4.3.2",
     "typescript": "^6.0.3"
   }
 }
