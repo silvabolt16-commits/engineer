@@ -1,7 +1,7 @@
 ---
 export const prerender = true;
 
-import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { getCollection, render } from '../../firebase/content';
 import MainLayout from '../../layouts/MainLayout.astro';
 
 export async function getStaticPaths() {
@@ -12,35 +12,37 @@ export async function getStaticPaths() {
   }));
 }
 
-type Props = { update: CollectionEntry<'updates'> };
 const { update } = Astro.props;
-const { Content } = await render(update);
+const { Content } = await render(update || {});
+
+const photos = update?.data?.photos || [];
+const title = update?.data?.title || 'Update';
+const date = update?.data?.date || '';
 ---
 
 <MainLayout 
-  title={`${update.data.title} - Fajri Awwaluddin`}
-  description={update.data.title}
-  image={update.data.photos.length > 0 ? update.data.photos[0] : undefined}
+  title={`${title} - Fajri Awwaluddin`}
+  description={title}
+  image={photos.length > 0 ? photos[0] : undefined}
 >
   <!-- Article Header -->
   <div class="max-w-[1400px] mx-auto px-6 md:px-8 pt-32 pb-12">
     <div class="inline-block text-[#10b981] font-extrabold tracking-widest uppercase mb-4 text-sm bg-[#10b981]/10 px-4 py-2 rounded-lg">
-      {update.data.date}
+      {date}
     </div>
-    <h1 class="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.1] mb-8">{update.data.title}</h1>
+    <h1 class="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.1] mb-8">{title}</h1>
 
     <!-- Hero Image -->
-    {update.data.photos.length > 0 && (
+    {photos.length > 0 && (
       <div class="w-full rounded-[2rem] overflow-hidden neu-flat border-none mb-16 p-3">
-        <img src={update.data.photos[0]} alt={update.data.title} class="w-full h-auto max-h-[600px] object-cover rounded-3xl" loading="lazy" decoding="async" />
+        <img src={photos[0]} alt={title} class="w-full h-auto max-h-[600px] object-cover rounded-3xl" loading="lazy" decoding="async" />
       </div>
     )}
   </div>
 
   <!-- Content Section -->
   <div class="max-w-[1400px] mx-auto px-6 md:px-8 pb-24">
-    <div class="prose prose-lg md:prose-xl prose-slate dark:prose-invert max-w-none text-slate-700 dark:text-neutral-300 leading-relaxed prose-a:text-[#E9582A] hover:prose-a:text-[#d04a1f]">
-      <Content />
+    <div class="prose prose-lg md:prose-xl prose-slate dark:prose-invert max-w-none text-slate-700 dark:text-neutral-300 leading-relaxed prose-a:text-[#E9582A] hover:prose-a:text-[#d04a1f]" set:html={Content}>
     </div>
 
     <!-- Back button -->

@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection } from '../firebase/content';
 import MainLayout from '../layouts/MainLayout.astro';
 
 const experiences = (await getCollection('experiences')).sort((a, b) => parseInt(b.data.duration) - parseInt(a.data.duration));

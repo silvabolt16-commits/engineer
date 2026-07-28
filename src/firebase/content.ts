@@ -21,8 +21,8 @@ export async function getCollection(collectionName: string) {
   if (items.length === 0) {
     try {
       const localDocs = await getLocalCollection(collectionName as any);
-      items = localDocs.map(doc => ({
-        id: doc.id,
+      items = localDocs.map((doc: any) => ({
+        id: doc.slug || doc.id,
         data: doc.data,
         body: doc.body || ''
       }));
@@ -34,8 +34,10 @@ export async function getCollection(collectionName: string) {
   return items;
 }
 
-// Render markdown string ke HTML
+// Render markdown string ke HTML secara aman
 export async function render(entry: any) {
-  const html = marked.parse(entry.body || '');
+  if (!entry) return { Content: '' };
+  const bodyText = entry.body || entry.data?.body || entry.data?.description || '';
+  const html = marked.parse(bodyText);
   return { Content: html };
 }

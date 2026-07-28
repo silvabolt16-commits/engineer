@@ -4,14 +4,14 @@ import profile from '../content/profile.json';
 import { getCollection } from '../firebase/content';
 
 let experiences = await getCollection('experiences');
-experiences = experiences.sort((a, b) => parseInt(b.data.duration || '0') - parseInt(a.data.duration || '0'));
+experiences = (experiences || []).sort((a, b) => parseInt(b?.data?.duration || '0') - parseInt(a?.data?.duration || '0'));
 
 let projects = await getCollection('projects');
 let certificates = await getCollection('certificates');
 let achievements = await getCollection('achievements');
 
 let articles = await getCollection('articles');
-articles = articles.sort((a, b) => new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime());
+articles = (articles || []).sort((a, b) => new Date(b?.data?.date || 0).getTime() - new Date(a?.data?.date || 0).getTime());
 
 // Gandakan 4 kali agar efek infinite scroll (marquee) mulus di layar ultra-wide
 const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
@@ -143,11 +143,15 @@ const skillStyles = [
         <a href={`/experience/${exp.id}`} class={`group/card reveal-up flex flex-col md:flex-row ${index % 2 !== 0 ? 'md:flex-row-reverse' : ''} gap-8 items-center neu-flat neu-flat-hover border-none rounded-[2rem] p-4 transition-all duration-400 cursor-pointer`}>
           <!-- Image Section -->
           <div class="w-full md:w-1/2 h-[240px] md:h-[300px] rounded-3xl overflow-hidden shrink-0 relative">
-            {exp.data.photos && exp.data.photos.length > 0 ? (
-              <img src={exp.data.photos[0]} alt={exp.data.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" loading="lazy" decoding="async" />
-            ) : (
-              <div class="w-full h-full bg-slate-100 dark:bg-[#222] flex items-center justify-center text-slate-400 dark:text-neutral-500">No Image</div>
-            )}
+            {(() => {
+              const rawPhotos = exp.data.photos;
+              const photos = Array.isArray(rawPhotos) ? rawPhotos : (typeof rawPhotos === 'string' ? [rawPhotos] : []);
+              return photos.length > 0 ? (
+                <img src={photos[0]} alt={exp.data.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" loading="lazy" decoding="async" />
+              ) : (
+                <div class="w-full h-full bg-slate-100 dark:bg-[#222] flex items-center justify-center text-slate-400 dark:text-neutral-500">No Image</div>
+              );
+            })()}
             <div class="absolute inset-0 ring-1 ring-inset ring-black/10 dark:ring-white/10 rounded-3xl"></div>
           </div>
 
@@ -158,7 +162,7 @@ const skillStyles = [
             </div>
             <h3 class="text-[24px] md:text-[28px] font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight mb-2 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#38bdf8] transition-colors">{exp.data.title}</h3>
             <div class="text-[16px] font-bold text-slate-600 dark:text-slate-300 mb-4">{exp.data.company}</div>
-            <p class="text-[15px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-6">{exp.body}</p>
+            <p class="text-[15px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-6">{exp.body || exp.data?.description || ''}</p>
             <div class="text-[13px] font-bold text-[#E9582A] flex items-center gap-1 uppercase tracking-widest mt-auto">
               Read Details <span class="text-xl leading-none transition-transform group-hover/card:translate-x-2">&rarr;</span>
             </div>
@@ -248,11 +252,15 @@ const skillStyles = [
               <div class="pointer-events-none">
                 <!-- Cover Image -->
                 <div class="w-full h-[200px] relative overflow-hidden bg-slate-200 dark:bg-[#222]">
-                  {proj.data.photos && proj.data.photos.length > 0 ? (
-                    <img src={proj.data.photos[0]} alt={proj.data.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" loading="lazy" decoding="async" />
-                  ) : (
-                    <div class="w-full h-full flex items-center justify-center text-slate-400 dark:text-neutral-600">No Image</div>
-                  )}
+                  {(() => {
+                    const rawPhotos = proj.data.photos;
+                    const photos = Array.isArray(rawPhotos) ? rawPhotos : (typeof rawPhotos === 'string' ? [rawPhotos] : []);
+                    return photos.length > 0 ? (
+                      <img src={photos[0]} alt={proj.data.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" loading="lazy" decoding="async" />
+                    ) : (
+                      <div class="w-full h-full flex items-center justify-center text-slate-400 dark:text-neutral-600">No Image</div>
+                    );
+                  })()}
                   <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   <div class="absolute bottom-4 left-4">
                     <div class="inline-block bg-white/20 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-[4px] tracking-wider border border-white/30">
@@ -268,9 +276,11 @@ const skillStyles = [
 
                   <!-- Tags -->
                   <div class="flex flex-wrap gap-2 mb-6">
-                    {proj.data.tags && proj.data.tags.map((tag) => (
+                    {Array.isArray(proj.data.tags) ? proj.data.tags.map((tag: string) => (
                       <span class="bg-slate-200/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 text-[11px] font-bold px-2 py-1 rounded-md">{tag}</span>
-                    ))}
+                    )) : (typeof proj.data.tags === 'string' ? proj.data.tags.split(',').map((t: string) => (
+                      <span class="bg-slate-200/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 text-[11px] font-bold px-2 py-1 rounded-md">{t.trim()}</span>
+                    )) : null)}
                   </div>
 
                   <div class="text-[13px] font-bold text-[#E9582A] flex items-center gap-1 uppercase tracking-widest mt-auto">

@@ -17,12 +17,16 @@ const projects = await getCollection('projects');
       {projects.map((project) => (
         <a href={`/projects/${project.id}`} class="block group/card neu-flat neu-flat-hover border-none rounded-3xl overflow-hidden transition-all duration-500 cursor-pointer h-full flex flex-col">
           <!-- Cover Image -->
-          <div class="w-full h-[220px] relative overflow-hidden bg-slate-200 dark:bg-[#222] shrink-0">
-            {project.data.photos && project.data.photos.length > 0 ? (
-              <img src={project.data.photos[0]} alt={project.data.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" />
-            ) : (
-              <div class="w-full h-full flex items-center justify-center text-slate-400 dark:text-neutral-600">No Image</div>
-            )}
+          <div class="w-full h-[240px] relative overflow-hidden bg-slate-200 dark:bg-[#222]">
+            {(() => {
+              const rawPhotos = project.data.photos;
+              const photos = Array.isArray(rawPhotos) ? rawPhotos : (typeof rawPhotos === 'string' ? [rawPhotos] : []);
+              return photos.length > 0 ? (
+                <img src={photos[0]} alt={project.data.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" />
+              ) : (
+                <div class="w-full h-full flex items-center justify-center text-slate-400 dark:text-neutral-600">No Image</div>
+              );
+            })()}
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
             <div class="absolute bottom-4 left-4">
               <div class="inline-block bg-[#E9582A] text-white text-[11px] font-bold px-3 py-1 rounded-[4px] tracking-wider border-none shadow-md">
@@ -38,9 +42,11 @@ const projects = await getCollection('projects');
 
             <!-- Tags -->
             <div class="flex flex-wrap gap-2 mb-6">
-              {project.data.tags && project.data.tags.map((tag) => (
+              {Array.isArray(project.data.tags) ? project.data.tags.map((tag: string) => (
                 <span class="neu-flat border-none text-slate-700 dark:text-neutral-300 text-[11px] font-bold px-2 py-1 rounded-md">{tag}</span>
-              ))}
+              )) : (typeof project.data.tags === 'string' ? project.data.tags.split(',').map((t: string) => (
+                <span class="neu-flat border-none text-slate-700 dark:text-neutral-300 text-[11px] font-bold px-2 py-1 rounded-md">{t.trim()}</span>
+              )) : null)}
             </div>
 
             <div class="text-[13px] font-bold text-[#E9582A] flex items-center gap-1 uppercase tracking-widest mt-auto">

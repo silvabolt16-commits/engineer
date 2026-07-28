@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection } from '../firebase/content';
 import profileData from '../content/profile.json';
 
 const profile = {
@@ -112,14 +112,14 @@ const experiences = (await getCollection('experiences'))
     <section class="mb-5">
       <h2 class="text-[13px] font-bold uppercase mb-1 border-b border-black pb-0.5">Pendidikan</h2>
       <div class="mt-2 space-y-3">
-        {education.map(edu => (
+        {education.map((edu: any) => (
           <div>
             <div class="flex justify-between items-baseline font-bold mb-1">
               <span>{edu.institution} &mdash; <span class="font-normal italic">{edu.degree}</span></span>
               <span class="text-[10.5px] whitespace-nowrap">{edu.duration}</span>
             </div>
             <ul class="list-disc list-inside ml-2 space-y-0.5">
-              {edu.achievements.map(ach => (
+              {edu.achievements.map((ach: string) => (
                 <li class="leading-snug">{ach}</li>
               ))}
             </ul>
@@ -132,14 +132,14 @@ const experiences = (await getCollection('experiences'))
     <section class="mb-5">
       <h2 class="text-[13px] font-bold uppercase mb-1 border-b border-black pb-0.5">Pengalaman Kerja &amp; Pelatihan</h2>
       <div class="mt-2 space-y-3">
-        {experiences.map(exp => (
+        {experiences.map((exp: any) => (
           <div>
             <div class="flex justify-between items-baseline font-bold mb-1">
               <span>{exp.title} &mdash; <span class="font-normal italic">{exp.company}</span></span>
               <span class="text-[10.5px] whitespace-nowrap">{exp.duration}</span>
             </div>
             <ul class="list-disc list-outside ml-6 space-y-0.5">
-              {exp.details.map(detail => (
+              {(Array.isArray(exp.details) ? exp.details : (typeof exp.details === 'string' ? exp.details.split(',').map((t: string) => t.trim()) : [])).map((detail: string) => (
                 <li class="leading-snug pl-1">{detail}</li>
               ))}
             </ul>
@@ -154,7 +154,7 @@ const experiences = (await getCollection('experiences'))
       <div class="mt-2">
         <table class="w-full text-left border-collapse">
           <tbody>
-            {skills.map(skill => (
+            {skills.map((skill: any) => (
               <tr class="align-top">
                 <td class="py-0.5 pr-4 font-bold whitespace-nowrap w-[120px]">{skill.category}</td>
                 <td class="py-0.5 font-bold px-2">:</td>
