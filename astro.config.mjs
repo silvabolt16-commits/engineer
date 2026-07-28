@@ -6,7 +6,7 @@ import cloudflare from '@astrojs/cloudflare';
 export default defineConfig({
   site: 'https://fajriawwaluddin.com',
   integrations: [sitemap()],
-  output: 'server', // Use 'server' for SSR, or 'static' if no SSR is needed
+  output: 'static',
   adapter: cloudflare(),
   vite: {
     plugins: [tailwindcss()],
