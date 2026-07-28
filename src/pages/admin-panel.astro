@@ -1,0 +1,253 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Admin Panel - Upload Portofolio">
+  <div class="max-w-4xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
+    
+    <!-- 1. LOGIN FORM CONTAINER (FIREBASE AUTH) -->
+    <div id="loginCard" class="neu-flat border-none rounded-3xl p-8 max-w-md mx-auto">
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 bg-[#E9582A]/10 text-[#E9582A] rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+        </div>
+        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">Admin Login</h2>
+        <p class="text-slate-500 dark:text-neutral-400 text-sm mt-1">Login menggunakan akun Firebase Authentication resmi Anda.</p>
+      </div>
+
+      <form id="loginForm" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Email Firebase</label>
+          <input type="email" id="email" required class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="fajriawwaluddin01@gmail.com">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Password</label>
+          <input type="password" id="password" required class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="••••••••">
+        </div>
+
+        <div id="loginError" class="hidden text-red-500 text-xs font-bold text-center"></div>
+
+        <button type="submit" id="loginBtn" class="w-full bg-[#E9582A] hover:bg-[#d04a1f] text-white font-bold py-3.5 rounded-xl shadow-md transition-all">
+          Masuk dengan Firebase
+        </button>
+      </form>
+    </div>
+
+    <!-- 2. MAIN ADMIN UPLOAD PANEL (TERPROTEKSI FIREBASE AUTH) -->
+    <div id="adminPanel" class="hidden neu-flat border-none rounded-3xl p-8">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-6 mb-8">
+        <div>
+          <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">Admin Panel - Upload Konten</h1>
+          <p id="userEmailText" class="text-[#E9582A] font-bold text-xs mt-1"></p>
+        </div>
+        <button id="logoutBtn" class="neu-flat neu-flat-hover text-red-500 font-bold px-4 py-2 rounded-xl text-xs uppercase tracking-wider border-none">
+          Logout
+        </button>
+      </div>
+
+      <form id="uploadForm" class="space-y-6">
+        <!-- Pilihan Koleksi -->
+        <div>
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Tipe Konten</label>
+          <select id="collectionName" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white dark:bg-[#1a1a1a] focus:outline-none focus:ring-2 focus:ring-[#E9582A]">
+            <option value="projects">Projects (Proyek)</option>
+            <option value="articles">Articles (Artikel)</option>
+            <option value="experiences">Experiences (Pengalaman Kerja)</option>
+            <option value="certificates">Certificates (Sertifikat)</option>
+            <option value="achievements">Achievements (Prestasi)</option>
+          </select>
+        </div>
+
+        <!-- Judul -->
+        <div>
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Judul</label>
+          <input type="text" id="title" required class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Judul Proyek / Artikel / Posisi">
+        </div>
+
+        <!-- Sub-Detail (Perusahaan / Issuer / Category / Tech) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Kategori / Perusahaan / Issuer / Tech</label>
+            <input type="text" id="subTitle" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Contoh: PT Engineering / Siemens / IoT">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Tanggal / Durasi</label>
+            <input type="text" id="dateOrDuration" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Contoh: 2023 - 2024 / Mei 2024">
+          </div>
+        </div>
+
+        <!-- Link External -->
+        <div>
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Link External (Opsional)</label>
+          <input type="url" id="link" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="https://github.com/...">
+        </div>
+
+        <!-- Deskripsi/Konten -->
+        <div>
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Deskripsi / Detail Konten</label>
+          <textarea id="description" required rows="5" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Tuliskan penjelasan atau konten markdown di sini..."></textarea>
+        </div>
+
+        <!-- File Upload Gambar -->
+        <div>
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Gambar Cover / Dokumentasi (Opsional)</label>
+          <input type="file" id="imageFile" accept="image/*" class="w-full text-sm text-slate-600 dark:text-neutral-300 neu-pressed border-none rounded-xl p-3">
+        </div>
+
+        <button type="submit" id="submitBtn" class="w-full bg-[#E9582A] hover:bg-[#d04a1f] text-white font-bold py-4 rounded-xl shadow-md transition-all text-sm uppercase tracking-wider">
+          Unggah Konten
+        </button>
+      </form>
+      
+      <!-- Status Message -->
+      <div id="statusMessage" class="mt-6 hidden p-4 rounded-xl font-bold text-sm text-center"></div>
+    </div>
+  </div>
+</MainLayout>
+
+<script>
+  import { db, storage, auth } from "../firebase/client";
+  import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+  import { collection, addDoc } from "firebase/firestore";
+  import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+
+  const loginCard = document.getElementById("loginCard");
+  const adminPanel = document.getElementById("adminPanel");
+  const loginForm = document.getElementById("loginForm") as HTMLFormElement;
+  const loginBtn = document.getElementById("loginBtn") as HTMLButtonElement;
+  const loginError = document.getElementById("loginError");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const userEmailText = document.getElementById("userEmailText");
+
+  const form = document.getElementById("uploadForm") as HTMLFormElement;
+  const submitBtn = document.getElementById("submitBtn") as HTMLButtonElement;
+  const statusMessage = document.getElementById("statusMessage");
+
+  // Listen to Firebase Auth state changes
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      loginCard?.classList.add("hidden");
+      adminPanel?.classList.remove("hidden");
+      if (userEmailText) userEmailText.textContent = `Logged in as: ${user.email}`;
+    } else {
+      adminPanel?.classList.add("hidden");
+      loginCard?.classList.remove("hidden");
+    }
+  });
+
+  // Handle Firebase Login
+  loginForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = (document.getElementById("email") as HTMLInputElement).value;
+    const password = (document.getElementById("password") as HTMLInputElement).value;
+
+    if (loginBtn) {
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Memverifikasi...";
+    }
+    if (loginError) loginError.classList.add("hidden");
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      loginForm.reset();
+    } catch (error: any) {
+      console.error(error);
+      if (loginError) {
+        loginError.textContent = `Login Gagal: ${error.message || 'Email atau password salah'}`;
+        loginError.classList.remove("hidden");
+      }
+    } finally {
+      if (loginBtn) {
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Masuk dengan Firebase";
+      }
+    }
+  });
+
+  // Handle Logout
+  logoutBtn?.addEventListener("click", async () => {
+    await signOut(auth);
+  });
+
+  function showStatus(message: string, isError = false) {
+    if (!statusMessage) return;
+    statusMessage.textContent = message;
+    statusMessage.classList.remove("hidden", "bg-emerald-100", "text-emerald-800", "bg-red-100", "text-red-800");
+    
+    if (isError) {
+      statusMessage.classList.add("bg-red-100", "text-red-800");
+    } else {
+      statusMessage.classList.add("bg-emerald-100", "text-emerald-800");
+    }
+  }
+
+  // Handle Upload Form Submit
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Mengunggah...";
+    showStatus("Memproses unggahan...");
+
+    const collectionName = (document.getElementById("collectionName") as HTMLSelectElement).value;
+    const title = (document.getElementById("title") as HTMLInputElement).value;
+    const subTitle = (document.getElementById("subTitle") as HTMLInputElement).value;
+    const dateOrDuration = (document.getElementById("dateOrDuration") as HTMLInputElement).value;
+    const link = (document.getElementById("link") as HTMLInputElement).value;
+    const description = (document.getElementById("description") as HTMLTextAreaElement).value;
+    const imageInput = document.getElementById("imageFile") as HTMLInputElement;
+    const file = imageInput.files?.[0];
+
+    try {
+      let imageUrl = "";
+
+      // 1. Upload Gambar ke Storage jika ada
+      if (file) {
+        const storageRef = ref(storage, `${collectionName}/${Date.now()}_${file.name}`);
+        showStatus("Mengunggah gambar ke Firebase Storage...");
+        
+        const snapshot = await uploadBytesResumable(storageRef, file);
+        imageUrl = await getDownloadURL(snapshot.ref);
+      }
+
+      // 2. Simpan Data ke Firestore
+      showStatus("Menyimpan data ke Firestore...");
+      const docData: any = {
+        title,
+        description,
+        body: description,
+        image: imageUrl,
+        photos: imageUrl ? [imageUrl] : [],
+        createdAt: new Date().toISOString()
+      };
+
+      if (collectionName === "projects") {
+        docData.tech = subTitle || "General";
+        docData.tags = subTitle ? subTitle.split(",").map(t => t.trim()) : ["Engineering"];
+        docData.link = link || "#";
+      } else if (collectionName === "articles") {
+        docData.category = subTitle || "General";
+        docData.date = dateOrDuration || new Date().toLocaleDateString("id-ID");
+        docData.summary = description.slice(0, 150);
+      } else if (collectionName === "experiences") {
+        docData.company = subTitle || "Company";
+        docData.duration = dateOrDuration || "2024";
+        docData.details = description.split("\n").filter(line => line.trim() !== "");
+      } else if (collectionName === "certificates" || collectionName === "achievements") {
+        docData.issuer = subTitle || "Official";
+        docData.date = dateOrDuration || "2024";
+        docData.link = link || "#";
+      }
+
+      await addDoc(collection(db, collectionName), docData);
+
+      showStatus("✅ Berhasil diunggah ke Firebase!");
+      form.reset();
+    } catch (error) {
+      console.error(error);
+      showStatus(`❌ Gagal: ${(error as Error).message}`, true);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Unggah Konten";
+    }
+  });
+</script>
