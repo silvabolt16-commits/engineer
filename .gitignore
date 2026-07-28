@@ -26,5 +26,16 @@ pnpm-debug.log*
 node_modules
 tina/__generated__
 
+# Firebase Credentials & Logs
+serviceAccountKey.json
+firebase-debug.log
+firebase-debug.*.log
+
+# Agent & System Documentation
+AGENTS.md
+CLAUDE.md
+PANDUAN_*.md
+.wrangler/
+
 # Firebase Credentials
 serviceAccountKey.json
