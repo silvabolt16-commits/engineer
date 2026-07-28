@@ -1,0 +1,33 @@
+[debug] [2026-07-28T00:03:38.405Z] ----------------------------------------------------------------------
+[debug] [2026-07-28T00:03:38.409Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\fajri\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2026-07-28T00:03:38.409Z] CLI Version:   15.24.0
+[debug] [2026-07-28T00:03:38.409Z] Platform:      win32
+[debug] [2026-07-28T00:03:38.409Z] Node Version:  v24.16.0
+[debug] [2026-07-28T00:03:38.409Z] Detected Agent: unknown
+[debug] [2026-07-28T00:03:38.410Z] Time:          Tue Jul 28 2026 07:03:38 GMT+0700 (Waktu Indonesia Barat)
+[debug] [2026-07-28T00:03:38.410Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  D:\Portofolio\EI Engineer\my-portfolio
+
+[debug] [2026-07-28T00:05:53.148Z] ExitPromptError: User force closed the prompt with SIGINT
+    at Interface.sigint (C:\Users\fajri\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\@inquirer\core\dist\commonjs\lib\create-prompt.js:101:37)
+    at Interface.emit (node:events:509:28)
+    at [_ttyWrite] [as _ttyWrite] (node:internal/readline/interface:1327:18)
+    at ReadStream.onkeypress (node:internal/readline/interface:284:20)
+    at ReadStream.emit (node:events:521:24)
+    at emitKeys (node:internal/readline/utils:371:14)
+    at emitKeys.next (<anonymous>)
+    at ReadStream.onData (node:internal/readline/emitKeypressEvents:64:36)
+    at ReadStream.emit (node:events:509:28)
+    at addChunk (node:internal/streams/readable:563:12)
+[error] 
+[error] Error: An unexpected error has occurred.

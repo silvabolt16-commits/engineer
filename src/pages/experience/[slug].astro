@@ -1,65 +1,70 @@
 ---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import MainLayout from '../../layouts/MainLayout.astro';
-import { experiences } from '../../data/portfolio.ts';
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+  const experiences = await getCollection('experiences');
   return experiences.map((exp) => ({
-    params: { slug: exp.slug },
+    params: { slug: exp.id },
     props: { exp },
   }));
 }
 
+type Props = { exp: CollectionEntry<'experiences'> };
 const { exp } = Astro.props;
+const { Content } = await render(exp);
 ---
 
-<MainLayout title={`${exp.title} - Fajri Awwaluddin`}>
+<MainLayout 
+  title={`${exp.data.title} - Fajri Awwaluddin`}
+  description={`Experience as ${exp.data.title} at ${exp.data.company}`}
+  image={exp.data.photos.length > 0 ? exp.data.photos[0] : undefined}
+>
   <!-- Header Section -->
-  <div class="bg-slate-900 pt-32 pb-20 px-8 text-white">
-    <div class="max-w-[1000px] mx-auto">
-      <div class="inline-block bg-[#2a85ff] text-white text-[12px] font-bold px-3 py-1.5 rounded-[4px] tracking-widest uppercase mb-6">
-        {exp.duration}
+  <div class="pt-32 pb-12 px-6 md:px-8">
+    <div class="max-w-[1400px] mx-auto">
+      <div class="inline-block bg-[#E9582A] shadow-md text-white text-[12px] font-bold px-3 py-1.5 rounded-[4px] tracking-widest uppercase mb-6 border-none">
+        {exp.data.duration}
       </div>
-      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">{exp.title}</h1>
-      <p class="text-xl text-slate-300 font-medium">{exp.company}</p>
+      <h1 class="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight mb-4 text-slate-900 dark:text-white leading-[1.1]">{exp.data.title}</h1>
+      <p class="text-xl md:text-2xl text-slate-500 dark:text-neutral-400 font-medium mb-8">{exp.data.company}</p>
     </div>
   </div>
 
   <!-- Content Section -->
-  <div class="max-w-[1000px] mx-auto px-8 py-16 grid grid-cols-1 md:grid-cols-3 gap-16">
-    
+  <div class="max-w-[1400px] mx-auto px-6 md:px-8 py-12 mb-16">
     <!-- Main Content -->
-    <div class="md:col-span-2">
+    <div class="mb-16">
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">Job Description</h2>
-      <div class="prose prose-lg prose-slate dark:prose-invert max-w-none mb-12 text-slate-600 dark:text-neutral-400 leading-relaxed">
-        {exp.content.split('\n').map((paragraph) => (
-          <p class="mb-4">{paragraph}</p>
-        ))}
+      <div class="prose prose-lg md:prose-xl prose-slate dark:prose-invert max-w-none mb-12 text-slate-600 dark:text-neutral-400 leading-relaxed prose-a:text-[#E9582A] hover:prose-a:text-[#d04a1f] prose-img:rounded-3xl prose-headings:font-extrabold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-white">
+        <Content />
       </div>
-      
+
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">Key Responsibilities</h2>
-      <ul class="list-disc list-outside ml-6 space-y-3 text-slate-600 dark:text-neutral-400 text-lg">
-        {exp.details.map(detail => (
+      <ul class="list-disc list-outside ml-6 space-y-3 text-slate-600 dark:text-neutral-400 text-lg md:text-xl mb-12">
+        {exp.data.details.map((detail) => (
           <li>{detail}</li>
         ))}
       </ul>
     </div>
-    
-    <!-- Sidebar (Photos) -->
-    <div class="md:col-span-1">
-      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 tracking-wide uppercase">Photo Documentation</h3>
-      <div class="space-y-6">
-        {exp.photos.map(photo => (
-          <div class="rounded-xl overflow-hidden shadow-md border border-slate-100 dark:border-white/10 hover:shadow-lg dark:hover:shadow-white/5 transition-shadow">
-            <img src={photo} alt={`Documentation ${exp.title}`} class="w-full h-auto object-cover hover:scale-105 transition-transform duration-500" />
-          </div>
-        ))}
+
+    <!-- Photo Documentation Gallery -->
+    {exp.data.photos.length > 0 && (
+      <div>
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-8 border-b border-slate-200 dark:border-white/10 pb-4">Photo Documentation</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {exp.data.photos.map((photo) => (
+            <div class="neu-flat border-none p-3 rounded-[2rem] overflow-hidden transition-all duration-300 hover:-translate-y-2">
+              <img src={photo} alt={`Documentation ${exp.data.title}`} class="w-full h-auto object-cover rounded-3xl hover:scale-105 transition-transform duration-700" loading="lazy" decoding="async" />
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-    
+    )}
   </div>
-  
+
   <!-- Back button -->
-  <section class="py-12 max-w-[1000px] mx-auto px-8 relative">
+  <section class="py-12 max-w-[1400px] mx-auto px-6 md:px-8 relative mb-16">
     <a href="/#experience" class="inline-flex items-center gap-2 text-slate-500 dark:text-neutral-400 hover:text-[#E9582A] dark:hover:text-[#E9582A] font-bold text-sm mb-8 transition-colors">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
       Back to Home

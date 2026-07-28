@@ -1,44 +1,50 @@
 ---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import MainLayout from '../../layouts/MainLayout.astro';
-import { articles } from '../../data/portfolio.ts';
 
-export function getStaticPaths() {
-  return articles.map(article => ({
-    params: { slug: article.slug },
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles.map((article) => ({
+    params: { slug: article.id },
     props: { article },
   }));
 }
 
+type Props = { article: CollectionEntry<'articles'> };
 const { article } = Astro.props;
+const { Content } = await render(article);
 ---
 
-<MainLayout title={`${article.title} - Fajri Awwaluddin`}>
-  <article class="max-w-3xl mx-auto py-24 px-8">
+<MainLayout 
+  title={`${article.data.title} - Fajri Awwaluddin`}
+  description={article.data.summary}
+  image={article.data.image}
+>
+  <article class="max-w-[1400px] mx-auto py-24 px-6 md:px-8">
     <a href="/articles" class="inline-flex items-center gap-2 text-slate-500 dark:text-neutral-400 hover:text-[#E9582A] dark:hover:text-[#E9582A] font-bold text-sm mb-8 transition-colors">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
       Back to Articles
     </a>
-    
-    <div class="mb-8">
+
+    <div class="mb-10">
       <div class="flex items-center gap-3 mb-4">
         <span class="bg-[#2a85ff] text-white text-[12px] font-bold px-3 py-1 rounded-[4px] tracking-wider">
-          {article.category}
+          {article.data.category}
         </span>
-        <span class="text-slate-400 dark:text-slate-500 text-sm font-bold">{article.date}</span>
+        <span class="text-slate-400 dark:text-slate-500 text-sm font-bold">{article.data.date}</span>
       </div>
-      <h1 class="text-[36px] md:text-[44px] font-extrabold text-slate-900 dark:text-white leading-[1.1] tracking-tight">{article.title}</h1>
+      <h1 class="text-[36px] md:text-[48px] font-extrabold text-slate-900 dark:text-white leading-[1.1] tracking-tight">{article.data.title}</h1>
+      <p class="text-xl text-slate-500 dark:text-neutral-400 font-medium mt-6 leading-relaxed">{article.data.summary}</p>
     </div>
 
-    {article.image && (
-      <div class="w-full h-[300px] md:h-[400px] rounded-3xl overflow-hidden mb-12 shadow-lg">
-        <img src={article.image} alt={article.title} class="w-full h-full object-cover" />
+    {article.data.image && (
+      <div class="w-full h-[300px] md:h-[500px] rounded-[2rem] overflow-hidden mb-12 neu-flat border-none p-3">
+        <img src={article.data.image} alt={article.data.title} class="w-full h-full object-cover rounded-2xl" loading="lazy" decoding="async" />
       </div>
     )}
 
-    <div class="prose prose-lg prose-slate dark:prose-invert prose-a:text-blue-600 dark:prose-a:text-blue-400 hover:prose-a:text-blue-500 max-w-none">
-      {article.content.split('\n').map((paragraph) => (
-        paragraph.trim() ? <p class="mb-6 text-slate-700 dark:text-slate-300 leading-relaxed">{paragraph}</p> : <br/>
-      ))}
+    <div class="prose prose-lg md:prose-xl prose-slate dark:prose-invert prose-a:text-[#E9582A] hover:prose-a:text-[#d04a1f] max-w-none prose-img:rounded-3xl prose-headings:font-extrabold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-white">
+      <Content />
     </div>
   </article>
 </MainLayout>

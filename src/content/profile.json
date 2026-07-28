@@ -1,0 +1,39 @@
+{
+  "name": "Fajri Awwaluddin, S.T.",
+  "role": "Electrical dan Instrument Engineer",
+  "heroBadge": "HIRE ME",
+  "tagline": "Available for new career opportunities",
+  "availabilityText": "Available to Work",
+  "bio": "An Electrical Engineering graduate specializing in Electrical & Instrumentation Engineering, certified as an OHS Officer by BNSP. I have hands-on experience in developing technical documents (WI/SOP/Checksheet), interpreting P&ID, and assisting in industrial project commissioning. Recognized for driving production optimization and cost efficiency. Skilled in the fundamentals of PLC, HMI, and SCADA.",
+  "cvSummary": "Profesional teknik yang berdedikasi tinggi dengan pengalaman di bidang instrumentasi, analisis kegagalan sistem, dan optimisasi proses industri. Memiliki kemampuan kuat dalam membaca P&ID, menyusun standar operasional, serta pengembangan perangkat lunak berbasis IoT dan antarmuka web untuk kebutuhan internal teknik.",
+  "avatar": "https://ui-avatars.com/api/?name=Fajri+Awwaluddin&size=600&background=E9582A&color=fff&font-size=0.35&bold=true",
+  "location": "Bekasi, Jawa Barat",
+  "phone": "+62 895-3578-79220",
+  "email": "fajriawwaluddin01@gmail.com",
+  "linkedin": "https://www.linkedin.com/in/fajri-awwaluddin",
+  "skills": [
+    {
+      "category": "Software",
+      "items": ["AutoCAD", "SCADA/HMI Design", "TIA Portal (Siemens)", "EcoStruxure Machine (Schneider)", "Factory IO", "Ms. Excel", "Ms. Word", "Ms. PowerPoint"]
+    },
+    {
+      "category": "Teknikal",
+      "items": ["ESP32 & Arduino", "Panel Wiring", "Commissioning"]
+    },
+    {
+      "category": "Dokumen",
+      "items": ["P&ID Interpretation", "SOP / WI", "Checksheet / OHS"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "UIN Sunan Gunung Djati Bandung",
+      "degree": "S1 - Teknik Elektro (IPK: 3.40)",
+      "duration": "2019 - 2023",
+      "achievements": [
+        "Fokus studi pada Sistem Kendali dan Instrumentasi Industri.",
+        "Lulus dengan predikat Sangat Memuaskan."
+      ]
+    }
+  ]
+}

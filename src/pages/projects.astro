@@ -1,6 +1,8 @@
 ---
+import { getCollection } from '../firebase/content';
 import MainLayout from '../layouts/MainLayout.astro';
-import { projects } from '../data/portfolio.ts';
+
+const projects = await getCollection('projects');
 ---
 
 <MainLayout title="Projects - Fajri Awwaluddin">
@@ -9,35 +11,35 @@ import { projects } from '../data/portfolio.ts';
       <h1 class="text-[36px] md:text-[44px] font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">Projects</h1>
       <p class="text-slate-500 dark:text-neutral-400 font-medium text-lg">Technical works, research, and systems built.</p>
     </div>
-    
+
     <!-- Grid (Project List) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-24">
       {projects.map((project) => (
-        <a href={`/projects/${project.slug}`} class="block group/card bg-slate-50 dark:bg-[#111] border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden hover:bg-white dark:hover:bg-[#1a1a1a] hover:border-slate-300 dark:hover:border-white/20 hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(255,255,255,0.02)] transition-all duration-500 hover:-translate-y-1 cursor-pointer h-full flex flex-col">
+        <a href={`/projects/${project.id}`} class="block group/card neu-flat neu-flat-hover border-none rounded-3xl overflow-hidden transition-all duration-500 cursor-pointer h-full flex flex-col">
           <!-- Cover Image -->
           <div class="w-full h-[220px] relative overflow-hidden bg-slate-200 dark:bg-[#222] shrink-0">
-            {project.photos && project.photos.length > 0 ? (
-              <img src={project.photos[0]} alt={project.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" />
+            {project.data.photos && project.data.photos.length > 0 ? (
+              <img src={project.data.photos[0]} alt={project.data.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" />
             ) : (
               <div class="w-full h-full flex items-center justify-center text-slate-400 dark:text-neutral-600">No Image</div>
             )}
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
             <div class="absolute bottom-4 left-4">
-              <div class="inline-block bg-white/20 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-[4px] tracking-wider border border-white/30">
-                {project.tech}
+              <div class="inline-block bg-[#E9582A] text-white text-[11px] font-bold px-3 py-1 rounded-[4px] tracking-wider border-none shadow-md">
+                {project.data.tech}
               </div>
             </div>
           </div>
-          
+
           <!-- Text Section -->
           <div class="p-6 flex flex-col flex-1">
-            <h3 class="text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-2 group-hover/card:text-[#E9582A] transition-colors">{project.title}</h3>
-            <p class="text-[14px] text-slate-500 dark:text-neutral-400 leading-relaxed font-medium line-clamp-3 mb-6">{project.description}</p>
-            
+            <h3 class="text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-2 group-hover/card:text-[#E9582A] transition-colors">{project.data.title}</h3>
+            <p class="text-[14px] text-slate-500 dark:text-neutral-400 leading-relaxed font-medium line-clamp-3 mb-6">{project.data.description}</p>
+
             <!-- Tags -->
             <div class="flex flex-wrap gap-2 mb-6">
-              {project.tags && project.tags.map(tag => (
-                <span class="bg-slate-200/60 dark:bg-white/10 text-slate-700 dark:text-neutral-300 text-[11px] font-bold px-2 py-1 rounded-md">{tag}</span>
+              {project.data.tags && project.data.tags.map((tag) => (
+                <span class="neu-flat border-none text-slate-700 dark:text-neutral-300 text-[11px] font-bold px-2 py-1 rounded-md">{tag}</span>
               ))}
             </div>
 
@@ -48,6 +50,5 @@ import { projects } from '../data/portfolio.ts';
         </a>
       ))}
     </div>
-    
-  </div>
+  </section>
 </MainLayout>

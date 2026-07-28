@@ -1,84 +1,21 @@
 ---
-// ==========================================
-// Integrasi TinaCMS / CMS Dinamis
-// ==========================================
-// Jika Anda sudah mengkonfigurasi TinaCMS / Astro Collections, 
-// gunakan getCollection() atau Astro.glob() di bawah ini:
-// import { getCollection } from 'astro:content';
-// const experiences = await getCollection('experience');
-// const profile = await getCollection('profile');
+import { getCollection } from 'astro:content';
+import profileData from '../content/profile.json';
 
-// Fallback Data (Data Dinamis Dummy untuk sinkronisasi awal)
 const profile = {
-  name: "FAJRI AWWALUDDIN",
-  phone: "+62 812-3456-7890",
-  email: "fajri@example.com",
-  linkedin: "linkedin.com/in/fajri",
-  summary: "Profesional teknik yang berdedikasi tinggi dengan pengalaman di bidang instrumentasi, analisis kegagalan sistem, dan optimisasi proses industri. Memiliki kemampuan kuat dalam membaca P&ID, menyusun standar operasional, serta pengembangan perangkat lunak berbasis IoT dan antarmuka web untuk kebutuhan internal teknik."
+  name: profileData.name.toUpperCase(),
+  phone: profileData.phone,
+  email: profileData.email,
+  linkedin: profileData.linkedin.replace(/^https?:\/\//, ''),
+  summary: profileData.cvSummary,
 };
 
-const education = [
-  {
-    institution: "UIN Sunan Gunung Djati Bandung",
-    degree: "S1 - Teknik Elektro (IPK: 3.40)",
-    duration: "2019 - 2023",
-    achievements: [
-      "Fokus studi pada Sistem Kendali dan Instrumentasi Industri.",
-      "Lulus dengan predikat Sangat Memuaskan."
-    ]
-  }
-];
+const education = profileData.education;
+const skills = profileData.skills.map((skill) => ({ category: skill.category, items: skill.items.join(', ') }));
 
-const experiences = [
-  {
-    title: "Magang Instrument Engineer",
-    company: "PT Mipcon Prima Industri",
-    duration: "2023 - 2024",
-    details: [
-      "Menyusun 100+ Working Instruction (WI) & Checksheet operasional.",
-      "Membaca, memverifikasi, dan menganalisis 14 gambar Piping and Instrumentation Diagram (P&ID).",
-      "Membangun prototipe web internal terintegrasi untuk efisiensi manajemen dokumen engineering."
-    ]
-  },
-  {
-    title: "Magang Engineering Staff",
-    company: "PT Matra Roda Piranti",
-    duration: "2022 - 2023",
-    details: [
-      "Melakukan analisis bottleneck produksi, meredesain layout dan troli produksi (efisiensi biaya 3x lipat).",
-      "Menyusun dokumentasi sistematis termasuk 5 FMEA, 20 Working Instruction (WI), dan 20 Checksheet.",
-      "Membuat 4 desain pemodelan teknik presisi tinggi menggunakan Autodesk Inventor."
-    ]
-  },
-  {
-    title: "IoT Developer",
-    company: "PT Engineering Sinar Abadi & BRIN",
-    duration: "2021 - 2022",
-    details: [
-      "Mengembangkan sistem berbasis Internet of Things (IoT) menggunakan mikrokontroler ESP32.",
-      "Melakukan integrasi sensor industri untuk transmisi data telemetri secara real-time."
-    ]
-  }
-];
-
-const skills = [
-  {
-    category: "Otomasi & Software",
-    items: "AutoCAD, Autodesk Inventor, P&ID Analysis, PLC, SCADA, Python, Web Development"
-  },
-  {
-    category: "Elektrikal & K3",
-    items: "Instalasi Kelistrikan Industri, FMEA, Keselamatan dan Kesehatan Kerja (Sertifikasi BNSP)"
-  },
-  {
-    category: "Proyek",
-    items: "Computer Vision (MobileNet), IoT Telemetry, Internal Engineering Web Tools"
-  },
-  {
-    category: "Soft Skill",
-    items: "Problem Solving, Technical Documentation, Process Optimization, Team Collaboration"
-  }
-];
+const experiences = (await getCollection('experiences'))
+  .sort((a, b) => parseInt(b.data.duration) - parseInt(a.data.duration))
+  .map((exp) => exp.data);
 ---
 <!DOCTYPE html>
 <html lang="id">

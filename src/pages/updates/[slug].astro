@@ -1,45 +1,51 @@
 ---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import MainLayout from '../../layouts/MainLayout.astro';
-import { updates } from '../../data/portfolio.ts';
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+  const updates = await getCollection('updates');
   return updates.map((update) => ({
-    params: { slug: update.slug },
+    params: { slug: update.id },
     props: { update },
   }));
 }
 
+type Props = { update: CollectionEntry<'updates'> };
 const { update } = Astro.props;
+const { Content } = await render(update);
 ---
 
-<MainLayout title={`${update.title} - Fajri Awwaluddin`}>
+<MainLayout 
+  title={`${update.data.title} - Fajri Awwaluddin`}
+  description={update.data.title}
+  image={update.data.photos.length > 0 ? update.data.photos[0] : undefined}
+>
   <!-- Article Header -->
-  <div class="max-w-[800px] mx-auto px-8 pt-32 pb-12 text-center">
-    <div class="inline-block text-[#10b981] font-extrabold tracking-widest uppercase mb-4 text-sm">
-      {update.date}
+  <div class="max-w-[1400px] mx-auto px-6 md:px-8 pt-32 pb-12">
+    <div class="inline-block text-[#10b981] font-extrabold tracking-widest uppercase mb-4 text-sm bg-[#10b981]/10 px-4 py-2 rounded-lg">
+      {update.data.date}
     </div>
-    <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-8">{update.title}</h1>
-    
+    <h1 class="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.1] mb-8">{update.data.title}</h1>
+
     <!-- Hero Image -->
-    {update.photos.length > 0 && (
-      <div class="w-full rounded-2xl overflow-hidden shadow-xl border border-slate-200">
-        <img src={update.photos[0]} alt={update.title} class="w-full h-auto max-h-[450px] object-cover" />
+    {update.data.photos.length > 0 && (
+      <div class="w-full rounded-[2rem] overflow-hidden neu-flat border-none mb-16 p-3">
+        <img src={update.data.photos[0]} alt={update.data.title} class="w-full h-auto max-h-[600px] object-cover rounded-3xl" loading="lazy" decoding="async" />
       </div>
     )}
   </div>
 
   <!-- Content Section -->
-  <div class="max-w-[700px] mx-auto px-8 pb-24">
-    <div class="prose prose-lg prose-slate max-w-none text-slate-700 leading-loose text-justify">
-      {update.content.split('\n').map((paragraph) => (
-        <p class="mb-6">{paragraph}</p>
-      ))}
+  <div class="max-w-[1400px] mx-auto px-6 md:px-8 pb-24">
+    <div class="prose prose-lg md:prose-xl prose-slate dark:prose-invert max-w-none text-slate-700 dark:text-neutral-300 leading-relaxed prose-a:text-[#E9582A] hover:prose-a:text-[#d04a1f]">
+      <Content />
     </div>
-    
+
     <!-- Back button -->
-    <div class="mt-16 pt-8 border-t border-slate-200 text-center">
-      <a href="/updates" class="inline-flex items-center gap-2 text-slate-500 hover:text-[#E9582A] font-bold transition-colors">
-        <span class="text-xl">&larr;</span> Kembali ke Updates
+    <div class="mt-20 pt-8 border-t border-slate-200 dark:border-white/10">
+      <a href="/updates" class="inline-flex items-center gap-2 text-slate-500 dark:text-neutral-400 hover:text-[#E9582A] dark:hover:text-[#E9582A] font-bold transition-colors">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+        Kembali ke Updates
       </a>
     </div>
   </div>

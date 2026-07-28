@@ -1,16 +1,51 @@
 ---
 import '../styles/global.css';
-const { title } = Astro.props;
+import profile from '../content/profile.json';
+import { ClientRouter } from 'astro:transitions';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const { 
+  title = `${profile.name} - Portofolio`, 
+  description = profile.bio, 
+  image = profile.avatar 
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://fajriawwaluddin.com');
 ---
 <html lang="id">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>{title || 'Fajri Awwaluddin - Portofolio'}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    
+    <!-- SEO & Metadata -->
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={image} />
+
+    <ClientRouter />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
+    <style is:global>
       :root {
         --font-sans: 'Plus Jakarta Sans', sans-serif;
       }
@@ -19,56 +54,113 @@ const { title } = Astro.props;
         scroll-behavior: smooth;
       }
       body {
-        /* Gradien biru muda (cyan) memudar ke putih persis seperti tina.io */
-        background: linear-gradient(180deg, #dcf4f5 0%, #ffffff 500px, #ffffff 100%);
-        background-repeat: no-repeat;
+        /* Neumorphism Light Mode Background */
+        background-color: #ecf0f3;
+        color: #333333;
       }
       .dark body {
-        /* Gradien full dark mode */
-        background: linear-gradient(180deg, #111111 0%, #000000 500px, #000000 100%);
+        /* Neumorphism Dark Mode Background */
+        background-color: #1a1a1a;
+        color: #e5e5e5;
+      }
+      
+      /* Neumorphism Utility Classes */
+      .neu-flat {
+        background-color: #ecf0f3;
+        box-shadow: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5);
+      }
+      .dark .neu-flat {
+        background-color: #1a1a1a;
+        box-shadow: 8px 8px 16px #101010, -8px -8px 16px #242424;
+      }
+      
+      .neu-pressed {
+        background-color: #ecf0f3;
+        box-shadow: inset 6px 6px 10px 0 rgba(163, 177, 198, 0.7), inset -6px -6px 10px 0 rgba(255, 255, 255, 0.8);
+      }
+      .dark .neu-pressed {
+        background-color: #1a1a1a;
+        box-shadow: inset 6px 6px 10px 0 #101010, inset -6px -6px 10px 0 #242424;
+      }
+      
+      /* Hover efek timbul */
+      .neu-flat-hover:hover {
+        box-shadow: 12px 12px 20px rgb(163,177,198,0.7), -12px -12px 20px rgba(255,255,255, 0.6);
+        transform: translateY(-2px);
+      }
+      .dark .neu-flat-hover:hover {
+        box-shadow: 12px 12px 20px #0d0d0d, -12px -12px 20px #272727;
+        transform: translateY(-2px);
+      }
+      /* Animasi Theme Toggle: Circular */
+      .circle-transition::view-transition-old(root),
+      .circle-transition::view-transition-new(root) {
+        animation: none;
+        mix-blend-mode: normal;
+      }
+      .circle-transition::view-transition-old(root) {
+        z-index: 1;
+      }
+      .circle-transition::view-transition-new(root) {
+        z-index: 9999;
+      }
+      @keyframes lightning {
+        0% { opacity: 0; background-color: #fff; }
+        10% { opacity: 1; }
+        20% { opacity: 0; }
+        30% { opacity: 1; }
+        40% { opacity: 0; background-color: #fff; }
+        50% { opacity: 1; background-color: #fef08a; }
+        100% { opacity: 0; }
+      }
+      .animate-lightning {
+        animation: lightning 0.5s ease-out forwards !important;
       }
     </style>
     <script is:inline>
       // Initialize dark mode on load to prevent FOUC
-      if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark');
-      } else {
-          document.documentElement.classList.remove('dark');
+      function initTheme() {
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
       }
+      initTheme();
+      document.addEventListener('astro:after-swap', initTheme);
     </script>
   </head>
   <body class="text-slate-900 dark:text-slate-100 min-h-screen flex flex-col antialiased font-sans selection:bg-orange-100 selection:text-orange-900 dark:selection:bg-orange-500/30 dark:selection:text-orange-200">
     
-    <nav class="sticky top-0 w-full z-50 pt-4 pb-4 transition-all duration-300 bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-white/20 dark:border-white/5 shadow-sm">
-      <div class="max-w-[1400px] mx-auto px-8 flex items-center justify-between">
+    <!-- Lightning Flash Overlay -->
+    <div id="lightning-flash" class="fixed inset-0 bg-white z-[9999] opacity-0 pointer-events-none transition-none"></div>
+
+    <nav class="sticky top-0 w-full z-50 pt-4 pb-4 transition-all duration-300 neu-flat rounded-b-3xl mb-8">
+      <div class="max-w-[1400px] mx-auto px-6 md:px-8 flex justify-between items-center">
         <!-- Logo -->
-        <a href="/" class="flex items-center gap-1.5 text-[22px] font-extrabold tracking-tight text-[#eb5b28] hover:opacity-90 transition-opacity">
-          <!-- Clean abstract Llama-like or simple dot to avoid ugly SVG -->
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18.8 4.2C18.4 3.8 17.8 3.5 17.2 3.5H15.8V2C15.8 1.4 15.3 1 14.8 1H11.2C10.7 1 10.2 1.4 10.2 2V3.5H8.8C8.2 3.5 7.6 3.8 7.2 4.2L3.2 8.2C2.8 8.6 2.5 9.2 2.5 9.8V17C2.5 17.6 3 18 3.5 18H5V22C5 22.6 5.4 23 6 23H8C8.6 23 9 22.6 9 22V18H15V22C15 22.6 15.4 23 16 23H18C18.6 23 19 22.6 19 22V18H20.5C21 18 21.5 17.6 21.5 17V9.8C21.5 9.2 21.2 8.6 20.8 8.2L18.8 4.2ZM12 14C10.9 14 10 13.1 10 12C10 10.9 10.9 10 12 10C13.1 10 14 10.9 14 12C14 13.1 13.1 14 12 14Z" fill="#eb5b28"/>
-          </svg>
-          Fajri Awwaluddin, S.T.
+        <a href="/" class="text-xl md:text-2xl font-extrabold tracking-tighter text-slate-800 dark:text-white flex items-center gap-2 md:gap-3 group relative z-10 cursor-pointer active:scale-95 transition-transform">
+          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full neu-flat overflow-hidden group-hover:scale-110 transition-transform duration-300 border-2 border-transparent dark:border-slate-800">
+            <img src={profile.avatar} alt={profile.name} class="w-full h-full object-cover pointer-events-none" />
+          </div>
+          <span class="pointer-events-none">{profile.name.split(' ')[0]}</span>
         </a>
         
-        <!-- Nav Links -->
-        <div class="hidden md:flex items-center gap-8 font-semibold text-sm">
-          <a href="/" class="text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
-            Home
-            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#eb5b28] transition-all group-hover:w-full"></span>
-          </a>
-          <a href="/#experience" class="text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex items-center gap-8 font-semibold text-[15px]">
+
+          <a href="/#experience" class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
             Experience
             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#eb5b28] transition-all group-hover:w-full"></span>
           </a>
-          <a href="/projects" class="text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
+          <a href="/projects" class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
             Projects
             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#eb5b28] transition-all group-hover:w-full"></span>
           </a>
-          <a href="/#certificates" class="text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
+          <a href="/#certificates" class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
             Certificates
             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#eb5b28] transition-all group-hover:w-full"></span>
           </a>
-          <a href="/articles" class="text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
+          <a href="/articles" class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
             Articles
             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#eb5b28] transition-all group-hover:w-full"></span>
           </a>
@@ -76,125 +168,236 @@ const { title } = Astro.props;
         
         <!-- Button (TinaCloud style) -->
         <div class="flex items-center gap-4">
-          <a href="/cv-print" target="_blank" class="hidden sm:inline-flex items-center gap-2 bg-[#020617] dark:bg-white text-white dark:text-black px-4 py-2 rounded-full font-bold text-sm hover:bg-[#eb5b28] dark:hover:bg-[#eb5b28] dark:hover:text-white transition-colors">
+          <a href="/cv-print" target="_blank" class="inline-flex items-center gap-2 neu-flat px-3 sm:px-4 py-2 rounded-full font-bold text-[11px] sm:text-sm text-[#E9582A] hover:text-white hover:bg-[#E9582A] dark:hover:bg-[#E9582A] transition-colors neu-flat-hover">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            Download CV
+            <span class="hidden sm:inline">Download CV</span>
+            <span class="sm:hidden">CV</span>
           </a>
           
-          <!-- Theme Toggle -->
-          <button id="theme-toggle" type="button" class="hidden sm:flex group relative w-8 h-8 rounded-full overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#111] items-center justify-center cursor-pointer hover:bg-slate-100 dark:hover:bg-[#222] transition-colors">
-            <svg id="theme-toggle-dark-icon" class="hidden w-4 h-4 text-slate-500 dark:text-neutral-400 group-hover:text-slate-800 dark:group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-            <svg id="theme-toggle-light-icon" class="hidden w-4 h-4 text-slate-500 dark:text-neutral-400 group-hover:text-slate-800 dark:group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-            <div class="absolute -bottom-8 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-              Theme
-            </div>
+          <!-- Theme Toggle Switch -->
+          <button id="theme-toggle" type="button" aria-label="Toggle Dark Mode" class="hidden sm:flex relative w-[76px] h-8 neu-pressed rounded-full transition-colors duration-500 cursor-pointer group items-center px-1.5 border-none outline-none">
+             <!-- The Slider Dot -->
+             <div class="absolute left-1.5 w-6 h-6 neu-flat rounded-full transform transition-transform duration-500 flex items-center justify-center dark:translate-x-[40px] z-10">
+                <!-- Sun Icon -->
+                <svg class="w-3.5 h-3.5 text-orange-500 block dark:hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                <!-- Moon Icon -->
+                <svg class="w-3.5 h-3.5 text-slate-300 hidden dark:block" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+             </div>
+             
+             <!-- Decorative background icons in the track -->
+             <svg class="absolute right-[10px] w-4 h-4 text-slate-400 block dark:hidden pointer-events-none" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+             <svg class="absolute left-[10px] w-4 h-4 text-slate-500 hidden dark:block pointer-events-none" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707-.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+
+             <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+               Theme
+             </div>
           </button>
           
-          <button onclick="document.getElementById('login-modal').classList.remove('hidden'); document.getElementById('login-modal').classList.add('flex')" class="group relative w-8 h-8 rounded-full overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#111] flex items-center justify-center cursor-pointer hover:bg-[#E9582A] dark:hover:bg-[#E9582A] transition-colors">
-            <svg class="w-4 h-4 text-slate-500 dark:text-neutral-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+          <a href="/admin/index.html" aria-label="Admin / Edit Content" data-astro-reload class="group relative w-8 h-8 rounded-full neu-flat flex items-center justify-center cursor-pointer hover:text-[#E9582A] neu-flat-hover transition-all">
+            <svg class="w-4 h-4 text-slate-500 dark:text-neutral-400 group-hover:text-[#E9582A] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
             <div class="absolute -bottom-8 bg-[#E9582A] text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
               Edit
             </div>
-          </button>
+          </a>
         </div>
       </div>
     </nav>
 
-    <main class="flex-grow w-full max-w-7xl mx-auto px-6">
+    <!-- Mobile Bottom Navigation -->
+    <div class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[400px] neu-flat rounded-full py-3 px-6 flex justify-between items-center bg-[#ecf0f3]/80 dark:bg-[#1a1a1a]/80 backdrop-blur-lg">
+      <a href="/" aria-label="Home" class="mobile-nav-link text-slate-500 hover:text-[#eb5b28] dark:text-slate-400 dark:hover:text-[#eb5b28] transition-all duration-300 relative group p-2 rounded-full cursor-pointer block">
+        <svg class="w-6 h-6 group-hover:scale-110 transition-transform pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+      </a>
+
+      <a href="/#experience" aria-label="Experience" class="mobile-nav-link text-slate-500 hover:text-[#eb5b28] dark:text-slate-400 dark:hover:text-[#eb5b28] transition-all duration-300 relative group p-2 rounded-full cursor-pointer block">
+        <svg class="w-6 h-6 group-hover:scale-110 transition-transform pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+      </a>
+      <a href="/projects" aria-label="Projects" class="mobile-nav-link text-slate-500 hover:text-[#eb5b28] dark:text-slate-400 dark:hover:text-[#eb5b28] transition-all duration-300 relative group p-2 rounded-full cursor-pointer block">
+        <svg class="w-6 h-6 group-hover:scale-110 transition-transform pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+      </a>
+      <a href="/articles" aria-label="Articles" class="mobile-nav-link text-slate-500 hover:text-[#eb5b28] dark:text-slate-400 dark:hover:text-[#eb5b28] transition-all duration-300 relative group p-2 rounded-full cursor-pointer block">
+        <svg class="w-6 h-6 group-hover:scale-110 transition-transform pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+      </a>
+    </div>
+    <main class="flex-grow w-full max-w-full mx-auto">
       <slot />
     </main>
 
-    <footer class="bg-white dark:bg-black border-t border-slate-200 dark:border-white/5 py-12 mt-12 transition-colors duration-300">
-      <div class="max-w-[1400px] mx-auto px-8 text-center text-slate-500 dark:text-neutral-500 text-sm font-semibold">
-        &copy; {new Date().getFullYear()} Fajri Awwaluddin. All Rights Reserved.
+    <footer class="bg-[#E9582A] border-t border-[#E9582A]/20 py-12 mt-12 transition-colors duration-300">
+      <div class="max-w-[1400px] mx-auto px-8 text-center text-white text-sm font-bold">
+        &copy; {new Date().getFullYear()} {profile.name}. All Rights Reserved.
       </div>
     </footer>
 
-    <!-- Login Modal -->
-    <div id="login-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/40 dark:bg-black/80 backdrop-blur-sm items-center justify-center p-4">
-      <div class="bg-white dark:bg-[#111] border dark:border-white/10 rounded-2xl p-8 w-full max-w-sm shadow-2xl relative animate-[fadeIn_0.3s_ease-out]">
-        <button onclick="document.getElementById('login-modal').classList.add('hidden'); document.getElementById('login-modal').classList.remove('flex')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-        </button>
-        
-        <div class="text-center mb-6">
-          <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-3">
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-          </div>
-          <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Admin Login</h3>
-          <p class="text-xs text-slate-500 dark:text-neutral-400 mt-1 font-medium">Enter credentials to edit web content.</p>
-        </div>
-        
-        <form onsubmit="event.preventDefault(); window.handleAdminLogin()" class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 dark:text-neutral-300 mb-1">Username</label>
-            <input type="text" id="admin-user" class="w-full border border-slate-200 dark:border-white/10 dark:bg-[#222] dark:text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20 transition-all" required autocomplete="username" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 dark:text-neutral-300 mb-1">Password</label>
-            <input type="password" id="admin-pass" class="w-full border border-slate-200 dark:border-white/10 dark:bg-[#222] dark:text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20 transition-all" required autocomplete="current-password" />
-          </div>
-          <div id="login-error" class="text-xs text-red-500 font-bold hidden">Invalid credentials!</div>
-          <button type="submit" class="w-full bg-[#E9582A] hover:bg-[#d64e22] text-white font-bold py-2.5 rounded-lg transition-colors mt-2">
-            Login to CMS
-          </button>
-        </form>
-      </div>
-    </div>
-    
     <script is:inline>
       // Theme toggle script
-      var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-      var themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+      function setupThemeToggle() {
+        var themeToggleBtn = document.getElementById('theme-toggle');
+        if (!themeToggleBtn) return;
 
-      // Change the icons inside the button based on previous settings
-      if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          themeToggleLightIcon.classList.remove('hidden');
-      } else {
-          themeToggleDarkIcon.classList.remove('hidden');
+        // Prevent duplicate event listeners on astro:page-load
+        const newBtn = themeToggleBtn.cloneNode(true);
+        themeToggleBtn.parentNode.replaceChild(newBtn, themeToggleBtn);
+        themeToggleBtn = newBtn;
+
+        themeToggleBtn.addEventListener('click', function(e) {
+            const isDark = document.documentElement.classList.contains('dark');
+            
+            const toggleTheme = () => {
+                if (isDark) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            };
+
+            if (!document.startViewTransition) {
+                toggleTheme();
+                return;
+            }
+
+            document.documentElement.classList.add('circle-transition');
+            
+            // Get click coordinates
+            const x = e.clientX || window.innerWidth / 2;
+            const y = e.clientY || window.innerHeight / 2;
+            const endRadius = Math.hypot(
+                Math.max(x, window.innerWidth - x),
+                Math.max(y, window.innerHeight - y)
+            );
+
+            const transition = document.startViewTransition(toggleTheme);
+            
+            transition.ready.then(() => {
+                const clipPath = [
+                    `circle(0px at ${x}px ${y}px)`,
+                    `circle(${endRadius}px at ${x}px ${y}px)`
+                ];
+                
+                document.documentElement.animate(
+                    { clipPath: clipPath },
+                    {
+                        duration: 700,
+                        easing: 'ease-in-out',
+                        pseudoElement: '::view-transition-new(root)',
+                    }
+                );
+            });
+            
+            transition.finished.finally(() => {
+                document.documentElement.classList.remove('circle-transition');
+            });
+        });
       }
+      
+      let navScrollListener = null;
 
-      var themeToggleBtn = document.getElementById('theme-toggle');
-
-      themeToggleBtn.addEventListener('click', function() {
-          // toggle icons inside button
-          themeToggleDarkIcon.classList.toggle('hidden');
-          themeToggleLightIcon.classList.toggle('hidden');
-
-          // if set via local storage previously
-          if (localStorage.getItem('color-theme')) {
-              if (localStorage.getItem('color-theme') === 'light') {
-                  document.documentElement.classList.add('dark');
-                  localStorage.setItem('color-theme', 'dark');
-              } else {
-                  document.documentElement.classList.remove('dark');
-                  localStorage.setItem('color-theme', 'light');
-              }
-          // if NOT set via local storage previously
-          } else {
-              if (document.documentElement.classList.contains('dark')) {
-                  document.documentElement.classList.remove('dark');
-                  localStorage.setItem('color-theme', 'light');
-              } else {
-                  document.documentElement.classList.add('dark');
-                  localStorage.setItem('color-theme', 'dark');
-              }
-          }
-      });
-
-      window.handleAdminLogin = function() {
-        const user = document.getElementById('admin-user').value;
-        const pass = document.getElementById('admin-pass').value;
+      function setupActiveNav() {
+        const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+        const desktopLinks = document.querySelectorAll('.desktop-nav-link');
         
-        // Simple hardcoded check for demo purposes
-        if(user === 'fajri' && pass === 'admin123') {
-          window.location.href = '/admin/index.html';
-        } else if(user === 'admin' && pass === 'admin123') {
-          window.location.href = '/admin/index.html';
+        function setActive(href) {
+          // Reset
+          mobileLinks.forEach(link => {
+            link.classList.remove('text-[#eb5b28]', 'dark:text-[#eb5b28]', 'bg-orange-500/10');
+            link.classList.add('text-slate-500', 'dark:text-slate-400');
+          });
+          desktopLinks.forEach(link => {
+            link.classList.remove('text-[#eb5b28]', 'dark:text-[#eb5b28]');
+            link.classList.add('text-slate-600', 'dark:text-neutral-300');
+            const span = link.querySelector('span');
+            if(span) span.style.width = '0';
+          });
+
+          // Mobile fallback for sections without dedicated icons
+          let mobileHref = href;
+          if (href === '/#certificates' || href === '/#achievements') {
+            mobileHref = '/#experience';
+          }
+
+          // Set active
+          mobileLinks.forEach(link => {
+            if (link.getAttribute('href') === mobileHref) {
+              link.classList.remove('text-slate-500', 'dark:text-slate-400');
+              link.classList.add('text-[#eb5b28]', 'dark:text-[#eb5b28]', 'bg-orange-500/10');
+            }
+          });
+          desktopLinks.forEach(link => {
+            if (link.getAttribute('href') === href) {
+              link.classList.remove('text-slate-600', 'dark:text-neutral-300');
+              link.classList.add('text-[#eb5b28]', 'dark:text-[#eb5b28]');
+              const span = link.querySelector('span');
+              if(span) span.style.width = '100%';
+            }
+          });
+        }
+
+        const path = window.location.pathname;
+
+        // Tambahkan fungsi klik manual untuk hash anchor links supaya selalu bisa di scroll meskipun URL-nya tidak berubah
+        [...mobileLinks, ...desktopLinks].forEach(link => {
+          link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            if (href.startsWith('/#') && (path === '/' || path === '')) {
+              const targetId = href.substring(2);
+              const targetEl = document.getElementById(targetId);
+              if (targetEl) {
+                e.preventDefault();
+                targetEl.scrollIntoView({ behavior: 'smooth' });
+                history.pushState(null, null, href);
+              }
+            } else if (href === '/' && (path === '/' || path === '')) {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              history.pushState(null, null, href);
+            }
+          });
+        });
+
+        if (navScrollListener) {
+          window.removeEventListener('scroll', navScrollListener);
+        }
+
+        if (path === '/' || path === '') {
+          const sections = Array.from(document.querySelectorAll('section[id]'));
+          
+          navScrollListener = function() {
+            const scrollPos = window.scrollY + window.innerHeight / 3;
+            let currentSection = '/';
+            
+            sections.forEach(sec => {
+              const top = sec.offsetTop;
+              const height = sec.offsetHeight;
+              if (scrollPos >= top && scrollPos < top + height) {
+                if (sec.id === 'projects') currentSection = '/projects';
+                else if (sec.id === 'articles') currentSection = '/articles';
+                else currentSection = '/#' + sec.id;
+              }
+            });
+            
+            setActive(currentSection);
+          };
+          
+          window.addEventListener('scroll', navScrollListener, { passive: true });
+          navScrollListener(); // trigger once on load
         } else {
-          document.getElementById('login-error').classList.remove('hidden');
+          // Other pages
+          if (path.startsWith('/projects')) setActive('/projects');
+          else if (path.startsWith('/articles')) setActive('/articles');
+          else if (path.startsWith('/certificates')) setActive('/#certificates');
         }
       }
+
+      // Jalankan saat pertama load dan setiap perpindahan halaman
+      setupThemeToggle();
+      setupActiveNav();
+      
+      document.addEventListener('astro:page-load', () => {
+        setupThemeToggle();
+        setupActiveNav();
+      });
     </script>
   </body>
 </html>

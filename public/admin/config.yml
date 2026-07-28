@@ -2,38 +2,132 @@ backend:
   name: github
   repo: fajriawwaluddin/portofolio-EI # Repo GitHub kamu
   branch: main
+  # Ganti dengan domain Cloudflare Pages kamu setelah deploy pertama
+  # (misalnya https://portofolio-ei.pages.dev), lalu buat GitHub OAuth App
+  # dengan Authorization callback URL: <base_url>/callback
+  base_url: https://REPLACE-WITH-YOUR-CLOUDFLARE-PAGES-DOMAIN
+
+# Supaya bisa coba edit di localhost tanpa login GitHub:
+# jalankan `npx decap-server` di terminal lain, lalu buka /admin saat astro dev jalan.
+local_backend: true
 
 media_folder: "public/images"
 public_folder: "/images"
 
 collections:
-  - name: "profile"
-    label: "Biodata & Kontak"
-    folder: "src/content/profile"
-    create: true
-    fields:
-      - { label: "Nama Lengkap", name: "name", widget: "string" }
-      - { label: "Jabatan", name: "role", widget: "string" }
-      - { label: "No HP", name: "phone", widget: "string" }
-      - { label: "Email", name: "email", widget: "string" }
-      - { label: "LinkedIn", name: "linkedin", widget: "string" }
-      - { label: "Profil Singkat", name: "body", widget: "markdown" }
+  - name: "settings"
+    label: "Profil & Pengaturan Situs"
+    files:
+      - file: "src/content/profile.json"
+        label: "Profil Utama"
+        name: "profile"
+        fields:
+          - { label: "Nama Lengkap", name: "name", widget: "string" }
+          - { label: "Jabatan / Peran", name: "role", widget: "string" }
+          - { label: "Teks Badge (mis. HIRE ME)", name: "heroBadge", widget: "string" }
+          - { label: "Tagline di Bawah Badge", name: "tagline", widget: "string" }
+          - { label: "Teks Status Ketersediaan", name: "availabilityText", widget: "string" }
+          - { label: "Bio Singkat (Hero)", name: "bio", widget: "text" }
+          - { label: "Ringkasan Profil (untuk CV)", name: "cvSummary", widget: "text" }
+          - { label: "Foto Profil", name: "avatar", widget: "image" }
+          - { label: "Lokasi", name: "location", widget: "string" }
+          - { label: "No. WhatsApp / Telepon", name: "phone", widget: "string" }
+          - { label: "Email", name: "email", widget: "string" }
+          - { label: "URL LinkedIn", name: "linkedin", widget: "string" }
+          - label: "Keahlian & Spesialisasi"
+            name: "skills"
+            widget: "list"
+            fields:
+              - { label: "Kategori", name: "category", widget: "string" }
+              - { label: "Daftar Skill", name: "items", widget: "list" }
+          - label: "Pendidikan"
+            name: "education"
+            widget: "list"
+            fields:
+              - { label: "Institusi", name: "institution", widget: "string" }
+              - { label: "Gelar / Jurusan", name: "degree", widget: "string" }
+              - { label: "Durasi", name: "duration", widget: "string" }
+              - { label: "Pencapaian", name: "achievements", widget: "list" }
 
-  - name: "experience"
-    label: "Riwayat Kerja"
-    folder: "src/content/experience"
+  - name: "experiences"
+    label: "Pengalaman Kerja"
+    folder: "src/content/experiences"
     create: true
+    slug: "{{slug}}"
     fields:
+      - { label: "Posisi", name: "title", widget: "string" }
       - { label: "Perusahaan", name: "company", widget: "string" }
-      - { label: "Posisi", name: "position", widget: "string" }
       - { label: "Durasi", name: "duration", widget: "string" }
-      - { label: "Tugas & Pencapaian", name: "body", widget: "markdown" }
+      - { label: "Poin Tugas & Pencapaian", name: "details", widget: "list" }
+      - label: "Foto Dokumentasi"
+        name: "photos"
+        widget: "list"
+        field: { label: "Foto", name: "photo", widget: "image" }
+      - { label: "Deskripsi Lengkap", name: "body", widget: "markdown" }
 
   - name: "projects"
-    label: "Daftar Proyek"
+    label: "Proyek"
     folder: "src/content/projects"
     create: true
+    slug: "{{slug}}"
     fields:
       - { label: "Judul Proyek", name: "title", widget: "string" }
-      - { label: "Deskripsi", name: "description", widget: "string" }
-      - { label: "Link Proyek", name: "link", widget: "string" }
+      - { label: "Teknologi Utama", name: "tech", widget: "string" }
+      - { label: "Deskripsi Singkat", name: "description", widget: "text" }
+      - { label: "Tag", name: "tags", widget: "list" }
+      - { label: "Link Proyek", name: "link", widget: "string", default: "#" }
+      - label: "Foto Proyek"
+        name: "photos"
+        widget: "list"
+        field: { label: "Foto", name: "photo", widget: "image" }
+      - { label: "Deskripsi Lengkap", name: "body", widget: "markdown" }
+
+  - name: "updates"
+    label: "Updates"
+    folder: "src/content/updates"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Judul", name: "title", widget: "string" }
+      - { label: "Tanggal", name: "date", widget: "string" }
+      - label: "Foto"
+        name: "photos"
+        widget: "list"
+        field: { label: "Foto", name: "photo", widget: "image" }
+      - { label: "Isi", name: "body", widget: "markdown" }
+
+  - name: "certificates"
+    label: "Sertifikat"
+    folder: "src/content/certificates"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Judul Sertifikat", name: "title", widget: "string" }
+      - { label: "Tanggal", name: "date", widget: "string" }
+      - { label: "Penerbit", name: "issuer", widget: "string" }
+      - { label: "Deskripsi", name: "description", widget: "text" }
+      - { label: "Link", name: "link", widget: "string", default: "#" }
+
+  - name: "achievements"
+    label: "Prestasi"
+    folder: "src/content/achievements"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Judul Prestasi", name: "title", widget: "string" }
+      - { label: "Tanggal", name: "date", widget: "string" }
+      - { label: "Penyelenggara", name: "issuer", widget: "string" }
+      - { label: "Deskripsi", name: "description", widget: "text" }
+
+  - name: "articles"
+    label: "Artikel"
+    folder: "src/content/articles"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Judul", name: "title", widget: "string" }
+      - { label: "Tanggal", name: "date", widget: "string" }
+      - { label: "Kategori", name: "category", widget: "string" }
+      - { label: "Ringkasan", name: "summary", widget: "text" }
+      - { label: "Gambar Sampul", name: "image", widget: "image", required: false }
+      - { label: "Isi Artikel", name: "body", widget: "markdown" }

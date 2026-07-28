@@ -1,76 +1,101 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
-import { experiences, projects, certificates, achievements, articles } from '../data/portfolio.ts';
+import profile from '../content/profile.json';
+import { db } from '../firebase/client';
+import { collection, getDocs } from 'firebase/firestore';
+
+// Helper function untuk mengambil data dari Firestore
+async function fetchCollection(colName) {
+  try {
+    const snapshot = await getDocs(collection(db, colName));
+    return snapshot.docs.map(doc => ({ id: doc.id, data: doc.data(), body: doc.data().body || '' }));
+  } catch (error) {
+    console.error(`Error fetching ${colName}:`, error);
+    return [];
+  }
+}
+
+let experiences = await fetchCollection('experiences');
+experiences = experiences.sort((a, b) => parseInt(b.data.duration || '0') - parseInt(a.data.duration || '0'));
+
+let projects = await fetchCollection('projects');
+let certificates = await fetchCollection('certificates');
+let achievements = await fetchCollection('achievements');
+
+let articles = await fetchCollection('articles');
+articles = articles.sort((a, b) => new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime());
 
 // Gandakan 4 kali agar efek infinite scroll (marquee) mulus di layar ultra-wide
 const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
 
+// Warna & ikon kategori skill di-cycle per index (data kategorinya sendiri dari profile.json)
+const skillStyles = [
+  { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', tagHover: 'hover:border-blue-300 dark:hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400', d: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+  { bg: 'bg-orange-100 dark:bg-[#E9582A]/20', text: 'text-[#E9582A] dark:text-[#E9582A]', tagHover: 'hover:border-[#E9582A]/50 hover:text-[#E9582A]', d: 'M13 10V3L4 14h7v7l9-11h-7z' },
+  { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-400', tagHover: 'hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:text-emerald-600 dark:hover:text-emerald-400', d: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+];
 ---
 
 <MainLayout title="Fajri Awwaluddin">
   <!-- 1. Hero Section -->
-  <section class="pt-16 pb-24 md:pt-28 flex flex-col lg:flex-row items-center justify-between gap-12 max-w-[1400px] mx-auto px-8">
+  <section class="pt-16 pb-12 md:pt-24 md:pb-16 flex flex-col lg:flex-row items-center justify-between gap-12 max-w-[1400px] mx-auto px-8 overflow-hidden">
     <!-- Left Column (Text & CTA) -->
-    <div class="flex-1 max-w-[650px] text-left">
+    <div class="flex-1 max-w-[650px] text-left reveal-left">
       <!-- Top Badge -->
-      <div class="inline-flex items-center gap-3 px-1 py-1 pr-4 rounded-full border border-blue-200/60 dark:border-white/10 bg-[#eef8ff]/50 dark:bg-[#111]/80 mb-8 backdrop-blur-sm">
-        <span class="bg-[#E9582A] text-white text-[11px] font-bold px-3 py-1 rounded-full tracking-wide">
-          HIRE ME
+      <div class="inline-flex items-center gap-3 px-1 py-1 pr-4 rounded-full neu-pressed border-none mb-8">
+        <span class="bg-[#E9582A] text-white text-[11px] font-bold px-3 py-1 rounded-full tracking-wide shadow-md">
+          {profile.heroBadge}
         </span>
-        <span class="text-[#00609c] dark:text-[#7dd3fc] text-[15px] font-semibold">
-          Available for new career opportunities
+        <span class="text-[#00609c] dark:text-[#E9582A] text-[15px] font-semibold">
+          {profile.tagline}
         </span>
       </div>
       
       <!-- Heading -->
       <h1 class="text-[2.2rem] sm:text-[2.8rem] md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight text-[#0f172a] dark:text-white leading-[1.05] mb-6">
-        <span class="text-[#E9582A] whitespace-nowrap">Fajri Awwaluddin, S.T</span><br/>
+        <span class="text-[#E9582A] whitespace-nowrap">{profile.name}</span><br/>
         <span class="text-[1.5rem] sm:text-[1.8rem] md:text-[2.2rem] lg:text-[2.5rem] text-slate-600 dark:text-slate-300 mt-2 md:mt-3 block whitespace-normal">
-          Electrical dan Instrument Engineer
+          {profile.role}
         </span>
       </h1>
-      
+
       <!-- Subheading -->
       <p class="text-[16px] md:text-[18px] text-[#475569] dark:text-neutral-300 max-w-[700px] leading-[1.7] mb-10 font-medium">
-        An Electrical Engineering graduate specializing in Electrical & Instrumentation Engineering, certified as an OHS Officer by BNSP. I have hands-on experience in developing technical documents (WI/SOP/Checksheet), interpreting P&ID, and assisting in industrial project commissioning. Recognized for driving production optimization and cost efficiency. Skilled in the fundamentals of PLC, HMI, and SCADA.
+        {profile.bio}
       </p>
       
       <!-- Contact Links -->
       <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-8">
         <!-- WhatsApp -->
-        <a href="https://wa.me/62895357879220" target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-full bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 dark:text-neutral-400 hover:text-[#25D366] dark:hover:text-[#25D366] hover:border-[#25D366] dark:hover:border-[#25D366] hover:shadow-[0_4px_15px_rgba(37,211,102,0.2)] hover:-translate-y-1 transition-all duration-300" title="WhatsApp">
+        <a href={`https://wa.me/${profile.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-full neu-flat neu-flat-hover border-none flex items-center justify-center text-slate-500 dark:text-neutral-400 hover:text-[#25D366] dark:hover:text-[#25D366] transition-all duration-300" aria-label="WhatsApp" title="WhatsApp">
           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.115.549 4.17 1.593 6L.045 24l6.115-1.603c1.765.98 3.766 1.5 5.871 1.5 6.646 0 12.031-5.385 12.031-12.031S18.677 0 12.031 0zm0 21.905c-1.815 0-3.593-.487-5.15-1.408l-.369-.219-3.832 1.004 1.025-3.738-.241-.383C2.518 15.656 2.025 13.882 2.025 12c0-5.513 4.487-10 10-10s10 4.487 10 10-4.487 10-10 10zm5.495-7.518c-.301-.151-1.782-.881-2.058-.981-.275-.101-.476-.151-.677.151-.201.301-.777.981-.953 1.182-.175.201-.351.226-.652.075-2.224-1.116-3.835-2.923-4.577-3.811-.175-.201.127-.234.426-.683.151-.226.301-.452.451-.678.151-.226.226-.376.126-.677-.101-.301-.677-1.632-.927-2.234-.241-.579-.485-.501-.677-.511-.175-.01-.376-.01-.577-.01-.201 0-.526.075-.802.376-.276.301-1.053 1.029-1.053 2.509s1.078 2.909 1.228 3.11c.151.201 2.115 3.23 5.123 4.53 2.001.865 2.766.936 3.734.783.921-.144 2.825-1.155 3.226-2.271.401-1.116.401-2.07.275-2.271-.125-.201-.476-.301-.777-.452z"/></svg>
         </a>
         <!-- LinkedIn -->
-        <a href="https://www.linkedin.com/in/fajri-awwaluddin" target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-full bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 dark:text-neutral-400 hover:text-[#0A66C2] dark:hover:text-[#0A66C2] hover:border-[#0A66C2] dark:hover:border-[#0A66C2] hover:shadow-[0_4px_15px_rgba(10,102,194,0.2)] hover:-translate-y-1 transition-all duration-300" title="LinkedIn">
+        <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-full neu-flat neu-flat-hover border-none flex items-center justify-center text-slate-500 dark:text-neutral-400 hover:text-[#0A66C2] dark:hover:text-[#0A66C2] transition-all duration-300" aria-label="LinkedIn" title="LinkedIn">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
         </a>
         <!-- Email -->
-        <a href="mailto:fajriawwaluddin01@gmail.com" class="w-12 h-12 rounded-full bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 dark:text-neutral-400 hover:text-[#E9582A] dark:hover:text-[#E9582A] hover:border-[#E9582A] dark:hover:border-[#E9582A] hover:shadow-[0_4px_15px_rgba(233,88,42,0.2)] hover:-translate-y-1 transition-all duration-300" title="Email">
+        <a href={`mailto:${profile.email}`} class="w-12 h-12 rounded-full neu-flat neu-flat-hover border-none flex items-center justify-center text-slate-500 dark:text-neutral-400 hover:text-[#E9582A] dark:hover:text-[#E9582A] transition-all duration-300" aria-label="Email" title="Email">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
         </a>
         <!-- Location (Text) -->
-        <div class="flex items-center gap-2 px-4 py-2 ml-2 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-neutral-300 text-sm md:text-[15px] font-medium">
+        <div class="flex items-center gap-2 px-4 py-2 ml-2 rounded-full neu-pressed border-none text-slate-600 dark:text-neutral-300 text-sm md:text-[15px] font-medium">
           <svg class="w-5 h-5 text-slate-400 dark:text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-          Bekasi, Jawa Barat
+          {profile.location}
         </div>
       </div>
     </div>
     
     <!-- Right Column (Image/Illustration) -->
-    <div class="flex-1 flex justify-center lg:justify-end relative mt-12 lg:mt-0">
+    <div class="flex-1 flex justify-center lg:justify-end relative mt-12 lg:mt-0 reveal-right">
       <!-- Profile Picture Container -->
-      <div class="relative w-full max-w-[380px] mx-auto lg:mr-0 mt-4 group">
-        <!-- Background Glow Effects -->
-        <div class="absolute -inset-1 bg-gradient-to-r from-[#E9582A] to-[#00609c] rounded-[2rem] blur opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-300"></div>
-        <div class="absolute -inset-4 bg-gradient-to-r from-[#7dd3fc] to-[#E9582A] rounded-[2rem] blur-xl opacity-20 dark:opacity-30 animate-pulse"></div>
-        
+      <div class="relative w-full max-w-[380px] mx-auto lg:mr-8 mt-4 group">
         <!-- Main Image Card -->
-        <div class="relative bg-white/50 dark:bg-[#1a1a1a]/50 backdrop-blur-xl p-3 rounded-[2rem] shadow-2xl ring-1 ring-slate-900/5 dark:ring-white/10 transform group-hover:-translate-y-2 group-hover:rotate-1 transition-all duration-500 ease-out">
+        <div class="relative neu-flat p-3 rounded-[2rem] transform group-hover:-translate-y-2 group-hover:rotate-1 transition-all duration-500 ease-out">
           <div class="relative rounded-3xl overflow-hidden bg-[#E9582A]">
-            <img 
-              src="https://ui-avatars.com/api/?name=Fajri+Awwaluddin&size=600&background=E9582A&color=fff&font-size=0.35&bold=true" 
-              alt="Fajri Awwaluddin Profile Dummy" 
+            <img
+              src={profile.avatar}
+              alt={profile.name}
               class="w-full h-auto aspect-square object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <!-- Inner overlay gradient for depth -->
@@ -78,12 +103,12 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
           </div>
           
           <!-- Decorative Floating Status Badge -->
-          <div class="absolute -bottom-4 -left-4 md:-left-8 bg-white/90 dark:bg-[#111]/90 backdrop-blur-md px-5 py-3 rounded-2xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 flex items-center gap-3 transform group-hover:translate-x-2 group-hover:-translate-y-1 transition-all duration-500">
+          <div class="absolute -bottom-4 -left-4 md:-left-8 neu-flat px-5 py-3 rounded-2xl flex items-center gap-3 transform group-hover:translate-x-2 group-hover:-translate-y-1 transition-all duration-500">
             <span class="relative flex h-3 w-3">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-75"></span>
               <span class="relative inline-flex rounded-full h-3 w-3 bg-[#25D366]"></span>
             </span>
-            <span class="text-[13px] md:text-sm font-bold text-slate-700 dark:text-neutral-200 tracking-wide">Available to Work</span>
+            <span class="text-[13px] md:text-sm font-bold text-slate-700 dark:text-neutral-200 tracking-wide">{profile.availabilityText}</span>
           </div>
         </div>
       </div>
@@ -91,66 +116,35 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
   </section>
 
   <!-- 1.5 Skills Section -->
-  <section class="max-w-[1400px] mx-auto px-8 pb-4 pt-4 mt-8 md:mt-0">
-    <div class="border-y border-slate-100 dark:border-white/5 py-8 md:py-10 px-6 flex flex-col bg-white/50 dark:bg-[#111]/80 backdrop-blur-sm rounded-3xl">
+  <section class="max-w-[1400px] mx-auto px-8 py-8 md:py-12 reveal-up">
+    <div class="py-8 md:py-10 px-6 flex flex-col neu-flat border-none rounded-3xl">
       <p class="text-[11px] font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-widest mb-10 text-center">Keahlian & Spesialisasi</p>
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 w-full max-w-5xl mx-auto">
-        <!-- Software Category -->
-        <div class="flex flex-col gap-4">
-          <div class="flex items-center gap-3 mb-2">
-            <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+        {profile.skills.map((skill, i) => {
+          const style = skillStyles[i % skillStyles.length];
+          return (
+            <div class="flex flex-col gap-4">
+              <div class="flex items-center gap-3 mb-2">
+                <div class={`w-10 h-10 rounded-full ${style.bg} flex items-center justify-center ${style.text} shrink-0`}>
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={style.d} /></svg>
+                </div>
+                <h3 class="font-extrabold text-slate-800 dark:text-white text-lg">{skill.category}</h3>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                {skill.items.map((item) => (
+                  <span class={`px-3 py-1.5 neu-flat neu-flat-hover border-none rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 transition-all cursor-default ${style.tagHover}`}>{item}</span>
+                ))}
+              </div>
             </div>
-            <h3 class="font-extrabold text-slate-800 dark:text-white text-lg">Software</h3>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <span class="px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-default">AutoCAD</span>
-            <span class="px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-default">SCADA/HMI Design</span>
-            <span class="px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-default">TIA Portal (Siemens)</span>
-            <span class="px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-default">EcoStruxure Machine (Schneider)</span>
-            <span class="px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-default">Factory IO</span>
-            <span class="px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-default">Ms. Excel</span>
-            <span class="px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-default">Ms. Word</span>
-            <span class="px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-default">Ms. PowerPoint</span>
-          </div>
-        </div>
-
-        <!-- Teknikal Category -->
-        <div class="flex flex-col gap-4">
-          <div class="flex items-center gap-3 mb-2">
-            <div class="w-10 h-10 rounded-full bg-orange-100 dark:bg-[#E9582A]/20 flex items-center justify-center text-[#E9582A] dark:text-[#E9582A] shrink-0">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-            </div>
-            <h3 class="font-extrabold text-slate-800 dark:text-white text-lg">Teknikal</h3>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <span class="px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-[#E9582A]/50 hover:text-[#E9582A] transition-colors cursor-default">ESP32 & Arduino</span>
-            <span class="px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-[#E9582A]/50 hover:text-[#E9582A] transition-colors cursor-default">Panel Wiring</span>
-            <span class="px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-[#E9582A]/50 hover:text-[#E9582A] transition-colors cursor-default">Commissioning</span>
-          </div>
-        </div>
-
-        <!-- Dokumen Category -->
-        <div class="flex flex-col gap-4">
-          <div class="flex items-center gap-3 mb-2">
-            <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-            </div>
-            <h3 class="font-extrabold text-slate-800 dark:text-white text-lg">Dokumen</h3>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <span class="px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-default">P&ID Interpretation</span>
-            <span class="px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-default">SOP / WI</span>
-            <span class="px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-default">Checksheet / OHS</span>
-          </div>
-        </div>
+          );
+        })}
       </div>
     </div>
   </section>
 
   <!-- 2. Experience Section (Grid Layout) -->
-  <section id="experience" class="py-24 max-w-[1400px] mx-auto px-8 relative border-y border-slate-100 dark:border-white/5">
+  <section id="experience" class="py-16 max-w-[1400px] mx-auto px-8 relative border-none">
     <div class="mb-16 text-center max-w-2xl mx-auto">
       <h2 class="text-[36px] md:text-[44px] font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">Experience</h2>
       <p class="text-slate-500 dark:text-neutral-400 font-medium text-lg">Professional history and industry contributions.</p>
@@ -158,25 +152,25 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
     
     <div class="grid grid-cols-1 gap-12 max-w-5xl mx-auto">
       {experiences.map((exp, index) => (
-        <a href={`/experience/${exp.slug}`} class={`group/card flex flex-col md:flex-row ${index % 2 !== 0 ? 'md:flex-row-reverse' : ''} gap-8 items-center bg-white dark:bg-[#111] border border-slate-200 dark:border-white/10 rounded-[2rem] p-4 hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(255,255,255,0.03)] hover:border-blue-200 dark:hover:border-white/20 hover:-translate-y-1 transition-all duration-400 cursor-pointer backdrop-blur-sm`}>
+        <a href={`/experience/${exp.id}`} class={`group/card reveal-up flex flex-col md:flex-row ${index % 2 !== 0 ? 'md:flex-row-reverse' : ''} gap-8 items-center neu-flat neu-flat-hover border-none rounded-[2rem] p-4 transition-all duration-400 cursor-pointer`}>
           <!-- Image Section -->
           <div class="w-full md:w-1/2 h-[240px] md:h-[300px] rounded-3xl overflow-hidden shrink-0 relative">
-            {exp.photos && exp.photos.length > 0 ? (
-              <img src={exp.photos[0]} alt={exp.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" />
+            {exp.data.photos && exp.data.photos.length > 0 ? (
+              <img src={exp.data.photos[0]} alt={exp.data.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" loading="lazy" decoding="async" />
             ) : (
               <div class="w-full h-full bg-slate-100 dark:bg-[#222] flex items-center justify-center text-slate-400 dark:text-neutral-500">No Image</div>
             )}
             <div class="absolute inset-0 ring-1 ring-inset ring-black/10 dark:ring-white/10 rounded-3xl"></div>
           </div>
-          
+
           <!-- Text Section -->
           <div class="w-full md:w-1/2 flex flex-col p-4 md:p-8 text-left">
             <div class="inline-block bg-[#2a85ff]/10 dark:bg-[#2a85ff]/20 text-[#2a85ff] dark:text-[#60a5fa] text-[12px] font-bold px-4 py-1.5 rounded-full tracking-wider mb-4 w-max">
-              {exp.duration}
+              {exp.data.duration}
             </div>
-            <h3 class="text-[24px] md:text-[28px] font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight mb-2 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#38bdf8] transition-colors">{exp.title}</h3>
-            <div class="text-[16px] font-bold text-slate-600 dark:text-slate-300 mb-4">{exp.company}</div>
-            <p class="text-[15px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-6">{exp.content}</p>
+            <h3 class="text-[24px] md:text-[28px] font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight mb-2 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#38bdf8] transition-colors">{exp.data.title}</h3>
+            <div class="text-[16px] font-bold text-slate-600 dark:text-slate-300 mb-4">{exp.data.company}</div>
+            <p class="text-[15px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-6">{exp.body}</p>
             <div class="text-[13px] font-bold text-[#E9582A] flex items-center gap-1 uppercase tracking-widest mt-auto">
               Read Details <span class="text-xl leading-none transition-transform group-hover/card:translate-x-2">&rarr;</span>
             </div>
@@ -187,7 +181,7 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
   </section>
 
   <!-- 3. Sertifikat Kompetensi Section -->
-  <section id="certificates" class="py-24 max-w-[1400px] mx-auto px-8 relative">
+  <section id="certificates" class="py-16 max-w-[1400px] mx-auto px-8 relative">
     <div class="mb-16 text-center max-w-2xl mx-auto">
       <h2 class="text-[36px] md:text-[44px] font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">Competency Certificates</h2>
       <p class="text-slate-500 dark:text-slate-400 font-medium text-lg">Recognition of expertise and industry safety standards.</p>
@@ -195,19 +189,19 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {certificates.map((cert) => (
-        <a href={`/certificates/${cert.slug}`} class="block group bg-white dark:bg-[#111] border border-slate-200 dark:border-white/10 rounded-2xl p-6 flex flex-col sm:flex-row gap-6 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.03)] hover:border-emerald-200 dark:hover:border-white/20 hover:-translate-y-1 transition-all duration-300 cursor-pointer backdrop-blur-sm">
-          <div class="w-full sm:w-32 h-32 rounded-xl bg-[#ecfdf5] dark:bg-emerald-900/30 shrink-0 flex items-center justify-center text-[#10b981] dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50 group-hover:bg-[#d1fae5] dark:group-hover:bg-emerald-900/50 transition-colors duration-300">
+        <a href={`/certificates/${cert.id}`} class="block reveal-up group neu-flat neu-flat-hover border-none rounded-2xl p-6 flex flex-col sm:flex-row gap-6 transition-all duration-300 cursor-pointer">
+          <div class="w-full sm:w-32 h-32 rounded-xl neu-pressed border-none shrink-0 flex items-center justify-center text-[#10b981] dark:text-emerald-400 transition-colors duration-300">
             <svg class="w-12 h-12 opacity-80 transition-transform duration-500 ease-out group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           </div>
           <div class="flex-1 flex flex-col justify-center">
             <div class="mb-2">
               <span class="inline-block bg-[#10b981] dark:bg-[#10b981]/20 text-white dark:text-[#34d399] text-[11px] font-bold px-3 py-1 rounded-[4px] tracking-wider">
-                {cert.date}
+                {cert.data.date}
               </span>
             </div>
-            <h3 class="text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-2 tracking-tight group-hover:text-[#E9582A] dark:group-hover:text-[#fb923c] transition-colors">{cert.title}</h3>
-            <p class="text-[14px] font-bold text-slate-500 dark:text-neutral-400 mb-2">{cert.issuer}</p>
-            <p class="text-[13.5px] text-slate-600 dark:text-neutral-300 leading-relaxed font-medium line-clamp-2">{cert.description}</p>
+            <h3 class="text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-2 tracking-tight group-hover:text-[#E9582A] dark:group-hover:text-[#fb923c] transition-colors">{cert.data.title}</h3>
+            <p class="text-[14px] font-bold text-slate-500 dark:text-neutral-400 mb-2">{cert.data.issuer}</p>
+            <p class="text-[13.5px] text-slate-600 dark:text-neutral-300 leading-relaxed font-medium line-clamp-2">{cert.data.description}</p>
             <div class="text-[12px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-widest group-hover:text-[#E9582A] transition-colors mt-4">
               Read Details <span class="text-lg leading-none transition-transform group-hover:translate-x-1">&rarr;</span>
             </div>
@@ -218,29 +212,26 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
   </section>
 
   <!-- 4. Prestasi Section -->
-  <section id="achievements" class="py-24 max-w-[1400px] mx-auto px-8 relative bg-[#0a0a0a] dark:bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] mb-24 shadow-2xl overflow-hidden">
-    <!-- Decorative background elements -->
-    <div class="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-0 left-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
+  <section id="achievements" class="py-16 max-w-[1400px] mx-auto px-8 relative neu-flat border-none rounded-[2.5rem] my-8 overflow-hidden">
     
     <div class="mb-16 text-center max-w-2xl mx-auto relative z-10">
-      <h2 class="text-[36px] md:text-[44px] font-extrabold text-white mb-4 tracking-tight">Achievements</h2>
-      <p class="text-neutral-400 font-medium text-lg">Academic awards and non-academic competitions.</p>
+      <h2 class="text-[36px] md:text-[44px] font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">Achievements</h2>
+      <p class="text-slate-500 dark:text-neutral-400 font-medium text-lg">Academic awards and non-academic competitions.</p>
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
       {achievements.map((achievement) => (
-        <a href={`/achievements/${achievement.slug}`} class="block group bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-orange-500/30 hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+        <a href={`/achievements/${achievement.id}`} class="block reveal-up group neu-pressed border-none rounded-2xl p-6 transition-all duration-300 cursor-pointer">
           <div class="flex items-start gap-4 h-full">
-            <div class="w-12 h-12 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+            <div class="w-12 h-12 rounded-full neu-flat text-orange-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
               <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
             </div>
             <div class="flex flex-col h-full w-full">
-              <div class="text-orange-400 text-[12px] font-bold tracking-widest mb-1">{achievement.date}</div>
-              <h3 class="text-[18px] font-bold text-white mb-1 group-hover:text-orange-300 transition-colors">{achievement.title}</h3>
-              <p class="text-slate-400 text-[13px] font-medium mb-3">{achievement.issuer}</p>
-              <p class="text-slate-300 text-[14px] leading-relaxed mb-4">{achievement.description}</p>
-              <div class="text-[12px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-widest group-hover:text-orange-400 transition-colors mt-auto pt-2">
+              <div class="text-orange-500 text-[12px] font-bold tracking-widest mb-1">{achievement.data.date}</div>
+              <h3 class="text-[18px] font-bold text-slate-900 dark:text-white mb-1 group-hover:text-orange-500 transition-colors">{achievement.data.title}</h3>
+              <p class="text-slate-500 dark:text-neutral-400 text-[13px] font-medium mb-3">{achievement.data.issuer}</p>
+              <p class="text-slate-600 dark:text-neutral-300 text-[14px] leading-relaxed mb-4">{achievement.data.description}</p>
+              <div class="text-[12px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-widest group-hover:text-orange-500 transition-colors mt-auto pt-2">
                 Read Details <span class="text-lg leading-none transition-transform group-hover:translate-x-1">&rarr;</span>
               </div>
             </div>
@@ -251,7 +242,7 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
   </section>
 
   <!-- 5. Projects Section (Auto-Scrolling Marquee) -->
-  <section id="projects" class="py-24 max-w-full overflow-hidden relative bg-white dark:bg-black border-t border-slate-100 dark:border-white/5 transition-colors duration-300">
+  <section id="projects" class="py-16 max-w-full overflow-hidden relative border-none transition-colors duration-300 reveal-up">
     <div class="max-w-[1400px] mx-auto px-8 mb-16 text-center">
       <h2 class="text-[36px] md:text-[44px] font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">Projects</h2>
       <p class="text-slate-500 dark:text-neutral-400 font-medium text-lg">Engineering works and solutions built.</p>
@@ -259,37 +250,37 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
     
     <!-- Auto-Scrolling Horizontal Marquee Container with Custom Drag -->
     <div class="relative w-full overflow-hidden cursor-grab active:cursor-grabbing" id="project-wrapper">
-      <div class="absolute inset-y-0 left-0 w-20 md:w-48 bg-gradient-to-r from-white dark:from-black to-transparent z-20 pointer-events-none transition-colors duration-300"></div>
-      <div class="absolute inset-y-0 right-0 w-20 md:w-48 bg-gradient-to-l from-white dark:from-black to-transparent z-20 pointer-events-none transition-colors duration-300"></div>
+      <div class="absolute inset-y-0 left-0 w-20 md:w-48 bg-gradient-to-r from-[#ecf0f3] dark:from-[#1a1a1a] to-transparent z-20 pointer-events-none transition-colors duration-300"></div>
+      <div class="absolute inset-y-0 right-0 w-20 md:w-48 bg-gradient-to-l from-[#ecf0f3] dark:from-[#1a1a1a] to-transparent z-20 pointer-events-none transition-colors duration-300"></div>
       
       <div class="flex w-full relative">
-        <div id="project-track" class="flex items-start gap-8 w-max px-4 will-change-transform">
+        <div id="project-track" class="flex items-start gap-8 w-max px-4 py-8 will-change-transform">
           {marqueeProjects.map((proj, index) => (
-            <a href={`/projects/${proj.slug}`} class="w-[350px] md:w-[420px] shrink-0 block group/card bg-slate-50 dark:bg-[#111] border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden hover:bg-white dark:hover:bg-[#1a1a1a] hover:border-slate-300 dark:hover:border-white/20 hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(255,255,255,0.02)] transition-all duration-500 hover:-translate-y-1">
+            <a href={`/projects/${proj.id}`} class="w-[350px] md:w-[420px] shrink-0 block group/card neu-flat neu-flat-hover border-none rounded-3xl overflow-hidden transition-all duration-500">
               <div class="pointer-events-none">
                 <!-- Cover Image -->
                 <div class="w-full h-[200px] relative overflow-hidden bg-slate-200 dark:bg-[#222]">
-                  {proj.photos && proj.photos.length > 0 ? (
-                    <img src={proj.photos[0]} alt={proj.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" />
+                  {proj.data.photos && proj.data.photos.length > 0 ? (
+                    <img src={proj.data.photos[0]} alt={proj.data.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" loading="lazy" decoding="async" />
                   ) : (
                     <div class="w-full h-full flex items-center justify-center text-slate-400 dark:text-neutral-600">No Image</div>
                   )}
                   <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   <div class="absolute bottom-4 left-4">
                     <div class="inline-block bg-white/20 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-[4px] tracking-wider border border-white/30">
-                      {proj.tech}
+                      {proj.data.tech}
                     </div>
                   </div>
                 </div>
-                
+
                 <!-- Text Section -->
                 <div class="p-6">
-                  <h3 class="text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-2 group-hover/card:text-[#E9582A] transition-colors">{proj.title}</h3>
-                  <p class="text-[14px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-6">{proj.description}</p>
-                  
+                  <h3 class="text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-2 group-hover/card:text-[#E9582A] transition-colors">{proj.data.title}</h3>
+                  <p class="text-[14px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-6">{proj.data.description}</p>
+
                   <!-- Tags -->
                   <div class="flex flex-wrap gap-2 mb-6">
-                    {proj.tags && proj.tags.map(tag => (
+                    {proj.data.tags && proj.data.tags.map((tag) => (
                       <span class="bg-slate-200/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 text-[11px] font-bold px-2 py-1 rounded-md">{tag}</span>
                     ))}
                   </div>
@@ -307,15 +298,15 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
     
     <!-- Button Lihat Selengkapnya -->
     <div class="mt-16 flex justify-center pb-4 relative z-10">
-      <a href="/projects" class="inline-flex items-center gap-2 bg-[#E9582A] hover:bg-[#d64e22] text-white px-8 py-4 rounded-full font-bold transition-all duration-300 hover:shadow-[0_8px_20px_rgba(233,88,42,0.3)] hover:-translate-y-1">
-        View All 
+      <a href="/projects" class="inline-flex items-center gap-2 neu-flat neu-flat-hover px-8 py-4 rounded-full font-bold text-[#E9582A] border-none transition-all duration-300">
+        View All Projects
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
       </a>
     </div>
   </section>
 
   <!-- 6. Articles / Blog Section -->
-  <section id="articles" class="py-24 max-w-[1400px] mx-auto px-8 relative">
+  <section id="articles" class="py-16 max-w-[1400px] mx-auto px-8 relative">
     <div class="mb-16 text-center max-w-2xl mx-auto">
       <h2 class="text-[36px] md:text-[44px] font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">Articles</h2>
       <p class="text-slate-500 dark:text-neutral-400 font-medium text-lg">Thoughts, opinions, and guides on industry and technology.</p>
@@ -323,27 +314,27 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {articles.slice(0, 3).map((article) => (
-        <a href={`/articles/${article.slug}`} class="block group/card bg-slate-50 dark:bg-[#111] border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden hover:bg-white dark:hover:bg-[#1a1a1a] hover:border-slate-300 dark:hover:border-white/20 hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(255,255,255,0.02)] transition-all duration-500 hover:-translate-y-1 cursor-pointer h-full flex flex-col">
+        <a href={`/articles/${article.id}`} class="block reveal-up group/card neu-flat neu-flat-hover border-none rounded-3xl overflow-hidden transition-all duration-500 cursor-pointer h-full flex flex-col">
           <!-- Cover Image -->
           <div class="w-full h-[200px] relative overflow-hidden bg-slate-200 dark:bg-[#222] shrink-0">
-            {article.image ? (
-              <img src={article.image} alt={article.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" />
+            {article.data.image ? (
+              <img src={article.data.image} alt={article.data.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" loading="lazy" decoding="async" />
             ) : (
               <div class="w-full h-full flex items-center justify-center text-slate-400 dark:text-neutral-600">No Image</div>
             )}
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
             <div class="absolute bottom-4 left-4">
               <div class="inline-block bg-[#2a85ff] text-white text-[11px] font-bold px-3 py-1 rounded-[4px] tracking-wider border border-white/10">
-                {article.category}
+                {article.data.category}
               </div>
             </div>
           </div>
-          
+
           <!-- Text Section -->
           <div class="p-6 flex flex-col flex-1">
-            <div class="text-[12px] font-bold text-slate-400 dark:text-slate-500 mb-2">{article.date}</div>
-            <h3 class="text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-3 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#60a5fa] transition-colors">{article.title}</h3>
-            <p class="text-[14px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-6">{article.summary}</p>
+            <div class="text-[12px] font-bold text-slate-400 dark:text-slate-500 mb-2">{article.data.date}</div>
+            <h3 class="text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-3 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#60a5fa] transition-colors">{article.data.title}</h3>
+            <p class="text-[14px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-6">{article.data.summary}</p>
             
             <div class="text-[13px] font-bold text-[#2a85ff] dark:text-[#60a5fa] flex items-center gap-1 uppercase tracking-widest mt-auto">
               Read Article <span class="text-lg leading-none transition-transform group-hover/card:translate-x-1">&rarr;</span>
@@ -354,7 +345,7 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
     </div>
 
     <div class="mt-16 flex justify-center pb-4 relative z-10">
-      <a href="/articles" class="inline-flex items-center gap-2 border-2 border-slate-200 dark:border-white/10 hover:border-blue-200 dark:hover:border-white/20 hover:bg-blue-50 dark:hover:bg-[#1a1a1a] text-slate-600 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 px-8 py-4 rounded-full font-bold transition-all duration-300">
+      <a href="/articles" class="inline-flex items-center gap-2 neu-flat neu-flat-hover border-none text-slate-600 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 px-8 py-4 rounded-full font-bold transition-all duration-300">
         View All Articles 
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
       </a>
@@ -364,10 +355,14 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
 
 <script is:inline>
   // Script for Smooth Subpixel Transform Marquee + Drag capability for Projects
-  document.addEventListener('DOMContentLoaded', () => {
+  function setupMarquee() {
     const track = document.getElementById('project-track');
     const wrapper = document.getElementById('project-wrapper');
     if (!track || !wrapper) return;
+
+    // Cegah inisialisasi ganda jika event dipanggil berkali-kali
+    if (track.dataset.initialized) return;
+    track.dataset.initialized = "true";
 
     let currentTranslate = 0;
     let isDragging = false;
@@ -431,6 +426,9 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
     wrapper.addEventListener('mouseenter', () => isPaused = true);
 
     function animate() {
+      // Berhenti jika elemen sudah tidak ada di DOM (pindah halaman)
+      if (!document.getElementById('project-track')) return;
+
       if (!isDragging && !isPaused) {
         currentTranslate += 0.5; // Smooth subpixel speed (sangat lambat & halus)
       }
@@ -448,7 +446,11 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
     }
     
     requestAnimationFrame(animate);
-  });
+  }
+
+  // Inisialisasi saat pertama load dan saat perpindahan halaman dengan ClientRouter
+  setupMarquee();
+  document.addEventListener('astro:page-load', setupMarquee);
 </script>
 
 
@@ -462,4 +464,81 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
+
+  /* Reveal Animations */
+  .reveal-up {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+    filter: blur(5px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    filter: blur(5px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-right {
+    opacity: 0;
+    transform: translateX(40px);
+    filter: blur(5px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .reveal-up.is-revealed,
+  .reveal-left.is-revealed,
+  .reveal-right.is-revealed {
+    opacity: 1;
+    transform: translate(0) scale(1);
+    filter: blur(0);
+  }
 </style>
+
+<script is:inline>
+  function setupScrollReveal() {
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px 0px -50px 0px', // Trigger slightly before entering fully
+      threshold: 0.1
+    };
+
+    let staggerQueue = [];
+    let staggerTimeout = null;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Tambahkan ke antrean jika belum memiliki class is-revealed
+          if (!entry.target.classList.contains('is-revealed') && !staggerQueue.includes(entry.target)) {
+            staggerQueue.push(entry.target);
+          }
+        } else {
+          // Hapus class agar animasi diulang saat di-scroll kembali
+          entry.target.classList.remove('is-revealed');
+        }
+      });
+
+      if (staggerQueue.length > 0 && !staggerTimeout) {
+        staggerTimeout = setTimeout(() => {
+          staggerQueue.forEach((el, index) => {
+            setTimeout(() => {
+              el.classList.add('is-revealed');
+            }, index * 120); // 120ms delay between elements appearing
+          });
+          staggerQueue = [];
+          staggerTimeout = null;
+        }, 30);
+      }
+    }, observerOptions);
+
+    const revealElements = document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right');
+    // Clear any previously revealed classes on page load (useful for SPA transitions)
+    revealElements.forEach(el => {
+      el.classList.remove('is-revealed');
+      observer.observe(el);
+    });
+  }
+  
+  setupScrollReveal();
+  document.addEventListener('astro:page-load', setupScrollReveal);
+</script>
