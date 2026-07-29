@@ -1,6 +1,7 @@
 ---
 import { getCollection } from '../firebase/content';
-import profileData from '../content/profile.json';
+import { getProfile } from '../firebase/content';
+const profileData = await getProfile();
 
 const profile = {
   name: profileData.name.toUpperCase(),

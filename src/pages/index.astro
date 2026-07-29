@@ -1,6 +1,7 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
-import profile from '../content/profile.json';
+import { getProfile } from '../firebase/content';
+const profile = await getProfile();
 import { getCollection } from '../firebase/content';
 
 let experiences = await getCollection('experiences');

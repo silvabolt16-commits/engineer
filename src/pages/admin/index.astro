@@ -55,43 +55,46 @@ import MainLayout from "../../layouts/MainLayout.astro";
             <option value="experiences">Experiences (Pengalaman Kerja)</option>
             <option value="certificates">Certificates (Sertifikat)</option>
             <option value="achievements">Achievements (Prestasi)</option>
+            <option value="skills">Skills (Keahlian)</option>
+            <option value="education">Education (Pendidikan)</option>
+            <option value="settings_profile">Pengaturan Profil & CV</option>
           </select>
         </div>
 
         <!-- Judul -->
         <div>
-          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Judul</label>
+          <label id="lbl_title" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Judul</label>
           <input type="text" id="title" required class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Judul Proyek / Artikel / Posisi">
         </div>
 
         <!-- Sub-Detail (Perusahaan / Issuer / Category / Tech) -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Kategori / Perusahaan / Issuer / Tech</label>
+            <label id="lbl_subTitle" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Kategori / Perusahaan / Issuer / Tech</label>
             <input type="text" id="subTitle" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Contoh: PT Engineering / Siemens / IoT">
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Tanggal / Durasi</label>
+            <label id="lbl_dateOrDuration" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Tanggal / Durasi</label>
             <input type="text" id="dateOrDuration" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Contoh: 2023 - 2024 / Mei 2024">
           </div>
         </div>
 
         <!-- Link External -->
         <div>
-          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Link External (Opsional)</label>
-          <input type="url" id="link" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="https://github.com/...">
+          <label id="lbl_link" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Link External (Opsional)</label>
+          <input type="text" id="link" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="https://github.com/...">
         </div>
 
         <!-- Deskripsi/Konten -->
         <div>
-          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Deskripsi / Detail Konten</label>
+          <label id="lbl_description" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Deskripsi / Detail Konten</label>
           <textarea id="description" required rows="5" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Tuliskan penjelasan atau konten markdown di sini..."></textarea>
         </div>
 
         <!-- File Upload Gambar -->
         <div>
-          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Gambar Cover / Dokumentasi (Opsional)</label>
-          <input type="file" id="imageFile" accept="image/*" class="w-full text-sm text-slate-600 dark:text-neutral-300 neu-pressed border-none rounded-xl p-3">
+          <label id="lbl_imageFile" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Gambar Cover / Dokumentasi (Opsional)</label>
+          <input type="file" id="imageFile" class="w-full text-sm text-slate-600 dark:text-neutral-300 neu-pressed border-none rounded-xl p-3">
         </div>
 
         <button type="submit" id="submitBtn" class="w-full bg-[#E9582A] hover:bg-[#d04a1f] text-white font-bold py-4 rounded-xl shadow-md transition-all text-sm uppercase tracking-wider">
@@ -108,7 +111,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 <script>
   import { db, storage, auth } from "../../firebase/client";
   import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-  import { collection, addDoc } from "firebase/firestore";
+  import { collection, addDoc, setDoc, doc } from "firebase/firestore";
   import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
   const loginCard = document.getElementById("loginCard");
@@ -181,6 +184,47 @@ import MainLayout from "../../layouts/MainLayout.astro";
     }
   }
 
+  const collectionNameSelect = document.getElementById("collectionName") as HTMLSelectElement;
+  collectionNameSelect?.addEventListener("change", (e) => {
+    const val = (e.target as HTMLSelectElement).value;
+    const lblTitle = document.getElementById("lbl_title");
+    const lblSubTitle = document.getElementById("lbl_subTitle");
+    const lblDate = document.getElementById("lbl_dateOrDuration");
+    const lblLink = document.getElementById("lbl_link");
+    const lblDesc = document.getElementById("lbl_description");
+    const lblImage = document.getElementById("lbl_imageFile");
+    
+    if (val === "settings_profile") {
+      if(lblTitle) lblTitle.textContent = "Nama Lengkap";
+      if(lblSubTitle) lblSubTitle.textContent = "Role / Pekerjaan";
+      if(lblDate) lblDate.textContent = "Status Ketersediaan";
+      if(lblLink) lblLink.textContent = "Lokasi (Kota, Negara)";
+      if(lblDesc) lblDesc.textContent = "Bio / Ringkasan CV";
+      if(lblImage) lblImage.textContent = "File CV (PDF / DOC)";
+    } else if (val === "skills") {
+      if(lblTitle) lblTitle.textContent = "Kategori Skill (Misal: Software)";
+      if(lblSubTitle) lblSubTitle.textContent = "Kosongkan";
+      if(lblDate) lblDate.textContent = "Kosongkan";
+      if(lblLink) lblLink.textContent = "Kosongkan";
+      if(lblDesc) lblDesc.textContent = "Daftar Keahlian (Pisahkan dengan koma)";
+      if(lblImage) lblImage.textContent = "Kosongkan";
+    } else if (val === "education") {
+      if(lblTitle) lblTitle.textContent = "Nama Institusi / Universitas";
+      if(lblSubTitle) lblSubTitle.textContent = "Gelar & IPK";
+      if(lblDate) lblDate.textContent = "Tahun (Misal: 2019 - 2023)";
+      if(lblLink) lblLink.textContent = "Kosongkan";
+      if(lblDesc) lblDesc.textContent = "Pencapaian (Pisahkan dengan baris baru)";
+      if(lblImage) lblImage.textContent = "Kosongkan";
+    } else {
+      if(lblTitle) lblTitle.textContent = "Judul";
+      if(lblSubTitle) lblSubTitle.textContent = "Kategori / Perusahaan / Issuer / Tech";
+      if(lblDate) lblDate.textContent = "Tanggal / Durasi";
+      if(lblLink) lblLink.textContent = "Link External (Opsional)";
+      if(lblDesc) lblDesc.textContent = "Deskripsi / Detail Konten";
+      if(lblImage) lblImage.textContent = "Gambar Cover / Dokumentasi (Opsional)";
+    }
+  });
+
   // Handle Upload Form Submit
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -211,34 +255,59 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
       // 2. Simpan Data ke Firestore
       showStatus("Menyimpan data ke Firestore...");
-      const docData: any = {
-        title,
-        description,
-        body: description,
-        image: imageUrl,
-        photos: imageUrl ? [imageUrl] : [],
-        createdAt: new Date().toISOString()
-      };
+      
+      if (collectionName === "settings_profile") {
+        const profileData: any = {
+          name: title,
+          role: subTitle,
+          availabilityText: dateOrDuration,
+          location: link,
+          bio: description,
+          cvSummary: description,
+          updatedAt: new Date().toISOString()
+        };
+        if (imageUrl) {
+          profileData.cvUrl = imageUrl;
+        }
+        await setDoc(doc(db, "settings", "profile"), profileData, { merge: true });
+      } else {
+        const docData: any = {
+          title,
+          description,
+          body: description,
+          image: imageUrl,
+          photos: imageUrl ? [imageUrl] : [],
+          createdAt: new Date().toISOString()
+        };
 
-      if (collectionName === "projects") {
-        docData.tech = subTitle || "General";
-        docData.tags = subTitle ? subTitle.split(",").map(t => t.trim()) : ["Engineering"];
-        docData.link = link || "#";
-      } else if (collectionName === "articles") {
-        docData.category = subTitle || "General";
-        docData.date = dateOrDuration || new Date().toLocaleDateString("id-ID");
-        docData.summary = description.slice(0, 150);
-      } else if (collectionName === "experiences") {
-        docData.company = subTitle || "Company";
-        docData.duration = dateOrDuration || "2024";
-        docData.details = description.split("\n").filter(line => line.trim() !== "");
-      } else if (collectionName === "certificates" || collectionName === "achievements") {
-        docData.issuer = subTitle || "Official";
-        docData.date = dateOrDuration || "2024";
-        docData.link = link || "#";
+        if (collectionName === "projects") {
+          docData.tech = subTitle || "General";
+          docData.tags = subTitle ? subTitle.split(",").map(t => t.trim()) : ["Engineering"];
+          docData.link = link || "#";
+        } else if (collectionName === "articles") {
+          docData.category = subTitle || "General";
+          docData.date = dateOrDuration || new Date().toLocaleDateString("id-ID");
+          docData.summary = description.slice(0, 150);
+        } else if (collectionName === "experiences") {
+          docData.company = subTitle || "Company";
+          docData.duration = dateOrDuration || "2024";
+          docData.details = description.split("\n").filter((line: string) => line.trim() !== "");
+        } else if (collectionName === "certificates" || collectionName === "achievements") {
+          docData.issuer = subTitle || "Official";
+          docData.date = dateOrDuration || "2024";
+          docData.link = link || "#";
+        } else if (collectionName === "skills") {
+          docData.category = title;
+          docData.items = description.split(",").map(t => t.trim());
+        } else if (collectionName === "education") {
+          docData.institution = title;
+          docData.degree = subTitle;
+          docData.duration = dateOrDuration;
+          docData.achievements = description.split("\n").filter((line: string) => line.trim() !== "");
+        }
+
+        await addDoc(collection(db, collectionName), docData);
       }
-
-      await addDoc(collection(db, collectionName), docData);
 
       showStatus("✅ Berhasil diunggah ke Firebase!");
       form.reset();
