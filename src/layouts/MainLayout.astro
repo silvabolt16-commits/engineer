@@ -131,7 +131,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://fajriaww
       document.addEventListener('astro:after-swap', initTheme);
     </script>
   </head>
-  <body class="text-slate-900 dark:text-slate-100 min-h-screen flex flex-col antialiased font-sans selection:bg-orange-100 selection:text-orange-900 dark:selection:bg-orange-500/30 dark:selection:text-orange-200">
+  <body class="text-slate-900 dark:text-slate-100 min-h-screen flex flex-col antialiased font-sans selection:bg-orange-100 selection:text-orange-900 dark:selection:bg-orange-500/30 dark:selection:text-orange-200 overflow-x-hidden">
     
     <!-- Lightning Flash Overlay -->
     <div id="lightning-flash" class="fixed inset-0 bg-white z-[9999] opacity-0 pointer-events-none transition-none"></div>
