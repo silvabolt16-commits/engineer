@@ -115,7 +115,7 @@ import MainLayout from "../layouts/MainLayout.astro";
         </div>
 
         <!-- File Upload Gambar -->
-        <div>
+        <div id="imageRow">
           <label id="lbl_imageFile" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Gambar Cover / Dokumentasi (Opsional)</label>
           <input type="file" id="imageFile" accept="image/*" class="w-full text-sm text-slate-600 dark:text-neutral-300 neu-pressed border-none rounded-xl p-3">
         </div>
@@ -181,6 +181,7 @@ import MainLayout from "../layouts/MainLayout.astro";
     const skillsListContainer = document.getElementById("skillsListContainer");
     const subDetailRow = document.getElementById("subDetailRow");
     const linkRow = document.getElementById("linkRow");
+    const imageRow = document.getElementById("imageRow");
     
     if (val === "settings_profile") {
       if(lblTitle) lblTitle.textContent = "Nama Lengkap";
@@ -201,6 +202,8 @@ import MainLayout from "../layouts/MainLayout.astro";
       if(lblDesc) lblDesc.textContent = "Profil Singkat (Bio)";
       if(inputDesc) { inputDesc.classList.remove("hidden"); inputDesc.required = true; inputDesc.placeholder = "Tuliskan penjelasan atau konten markdown di sini..."; }
       if(skillsListContainer) { skillsListContainer.classList.add("hidden"); skillsListContainer.classList.remove("flex"); }
+      
+      if(imageRow) { imageRow.classList.remove("hidden"); }
       if(lblImage) lblImage.textContent = "Foto Profil";
       
       if(inputTitle) { inputTitle.classList.remove("hidden"); inputTitle.required = true; }
@@ -216,7 +219,8 @@ import MainLayout from "../layouts/MainLayout.astro";
       if(lblDesc) lblDesc.textContent = "Daftar Keahlian";
       if(inputDesc) { inputDesc.classList.add("hidden"); inputDesc.required = false; }
       if(skillsListContainer) { skillsListContainer.classList.remove("hidden"); skillsListContainer.classList.add("flex"); }
-      if(lblImage) lblImage.textContent = "Ikon (Otomatis menyesuaikan urutan)";
+      
+      if(imageRow) { imageRow.classList.add("hidden"); }
     } else {
       if(lblTitle) lblTitle.textContent = "Judul";
       if(inputTitle) { inputTitle.classList.remove("hidden"); inputTitle.required = true; inputTitle.placeholder = "Judul Proyek / Artikel / Posisi"; }
@@ -237,6 +241,8 @@ import MainLayout from "../layouts/MainLayout.astro";
       if(lblDesc) lblDesc.textContent = "Deskripsi / Detail Konten";
       if(inputDesc) { inputDesc.classList.remove("hidden"); inputDesc.required = true; inputDesc.placeholder = "Tuliskan penjelasan atau konten markdown di sini..."; }
       if(skillsListContainer) { skillsListContainer.classList.add("hidden"); skillsListContainer.classList.remove("flex"); }
+      
+      if(imageRow) { imageRow.classList.remove("hidden"); }
       if(lblImage) lblImage.textContent = "Gambar Cover / Dokumentasi (Opsional)";
     }
   });
