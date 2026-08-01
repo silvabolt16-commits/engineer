@@ -23,6 +23,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://fajriaww
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+
+    <!-- Favicon / Tab Icon (Synced with Profile Avatar) -->
+    <link rel="icon" type="image/png" href={profile.avatar} />
+    <link rel="shortcut icon" href={profile.avatar} />
+    <link rel="apple-touch-icon" href={profile.avatar} />
     
     <!-- SEO & Metadata -->
     <meta name="description" content={description} />
