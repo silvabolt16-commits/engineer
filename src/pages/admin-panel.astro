@@ -80,7 +80,7 @@ import MainLayout from "../layouts/MainLayout.astro";
         </div>
 
         <!-- Sub-Detail (Perusahaan / Issuer / Category / Tech) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div id="subDetailRow" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label id="lbl_subTitle" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Kategori / Perusahaan / Issuer / Tech</label>
             <input type="text" id="subTitle" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Contoh: PT Engineering / Siemens / IoT">
@@ -92,7 +92,7 @@ import MainLayout from "../layouts/MainLayout.astro";
         </div>
 
         <!-- Link External -->
-        <div>
+        <div id="linkRow">
           <label id="lbl_link" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Link External (Opsional)</label>
           <input type="text" id="link" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="https://github.com/...">
         </div>
@@ -179,6 +179,8 @@ import MainLayout from "../layouts/MainLayout.astro";
     const inputDesc = document.getElementById("description") as HTMLTextAreaElement;
     
     const skillsListContainer = document.getElementById("skillsListContainer");
+    const subDetailRow = document.getElementById("subDetailRow");
+    const linkRow = document.getElementById("linkRow");
     
     if (val === "settings_profile") {
       if(lblTitle) lblTitle.textContent = "Nama Lengkap";
@@ -189,6 +191,9 @@ import MainLayout from "../layouts/MainLayout.astro";
       
       if(lblDate) lblDate.textContent = "Status Ketersediaan (cth: Available to Work)";
       if(inputDate) inputDate.placeholder = "Contoh: Available for new career opportunities";
+      
+      if(subDetailRow) { subDetailRow.classList.remove("hidden"); subDetailRow.classList.add("grid"); }
+      if(linkRow) { linkRow.classList.remove("hidden"); }
       
       if(lblLink) lblLink.textContent = "Lokasi (Kota, Provinsi)";
       if(inputLink) inputLink.placeholder = "Contoh: Bekasi, Jawa Barat";
@@ -205,14 +210,8 @@ import MainLayout from "../layouts/MainLayout.astro";
       if(inputTitle) { inputTitle.classList.add("hidden"); inputTitle.required = false; }
       if(selectTitle) selectTitle.classList.remove("hidden");
       
-      if(lblSubTitle) lblSubTitle.textContent = "-";
-      if(inputSubTitle) inputSubTitle.placeholder = "-";
-      
-      if(lblDate) lblDate.textContent = "-";
-      if(inputDate) inputDate.placeholder = "-";
-      
-      if(lblLink) lblLink.textContent = "-";
-      if(inputLink) inputLink.placeholder = "-";
+      if(subDetailRow) { subDetailRow.classList.add("hidden"); subDetailRow.classList.remove("grid"); }
+      if(linkRow) { linkRow.classList.add("hidden"); }
       
       if(lblDesc) lblDesc.textContent = "Daftar Keahlian";
       if(inputDesc) { inputDesc.classList.add("hidden"); inputDesc.required = false; }
@@ -222,6 +221,9 @@ import MainLayout from "../layouts/MainLayout.astro";
       if(lblTitle) lblTitle.textContent = "Judul";
       if(inputTitle) { inputTitle.classList.remove("hidden"); inputTitle.required = true; inputTitle.placeholder = "Judul Proyek / Artikel / Posisi"; }
       if(selectTitle) selectTitle.classList.add("hidden");
+      
+      if(subDetailRow) { subDetailRow.classList.remove("hidden"); subDetailRow.classList.add("grid"); }
+      if(linkRow) { linkRow.classList.remove("hidden"); }
       
       if(lblSubTitle) lblSubTitle.textContent = "Kategori / Perusahaan / Issuer / Tech";
       if(inputSubTitle) inputSubTitle.placeholder = "Contoh: PT Engineering / Siemens / IoT";
