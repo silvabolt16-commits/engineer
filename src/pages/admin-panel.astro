@@ -63,6 +63,7 @@ import MainLayout from "../layouts/MainLayout.astro";
             <option value="experiences">Experiences (Pengalaman Kerja)</option>
             <option value="certificates">Certificates (Sertifikat)</option>
             <option value="achievements">Achievements (Prestasi)</option>
+            <option value="skills">Skills (Keahlian)</option>
             <option value="settings_profile">Profil (Foto Profil & Profil Singkat)</option>
           </select>
         </div>
@@ -158,6 +159,7 @@ import MainLayout from "../layouts/MainLayout.astro";
     const inputSubTitle = document.getElementById("subTitle") as HTMLInputElement;
     const inputDate = document.getElementById("dateOrDuration") as HTMLInputElement;
     const inputLink = document.getElementById("link") as HTMLInputElement;
+    const inputDesc = document.getElementById("description") as HTMLTextAreaElement;
     
     if (val === "settings_profile") {
       if(lblTitle) lblTitle.textContent = "Nama Lengkap";
@@ -173,7 +175,24 @@ import MainLayout from "../layouts/MainLayout.astro";
       if(inputLink) inputLink.placeholder = "Contoh: Bekasi, Jawa Barat";
       
       if(lblDesc) lblDesc.textContent = "Profil Singkat (Bio)";
+      if(inputDesc) inputDesc.placeholder = "Tuliskan penjelasan atau konten markdown di sini...";
       if(lblImage) lblImage.textContent = "Foto Profil";
+    } else if (val === "skills") {
+      if(lblTitle) lblTitle.textContent = "Kategori (Contoh: Software, Teknikal)";
+      if(inputTitle) inputTitle.placeholder = "Contoh: Software";
+      
+      if(lblSubTitle) lblSubTitle.textContent = "-";
+      if(inputSubTitle) inputSubTitle.placeholder = "-";
+      
+      if(lblDate) lblDate.textContent = "-";
+      if(inputDate) inputDate.placeholder = "-";
+      
+      if(lblLink) lblLink.textContent = "-";
+      if(inputLink) inputLink.placeholder = "-";
+      
+      if(lblDesc) lblDesc.textContent = "Daftar Keahlian (Pisahkan dengan koma)";
+      if(inputDesc) inputDesc.placeholder = "Contoh: AutoCAD, Ms. Excel, TIA Portal";
+      if(lblImage) lblImage.textContent = "Ikon (Otomatis menyesuaikan urutan)";
     } else {
       if(lblTitle) lblTitle.textContent = "Judul";
       if(inputTitle) inputTitle.placeholder = "Judul Proyek / Artikel / Posisi";
@@ -188,6 +207,7 @@ import MainLayout from "../layouts/MainLayout.astro";
       if(inputLink) inputLink.placeholder = "https://github.com/...";
       
       if(lblDesc) lblDesc.textContent = "Deskripsi / Detail Konten";
+      if(inputDesc) inputDesc.placeholder = "Tuliskan penjelasan atau konten markdown di sini...";
       if(lblImage) lblImage.textContent = "Gambar Cover / Dokumentasi (Opsional)";
     }
   });
@@ -331,6 +351,9 @@ import MainLayout from "../layouts/MainLayout.astro";
           docData.issuer = subTitle || "Official";
           docData.date = dateOrDuration || "2024";
           docData.link = link || "#";
+        } else if (collectionName === "skills") {
+          docData.category = title || "Kategori Baru";
+          docData.items = description.split(",").map(i => i.trim()).filter(i => i !== "");
         }
 
         await addDoc(collection(db, collectionName), docData);

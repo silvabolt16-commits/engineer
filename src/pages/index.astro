@@ -11,6 +11,9 @@ let projects = await getCollection('projects');
 let certificates = await getCollection('certificates');
 let achievements = await getCollection('achievements');
 
+let fbSkills = await getCollection('skills');
+let skills = fbSkills && fbSkills.length > 0 ? fbSkills.map(s => s.data) : profile.skills;
+
 let articles = await getCollection('articles');
 articles = (articles || []).sort((a, b) => new Date(b?.data?.date || 0).getTime() - new Date(a?.data?.date || 0).getTime());
 
@@ -110,7 +113,7 @@ const skillStyles = [
       <p class="text-[11px] font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-widest mb-10 text-center">Keahlian & Spesialisasi</p>
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 w-full max-w-5xl mx-auto">
-        {profile.skills.map((skill, i) => {
+        {skills.map((skill, i) => {
           const style = skillStyles[i % skillStyles.length];
           return (
             <div class="flex flex-col gap-4">
