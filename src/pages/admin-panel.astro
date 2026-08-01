@@ -72,6 +72,11 @@ import MainLayout from "../layouts/MainLayout.astro";
         <div>
           <label id="lbl_title" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Judul</label>
           <input type="text" id="title" required class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Judul Proyek / Artikel / Posisi">
+          <select id="title_select" class="hidden w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white dark:bg-[#1a1a1a] focus:outline-none focus:ring-2 focus:ring-[#E9582A]">
+            <option value="Software">Software</option>
+            <option value="Teknikal">Teknikal</option>
+            <option value="Dokumen">Dokumen</option>
+          </select>
         </div>
 
         <!-- Sub-Detail (Perusahaan / Issuer / Category / Tech) -->
@@ -156,6 +161,7 @@ import MainLayout from "../layouts/MainLayout.astro";
     const lblImage = document.getElementById("lbl_imageFile");
     
     const inputTitle = document.getElementById("title") as HTMLInputElement;
+    const selectTitle = document.getElementById("title_select") as HTMLSelectElement;
     const inputSubTitle = document.getElementById("subTitle") as HTMLInputElement;
     const inputDate = document.getElementById("dateOrDuration") as HTMLInputElement;
     const inputLink = document.getElementById("link") as HTMLInputElement;
@@ -177,9 +183,13 @@ import MainLayout from "../layouts/MainLayout.astro";
       if(lblDesc) lblDesc.textContent = "Profil Singkat (Bio)";
       if(inputDesc) inputDesc.placeholder = "Tuliskan penjelasan atau konten markdown di sini...";
       if(lblImage) lblImage.textContent = "Foto Profil";
+      
+      if(inputTitle) { inputTitle.classList.remove("hidden"); inputTitle.required = true; }
+      if(selectTitle) selectTitle.classList.add("hidden");
     } else if (val === "skills") {
-      if(lblTitle) lblTitle.textContent = "Kategori (Contoh: Software, Teknikal)";
-      if(inputTitle) inputTitle.placeholder = "Contoh: Software";
+      if(lblTitle) lblTitle.textContent = "Kategori (Pilih salah satu)";
+      if(inputTitle) { inputTitle.classList.add("hidden"); inputTitle.required = false; }
+      if(selectTitle) selectTitle.classList.remove("hidden");
       
       if(lblSubTitle) lblSubTitle.textContent = "-";
       if(inputSubTitle) inputSubTitle.placeholder = "-";
@@ -195,7 +205,8 @@ import MainLayout from "../layouts/MainLayout.astro";
       if(lblImage) lblImage.textContent = "Ikon (Otomatis menyesuaikan urutan)";
     } else {
       if(lblTitle) lblTitle.textContent = "Judul";
-      if(inputTitle) inputTitle.placeholder = "Judul Proyek / Artikel / Posisi";
+      if(inputTitle) { inputTitle.classList.remove("hidden"); inputTitle.required = true; inputTitle.placeholder = "Judul Proyek / Artikel / Posisi"; }
+      if(selectTitle) selectTitle.classList.add("hidden");
       
       if(lblSubTitle) lblSubTitle.textContent = "Kategori / Perusahaan / Issuer / Tech";
       if(inputSubTitle) inputSubTitle.placeholder = "Contoh: PT Engineering / Siemens / IoT";
@@ -283,7 +294,9 @@ import MainLayout from "../layouts/MainLayout.astro";
     showStatus("Memproses unggahan...");
 
     const collectionName = (document.getElementById("collectionName") as HTMLSelectElement).value;
-    const title = (document.getElementById("title") as HTMLInputElement).value;
+    const title = collectionName === "skills" 
+      ? (document.getElementById("title_select") as HTMLSelectElement).value 
+      : (document.getElementById("title") as HTMLInputElement).value;
     const subTitle = (document.getElementById("subTitle") as HTMLInputElement).value;
     const dateOrDuration = (document.getElementById("dateOrDuration") as HTMLInputElement).value;
     const link = (document.getElementById("link") as HTMLInputElement).value;
