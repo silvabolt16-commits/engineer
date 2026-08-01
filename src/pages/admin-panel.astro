@@ -63,6 +63,7 @@ import MainLayout from "../layouts/MainLayout.astro";
             <option value="experiences">Experiences (Pengalaman Kerja)</option>
             <option value="certificates">Certificates (Sertifikat)</option>
             <option value="achievements">Achievements (Prestasi)</option>
+            <option value="settings_profile">Profil (Foto Profil & Profil Singkat)</option>
           </select>
         </div>
 
@@ -116,7 +117,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 <script>
   import { db, storage, auth } from "../firebase/client";
   import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-  import { collection, addDoc } from "firebase/firestore";
+  import { collection, addDoc, setDoc, doc } from "firebase/firestore";
   import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
   const loginCard = document.getElementById("loginCard");
@@ -236,34 +237,54 @@ import MainLayout from "../layouts/MainLayout.astro";
 
       // 2. Simpan Data ke Firestore
       showStatus("Menyimpan data ke Firestore...");
-      const docData: any = {
-        title,
-        description,
-        body: description,
-        image: imageUrl,
-        photos: imageUrl ? [imageUrl] : [],
-        createdAt: new Date().toISOString()
-      };
+      
+      if (collectionName === "settings_profile") {
+        const profileData: any = {
+          bio: description, // Update profil singkat
+          updatedAt: new Date().toISOString()
+        };
+        
+        // Update foto profil jika ada gambar yang diunggah
+        if (imageUrl) {
+          profileData.avatar = imageUrl; 
+        }
+        
+        // Jika form judul tidak kosong, update nama juga
+        if (title && title.trim() !== "") {
+          profileData.name = title;
+        }
 
-      if (collectionName === "projects") {
-        docData.tech = subTitle || "General";
-        docData.tags = subTitle ? subTitle.split(",").map(t => t.trim()) : ["Engineering"];
-        docData.link = link || "#";
-      } else if (collectionName === "articles") {
-        docData.category = subTitle || "General";
-        docData.date = dateOrDuration || new Date().toLocaleDateString("id-ID");
-        docData.summary = description.slice(0, 150);
-      } else if (collectionName === "experiences") {
-        docData.company = subTitle || "Company";
-        docData.duration = dateOrDuration || "2024";
-        docData.details = description.split("\n").filter(line => line.trim() !== "");
-      } else if (collectionName === "certificates" || collectionName === "achievements") {
-        docData.issuer = subTitle || "Official";
-        docData.date = dateOrDuration || "2024";
-        docData.link = link || "#";
+        await setDoc(doc(db, "settings", "profile"), profileData, { merge: true });
+      } else {
+        const docData: any = {
+          title,
+          description,
+          body: description,
+          image: imageUrl,
+          photos: imageUrl ? [imageUrl] : [],
+          createdAt: new Date().toISOString()
+        };
+
+        if (collectionName === "projects") {
+          docData.tech = subTitle || "General";
+          docData.tags = subTitle ? subTitle.split(",").map(t => t.trim()) : ["Engineering"];
+          docData.link = link || "#";
+        } else if (collectionName === "articles") {
+          docData.category = subTitle || "General";
+          docData.date = dateOrDuration || new Date().toLocaleDateString("id-ID");
+          docData.summary = description.slice(0, 150);
+        } else if (collectionName === "experiences") {
+          docData.company = subTitle || "Company";
+          docData.duration = dateOrDuration || "2024";
+          docData.details = description.split("\n").filter(line => line.trim() !== "");
+        } else if (collectionName === "certificates" || collectionName === "achievements") {
+          docData.issuer = subTitle || "Official";
+          docData.date = dateOrDuration || "2024";
+          docData.link = link || "#";
+        }
+
+        await addDoc(collection(db, collectionName), docData);
       }
-
-      await addDoc(collection(db, collectionName), docData);
 
       showStatus("✅ Berhasil diunggah ke Firebase!");
       form.reset();
