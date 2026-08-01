@@ -69,37 +69,37 @@ import MainLayout from "../layouts/MainLayout.astro";
 
         <!-- Judul -->
         <div>
-          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Judul</label>
+          <label id="lbl_title" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Judul</label>
           <input type="text" id="title" required class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Judul Proyek / Artikel / Posisi">
         </div>
 
         <!-- Sub-Detail (Perusahaan / Issuer / Category / Tech) -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Kategori / Perusahaan / Issuer / Tech</label>
+            <label id="lbl_subTitle" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Kategori / Perusahaan / Issuer / Tech</label>
             <input type="text" id="subTitle" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Contoh: PT Engineering / Siemens / IoT">
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Tanggal / Durasi</label>
+            <label id="lbl_dateOrDuration" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Tanggal / Durasi</label>
             <input type="text" id="dateOrDuration" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Contoh: 2023 - 2024 / Mei 2024">
           </div>
         </div>
 
         <!-- Link External -->
         <div>
-          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Link External (Opsional)</label>
+          <label id="lbl_link" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Link External (Opsional)</label>
           <input type="url" id="link" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="https://github.com/...">
         </div>
 
         <!-- Deskripsi/Konten -->
         <div>
-          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Deskripsi / Detail Konten</label>
+          <label id="lbl_description" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Deskripsi / Detail Konten</label>
           <textarea id="description" required rows="5" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Tuliskan penjelasan atau konten markdown di sini..."></textarea>
         </div>
 
         <!-- File Upload Gambar -->
         <div>
-          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Gambar Cover / Dokumentasi (Opsional)</label>
+          <label id="lbl_imageFile" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Gambar Cover / Dokumentasi (Opsional)</label>
           <input type="file" id="imageFile" accept="image/*" class="w-full text-sm text-slate-600 dark:text-neutral-300 neu-pressed border-none rounded-xl p-3">
         </div>
 
@@ -141,6 +141,33 @@ import MainLayout from "../layouts/MainLayout.astro";
     } else {
       adminPanel?.classList.add("hidden");
       loginCard?.classList.remove("hidden");
+    }
+  });
+
+  const collectionNameSelect = document.getElementById("collectionName") as HTMLSelectElement;
+  collectionNameSelect?.addEventListener("change", (e) => {
+    const val = (e.target as HTMLSelectElement).value;
+    const lblTitle = document.getElementById("lbl_title");
+    const lblSubTitle = document.getElementById("lbl_subTitle");
+    const lblDate = document.getElementById("lbl_dateOrDuration");
+    const lblLink = document.getElementById("lbl_link");
+    const lblDesc = document.getElementById("lbl_description");
+    const lblImage = document.getElementById("lbl_imageFile");
+    
+    if (val === "settings_profile") {
+      if(lblTitle) lblTitle.textContent = "Nama Lengkap";
+      if(lblSubTitle) lblSubTitle.textContent = "Role / Pekerjaan";
+      if(lblDate) lblDate.textContent = "Status Ketersediaan (cth: Available to Work)";
+      if(lblLink) lblLink.textContent = "Lokasi (Kota, Provinsi)";
+      if(lblDesc) lblDesc.textContent = "Profil Singkat (Bio)";
+      if(lblImage) lblImage.textContent = "Foto Profil";
+    } else {
+      if(lblTitle) lblTitle.textContent = "Judul";
+      if(lblSubTitle) lblSubTitle.textContent = "Kategori / Perusahaan / Issuer / Tech";
+      if(lblDate) lblDate.textContent = "Tanggal / Durasi";
+      if(lblLink) lblLink.textContent = "Link External (Opsional)";
+      if(lblDesc) lblDesc.textContent = "Deskripsi / Detail Konten";
+      if(lblImage) lblImage.textContent = "Gambar Cover / Dokumentasi (Opsional)";
     }
   });
 
@@ -240,18 +267,20 @@ import MainLayout from "../layouts/MainLayout.astro";
       
       if (collectionName === "settings_profile") {
         const profileData: any = {
-          bio: description, // Update profil singkat
           updatedAt: new Date().toISOString()
         };
         
-        // Update foto profil jika ada gambar yang diunggah
-        if (imageUrl) {
-          profileData.avatar = imageUrl; 
+        if (title && title.trim() !== "") profileData.name = title;
+        if (subTitle && subTitle.trim() !== "") profileData.role = subTitle;
+        if (dateOrDuration && dateOrDuration.trim() !== "") profileData.availabilityText = dateOrDuration;
+        if (link && link.trim() !== "") profileData.location = link;
+        if (description && description.trim() !== "") {
+          profileData.bio = description;
+          profileData.cvSummary = description;
         }
         
-        // Jika form judul tidak kosong, update nama juga
-        if (title && title.trim() !== "") {
-          profileData.name = title;
+        if (imageUrl) {
+          profileData.avatar = imageUrl; 
         }
 
         await setDoc(doc(db, "settings", "profile"), profileData, { merge: true });
