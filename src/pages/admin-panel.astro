@@ -101,6 +101,17 @@ import MainLayout from "../layouts/MainLayout.astro";
         <div>
           <label id="lbl_description" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Deskripsi / Detail Konten</label>
           <textarea id="description" required rows="5" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="Tuliskan penjelasan atau konten markdown di sini..."></textarea>
+          
+          <!-- Dynamic Skills List -->
+          <div id="skillsListContainer" class="hidden flex-col gap-3">
+             <div id="skillsItems" class="flex flex-col gap-3">
+               <!-- Items will be appended here -->
+             </div>
+             <button type="button" id="addSkillBtn" class="flex items-center gap-2 text-sm font-bold text-[#E9582A] hover:text-[#d04a1f] transition-colors w-max mx-auto mt-2 px-4 py-2 neu-flat rounded-full">
+               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+               Tambah Skill
+             </button>
+          </div>
         </div>
 
         <!-- File Upload Gambar -->
@@ -167,6 +178,8 @@ import MainLayout from "../layouts/MainLayout.astro";
     const inputLink = document.getElementById("link") as HTMLInputElement;
     const inputDesc = document.getElementById("description") as HTMLTextAreaElement;
     
+    const skillsListContainer = document.getElementById("skillsListContainer");
+    
     if (val === "settings_profile") {
       if(lblTitle) lblTitle.textContent = "Nama Lengkap";
       if(inputTitle) inputTitle.placeholder = "Contoh: Fajri Awwaluddin, S.T.";
@@ -181,7 +194,8 @@ import MainLayout from "../layouts/MainLayout.astro";
       if(inputLink) inputLink.placeholder = "Contoh: Bekasi, Jawa Barat";
       
       if(lblDesc) lblDesc.textContent = "Profil Singkat (Bio)";
-      if(inputDesc) inputDesc.placeholder = "Tuliskan penjelasan atau konten markdown di sini...";
+      if(inputDesc) { inputDesc.classList.remove("hidden"); inputDesc.required = true; inputDesc.placeholder = "Tuliskan penjelasan atau konten markdown di sini..."; }
+      if(skillsListContainer) { skillsListContainer.classList.add("hidden"); skillsListContainer.classList.remove("flex"); }
       if(lblImage) lblImage.textContent = "Foto Profil";
       
       if(inputTitle) { inputTitle.classList.remove("hidden"); inputTitle.required = true; }
@@ -200,8 +214,9 @@ import MainLayout from "../layouts/MainLayout.astro";
       if(lblLink) lblLink.textContent = "-";
       if(inputLink) inputLink.placeholder = "-";
       
-      if(lblDesc) lblDesc.textContent = "Daftar Keahlian (Pisahkan dengan koma)";
-      if(inputDesc) inputDesc.placeholder = "Contoh: AutoCAD, Ms. Excel, TIA Portal";
+      if(lblDesc) lblDesc.textContent = "Daftar Keahlian";
+      if(inputDesc) { inputDesc.classList.add("hidden"); inputDesc.required = false; }
+      if(skillsListContainer) { skillsListContainer.classList.remove("hidden"); skillsListContainer.classList.add("flex"); }
       if(lblImage) lblImage.textContent = "Ikon (Otomatis menyesuaikan urutan)";
     } else {
       if(lblTitle) lblTitle.textContent = "Judul";
@@ -218,7 +233,8 @@ import MainLayout from "../layouts/MainLayout.astro";
       if(inputLink) inputLink.placeholder = "https://github.com/...";
       
       if(lblDesc) lblDesc.textContent = "Deskripsi / Detail Konten";
-      if(inputDesc) inputDesc.placeholder = "Tuliskan penjelasan atau konten markdown di sini...";
+      if(inputDesc) { inputDesc.classList.remove("hidden"); inputDesc.required = true; inputDesc.placeholder = "Tuliskan penjelasan atau konten markdown di sini..."; }
+      if(skillsListContainer) { skillsListContainer.classList.add("hidden"); skillsListContainer.classList.remove("flex"); }
       if(lblImage) lblImage.textContent = "Gambar Cover / Dokumentasi (Opsional)";
     }
   });
@@ -285,6 +301,34 @@ import MainLayout from "../layouts/MainLayout.astro";
       statusMessage.classList.add("bg-emerald-100", "text-emerald-800");
     }
   }
+
+  // Dynamic skills logic
+  const skillsItems = document.getElementById("skillsItems");
+  const addSkillBtn = document.getElementById("addSkillBtn");
+
+  function createSkillInput() {
+    const div = document.createElement("div");
+    div.className = "flex items-center gap-3";
+    
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A] skill-input-item";
+    input.placeholder = "Nama skill (Contoh: AutoCAD)";
+    
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "p-3.5 neu-flat text-red-500 hover:text-red-700 rounded-xl transition-colors shrink-0 flex items-center justify-center";
+    delBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
+    
+    delBtn.addEventListener("click", () => div.remove());
+    
+    div.appendChild(input);
+    div.appendChild(delBtn);
+    skillsItems?.appendChild(div);
+  }
+
+  addSkillBtn?.addEventListener("click", createSkillInput);
+  if (skillsItems && skillsItems.children.length === 0) createSkillInput();
 
   // Handle Upload Form Submit
   form?.addEventListener("submit", async (e) => {
@@ -366,7 +410,8 @@ import MainLayout from "../layouts/MainLayout.astro";
           docData.link = link || "#";
         } else if (collectionName === "skills") {
           docData.category = title || "Kategori Baru";
-          docData.items = description.split(",").map(i => i.trim()).filter(i => i !== "");
+          const skillInputs = document.querySelectorAll(".skill-input-item");
+          docData.items = Array.from(skillInputs).map(el => (el as HTMLInputElement).value.trim()).filter(v => v !== "");
         }
 
         await addDoc(collection(db, collectionName), docData);
