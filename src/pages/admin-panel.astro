@@ -88,7 +88,7 @@ import MainLayout from "../layouts/MainLayout.astro";
         <!-- Link External -->
         <div>
           <label id="lbl_link" class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Link External (Opsional)</label>
-          <input type="url" id="link" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="https://github.com/...">
+          <input type="text" id="link" class="w-full neu-pressed border-none rounded-xl p-3.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E9582A]" placeholder="https://github.com/...">
         </div>
 
         <!-- Deskripsi/Konten -->
@@ -154,18 +154,39 @@ import MainLayout from "../layouts/MainLayout.astro";
     const lblDesc = document.getElementById("lbl_description");
     const lblImage = document.getElementById("lbl_imageFile");
     
+    const inputTitle = document.getElementById("title") as HTMLInputElement;
+    const inputSubTitle = document.getElementById("subTitle") as HTMLInputElement;
+    const inputDate = document.getElementById("dateOrDuration") as HTMLInputElement;
+    const inputLink = document.getElementById("link") as HTMLInputElement;
+    
     if (val === "settings_profile") {
       if(lblTitle) lblTitle.textContent = "Nama Lengkap";
+      if(inputTitle) inputTitle.placeholder = "Contoh: Fajri Awwaluddin, S.T.";
+      
       if(lblSubTitle) lblSubTitle.textContent = "Role / Pekerjaan";
+      if(inputSubTitle) inputSubTitle.placeholder = "Contoh: Electrical dan Instrument Engineer";
+      
       if(lblDate) lblDate.textContent = "Status Ketersediaan (cth: Available to Work)";
+      if(inputDate) inputDate.placeholder = "Contoh: Available for new career opportunities";
+      
       if(lblLink) lblLink.textContent = "Lokasi (Kota, Provinsi)";
+      if(inputLink) inputLink.placeholder = "Contoh: Bekasi, Jawa Barat";
+      
       if(lblDesc) lblDesc.textContent = "Profil Singkat (Bio)";
       if(lblImage) lblImage.textContent = "Foto Profil";
     } else {
       if(lblTitle) lblTitle.textContent = "Judul";
+      if(inputTitle) inputTitle.placeholder = "Judul Proyek / Artikel / Posisi";
+      
       if(lblSubTitle) lblSubTitle.textContent = "Kategori / Perusahaan / Issuer / Tech";
+      if(inputSubTitle) inputSubTitle.placeholder = "Contoh: PT Engineering / Siemens / IoT";
+      
       if(lblDate) lblDate.textContent = "Tanggal / Durasi";
+      if(inputDate) inputDate.placeholder = "Contoh: 2023 - 2024 / Mei 2024";
+      
       if(lblLink) lblLink.textContent = "Link External (Opsional)";
+      if(inputLink) inputLink.placeholder = "https://github.com/...";
+      
       if(lblDesc) lblDesc.textContent = "Deskripsi / Detail Konten";
       if(lblImage) lblImage.textContent = "Gambar Cover / Dokumentasi (Opsional)";
     }
