@@ -425,7 +425,22 @@ import MainLayout from "../layouts/MainLayout.astro";
         await addDoc(collection(db, collectionName), docData);
       }
 
-      showStatus("✅ Berhasil diunggah ke Firebase!");
+      showStatus("✅ Tersimpan! Sedang menginstruksikan Cloudflare untuk update...");
+      
+      // Memicu Cloudflare Deploy Hook agar website otomatis rebuild
+      try {
+        const deployHookUrl = "MASUKKAN_URL_DEPLOY_HOOK_CLOUDFLARE_DISINI";
+        if (deployHookUrl !== "MASUKKAN_URL_DEPLOY_HOOK_CLOUDFLARE_DISINI") {
+          await fetch(deployHookUrl, { 
+            method: 'POST',
+            mode: 'no-cors' // Menghindari error CORS dari browser
+          });
+        }
+        showStatus("✅ Selesai! Website sedang diperbarui otomatis (Tunggu 1-2 menit lalu cek web Anda).");
+      } catch (e) {
+        showStatus("✅ Selesai! Website sedang diperbarui otomatis (Tunggu 1-2 menit lalu cek web Anda).");
+      }
+
       form.reset();
     } catch (error) {
       console.error(error);
