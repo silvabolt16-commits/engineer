@@ -1,5 +1,8 @@
 ---
+export const prerender = false;
+
 import { isAuthenticated } from "../../lib/auth";
+
 
 if (isAuthenticated(Astro)) {
   return Astro.redirect("/admin");
