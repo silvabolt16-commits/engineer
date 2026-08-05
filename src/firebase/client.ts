@@ -3,19 +3,24 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 
+const apiKey = import.meta.env.PUBLIC_FIREBASE_API_KEY;
+
 const firebaseConfig = {
-  apiKey: import.meta.env.PUBLIC_FIREBASE_API_KEY,
-  authDomain: import.meta.env.PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.PUBLIC_FIREBASE_APP_ID,
+  apiKey: apiKey || "",
+  authDomain: import.meta.env.PUBLIC_FIREBASE_AUTH_DOMAIN || "",
+  projectId: import.meta.env.PUBLIC_FIREBASE_PROJECT_ID || "",
+  storageBucket: import.meta.env.PUBLIC_FIREBASE_STORAGE_BUCKET || "",
+  messagingSenderId: import.meta.env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "",
+  appId: import.meta.env.PUBLIC_FIREBASE_APP_ID || "",
 };
 
-// Initialize Firebase only if it hasn't been initialized already
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+export const isFirebaseConfigured = Boolean(apiKey);
 
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-export const storage = getStorage(app);
+const app = isFirebaseConfigured
+  ? (!getApps().length ? initializeApp(firebaseConfig) : getApp())
+  : null;
+
+export const db = app ? getFirestore(app) : (null as any);
+export const auth = app ? getAuth(app) : (null as any);
+export const storage = app ? getStorage(app) : (null as any);
 export default app;
