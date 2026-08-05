@@ -1,0 +1,14 @@
+{
+	"name": "my-portfolio",
+	"compatibility_date": "2024-09-23",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "portfolio-db",
+			"database_id": "76b117ca-6cae-4ee2-8964-0f4282f504b0"
+		}
+	]
+}

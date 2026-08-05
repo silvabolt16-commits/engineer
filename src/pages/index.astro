@@ -3,11 +3,28 @@ import MainLayout from '../layouts/MainLayout.astro';
 import { getProfile } from '../firebase/content';
 const profile = await getProfile();
 import { getCollection } from '../firebase/content';
+import { getDB, getAllProjects } from '../lib/d1';
 
 let experiences = await getCollection('experiences');
 experiences = (experiences || []).sort((a, b) => parseInt(b?.data?.duration || '0') - parseInt(a?.data?.duration || '0'));
 
-let projects = await getCollection('projects');
+const db = getDB(Astro.locals);
+const d1Projects = await getAllProjects(db);
+let localProjects = await getCollection('projects');
+
+let projects = d1Projects.length > 0
+  ? d1Projects.map(p => ({
+      id: p.slug || String(p.id),
+      data: {
+        title: p.title,
+        description: p.description,
+        tech: p.category || 'Web',
+        photos: p.image_url ? [p.image_url] : [],
+        tags: p.tags ? p.tags.split(',') : [],
+      }
+    }))
+  : localProjects;
+
 let certificates = await getCollection('certificates');
 let achievements = await getCollection('achievements');
 
