@@ -1,16 +1,42 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import { getProfile } from '../firebase/content';
-const profile = await getProfile();
 import { getCollection } from '../firebase/content';
 import { getDB, getAllProjects } from '../lib/d1';
 
-let experiences = await getCollection('experiences');
+const profile = await getProfile();
+
+let experiences: any[] = [];
+let certificates: any[] = [];
+let achievements: any[] = [];
+let articles: any[] = [];
+let skills: any[] = [];
+let d1Projects: any[] = [];
+let localProjects: any[] = [];
+
+try { experiences = await getCollection('experiences'); } catch(e) {}
+try { certificates = await getCollection('certificates'); } catch(e) {}
+try { achievements = await getCollection('achievements'); } catch(e) {}
+try {
+  articles = await getCollection('articles');
+  articles = (articles || []).sort((a, b) => new Date(b?.data?.date || 0).getTime() - new Date(a?.data?.date || 0).getTime());
+} catch(e) {}
+try {
+  const fbSkills = await getCollection('skills');
+  skills = fbSkills && fbSkills.length > 0 ? fbSkills.map((s: any) => s.data) : (profile.skills || []);
+} catch(e) {
+  skills = profile.skills || [];
+}
+try { localProjects = await getCollection('projects'); } catch(e) {}
+
 experiences = (experiences || []).sort((a, b) => parseInt(b?.data?.duration || '0') - parseInt(a?.data?.duration || '0'));
 
-const db = getDB(Astro.locals);
-const d1Projects = await getAllProjects(db);
-let localProjects = await getCollection('projects');
+try {
+  const db = getDB(Astro.locals);
+  d1Projects = await getAllProjects(db);
+} catch(e) {
+  d1Projects = [];
+}
 
 let projects = d1Projects.length > 0
   ? d1Projects.map(p => ({
@@ -25,15 +51,6 @@ let projects = d1Projects.length > 0
     }))
   : localProjects;
 
-let certificates = await getCollection('certificates');
-let achievements = await getCollection('achievements');
-
-let fbSkills = await getCollection('skills');
-let skills = fbSkills && fbSkills.length > 0 ? fbSkills.map(s => s.data) : profile.skills;
-
-let articles = await getCollection('articles');
-articles = (articles || []).sort((a, b) => new Date(b?.data?.date || 0).getTime() - new Date(a?.data?.date || 0).getTime());
-
 // Gandakan 4 kali agar efek infinite scroll (marquee) mulus di layar ultra-wide
 const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
 
@@ -44,6 +61,7 @@ const skillStyles = [
   { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-400', tagHover: 'hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:text-emerald-600 dark:hover:text-emerald-400', d: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
 ];
 ---
+
 
 <MainLayout title="Fajri Awwaluddin">
   <!-- 1. Hero Section -->
