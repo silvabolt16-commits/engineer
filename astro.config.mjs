@@ -13,6 +13,10 @@ export default defineConfig({
       configPath: 'wrangler.toml',
     },
   }),
+  // Override session driver to prevent auto-injection of SESSION KV Namespace binding
+  session: {
+    driver: 'memory',
+  },
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],
