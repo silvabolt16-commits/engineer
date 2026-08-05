@@ -184,29 +184,29 @@ import MainLayout from "../layouts/MainLayout.astro";
     const imageRow = document.getElementById("imageRow");
     
     if (val === "settings_profile") {
-      if(lblTitle) lblTitle.textContent = "Nama Lengkap";
-      if(inputTitle) inputTitle.placeholder = "Contoh: Fajri Awwaluddin, S.T.";
+      if(lblTitle) lblTitle.textContent = "Nama Lengkap (Opsional)";
+      if(inputTitle) inputTitle.placeholder = "Kosongkan jika tidak ingin diubah...";
       
-      if(lblSubTitle) lblSubTitle.textContent = "Role / Pekerjaan";
-      if(inputSubTitle) inputSubTitle.placeholder = "Contoh: Electrical dan Instrument Engineer";
+      if(lblSubTitle) lblSubTitle.textContent = "Role / Pekerjaan (Opsional)";
+      if(inputSubTitle) inputSubTitle.placeholder = "Kosongkan jika tidak ingin diubah...";
       
-      if(lblDate) lblDate.textContent = "Status Ketersediaan (cth: Available to Work)";
-      if(inputDate) inputDate.placeholder = "Contoh: Available for new career opportunities";
+      if(lblDate) lblDate.textContent = "Status Ketersediaan (Opsional)";
+      if(inputDate) inputDate.placeholder = "Kosongkan jika tidak ingin diubah...";
       
       if(subDetailRow) { subDetailRow.classList.remove("hidden"); subDetailRow.classList.add("grid"); }
       if(linkRow) { linkRow.classList.remove("hidden"); }
       
-      if(lblLink) lblLink.textContent = "Lokasi (Kota, Provinsi)";
-      if(inputLink) inputLink.placeholder = "Contoh: Bekasi, Jawa Barat";
+      if(lblLink) lblLink.textContent = "Lokasi (Kota, Provinsi) (Opsional)";
+      if(inputLink) inputLink.placeholder = "Kosongkan jika tidak ingin diubah...";
       
-      if(lblDesc) lblDesc.textContent = "Profil Singkat (Bio)";
-      if(inputDesc) { inputDesc.classList.remove("hidden"); inputDesc.required = true; inputDesc.placeholder = "Tuliskan penjelasan atau konten markdown di sini..."; }
+      if(lblDesc) lblDesc.textContent = "Profil Singkat (Bio) (Opsional)";
+      if(inputDesc) { inputDesc.classList.remove("hidden"); inputDesc.required = false; inputDesc.placeholder = "Kosongkan jika tidak ingin diubah..."; }
       if(skillsListContainer) { skillsListContainer.classList.add("hidden"); skillsListContainer.classList.remove("flex"); }
       
       if(imageRow) { imageRow.classList.remove("hidden"); }
       if(lblImage) lblImage.textContent = "Foto Profil";
       
-      if(inputTitle) { inputTitle.classList.remove("hidden"); inputTitle.required = true; }
+      if(inputTitle) { inputTitle.classList.remove("hidden"); inputTitle.required = false; }
       if(selectTitle) selectTitle.classList.add("hidden");
     } else if (val === "skills") {
       if(lblTitle) lblTitle.textContent = "Kategori (Pilih salah satu)";
