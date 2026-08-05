@@ -1,26 +1,10 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import { getStorage } from "firebase/storage";
-
+// Firebase disabled for Cloudflare D1 migration
 const apiKey = import.meta.env.PUBLIC_FIREBASE_API_KEY;
 
-const firebaseConfig = {
-  apiKey: apiKey || "",
-  authDomain: import.meta.env.PUBLIC_FIREBASE_AUTH_DOMAIN || "",
-  projectId: import.meta.env.PUBLIC_FIREBASE_PROJECT_ID || "",
-  storageBucket: import.meta.env.PUBLIC_FIREBASE_STORAGE_BUCKET || "",
-  messagingSenderId: import.meta.env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "",
-  appId: import.meta.env.PUBLIC_FIREBASE_APP_ID || "",
-};
+export const isFirebaseConfigured = false;
+const app = null;
 
-export const isFirebaseConfigured = Boolean(apiKey);
-
-const app = isFirebaseConfigured
-  ? (!getApps().length ? initializeApp(firebaseConfig) : getApp())
-  : null;
-
-export const db = app ? getFirestore(app) : (null as any);
-export const auth = app ? getAuth(app) : (null as any);
-export const storage = app ? getStorage(app) : (null as any);
+export const db = null as any;
+export const auth = null as any;
+export const storage = null as any;
 export default app;
