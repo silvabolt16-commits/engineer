@@ -10,6 +10,7 @@ export default defineConfig({
     imageService: 'passthrough',
     platformProxy: {
       enabled: true,
+      configPath: 'wrangler.toml',
     },
   }),
   integrations: [sitemap()],
