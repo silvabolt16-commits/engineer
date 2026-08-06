@@ -14,8 +14,16 @@ export interface Project {
   updated_at?: string;
 }
 
-export function getDB(locals: any) {
-  return locals?.runtime?.env?.DB;
+// @ts-ignore
+import { env } from "cloudflare:workers";
+
+export function getDB(locals?: any) {
+  try {
+    return env.DB;
+  } catch (error) {
+    console.error("Failed to access cloudflare:workers env", error);
+    return null;
+  }
 }
 
 export async function getAllProjects(db: any): Promise<Project[]> {
