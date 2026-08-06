@@ -1,6 +1,7 @@
 ---
 import { isAuthenticated } from "../../../../lib/auth";
 import { getDB, getProjectById } from "../../../../lib/d1";
+import MainLayout from "../../../../layouts/MainLayout.astro";
 
 if (!isAuthenticated(Astro)) {
   return Astro.redirect("/admin/login");
@@ -18,91 +19,80 @@ const cloudName = Astro.locals.runtime?.env?.PUBLIC_CLOUDINARY_CLOUD_NAME || imp
 const uploadPreset = Astro.locals.runtime?.env?.PUBLIC_CLOUDINARY_UPLOAD_PRESET || import.meta.env.PUBLIC_CLOUDINARY_UPLOAD_PRESET || "";
 ---
 
-<!DOCTYPE html>
-<html lang="id" class="dark">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edit Proyek - Admin</title>
-  <style>
-    body {
-      background-color: #0f172a;
-      color: #f8fafc;
-      font-family: system-ui, -apple-system, sans-serif;
-    }
-  </style>
-</head>
-<body class="min-h-screen pb-16">
-  <div class="max-w-3xl mx-auto px-6 pt-10">
-    <div class="flex items-center justify-between mb-8">
-      <div>
-        <a href="/admin" class="text-sm text-blue-400 hover:text-blue-300">← Kembali ke Dashboard</a>
-        <h1 class="text-2xl font-bold text-slate-100 mt-2">Edit Proyek: {project.title}</h1>
-      </div>
+<MainLayout title={`Edit Proyek: ${project.title} | Admin`}>
+  <div class="max-w-4xl mx-auto py-12 px-6">
+    <div class="mb-10">
+      <a href="/admin" class="text-sm font-bold text-slate-500 dark:text-neutral-400 hover:text-[#E9582A] uppercase tracking-wider transition-colors">← Kembali ke Dashboard</a>
+      <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-4 uppercase tracking-widest">
+        Edit <span class="text-[#E9582A]">Proyek</span>
+      </h1>
+      <p class="text-sm text-slate-500 dark:text-neutral-400 mt-2">{project.title}</p>
     </div>
 
-    <form id="editProjectForm" class="space-y-6 bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-xl">
-      <div>
-        <label class="block text-sm font-medium text-slate-300">Judul Proyek *</label>
-        <input type="text" id="title" required value={project.title} class="w-full px-4 py-2.5 mt-1 bg-slate-800 border border-slate-700 rounded-xl text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="neu-flat rounded-3xl p-8 md:p-10">
+      <form id="editProjectForm" class="space-y-8">
         <div>
-          <label class="block text-sm font-medium text-slate-300">Kategori</label>
-          <input type="text" id="category" value={project.category || 'Web'} class="w-full px-4 py-2.5 mt-1 bg-slate-800 border border-slate-700 rounded-xl text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Judul Proyek *</label>
+          <input type="text" id="title" required value={project.title} class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
         </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Kategori</label>
+            <input type="text" id="category" value={project.category || 'Web'} class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Tags (Dipisah Koma)</label>
+            <input type="text" id="tags" value={project.tags || ''} class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
+          </div>
+        </div>
+
         <div>
-          <label class="block text-sm font-medium text-slate-300">Tags (Dipisah Koma)</label>
-          <input type="text" id="tags" value={project.tags || ''} class="w-full px-4 py-2.5 mt-1 bg-slate-800 border border-slate-700 rounded-xl text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-slate-300">Deskripsi Singkat *</label>
-        <textarea id="description" required rows="3" class="w-full px-4 py-2.5 mt-1 bg-slate-800 border border-slate-700 rounded-xl text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-none">{project.description}</textarea>
-      </div>
-
-      <!-- Cloudinary Upload / Image URL -->
-      <div class="p-5 bg-slate-950/60 border border-slate-800 rounded-xl space-y-4">
-        <label class="block text-sm font-medium text-slate-200">Gambar Proyek (Cloudinary / Link Direct)</label>
-        
-        <div class="flex flex-col sm:flex-row items-center gap-4">
-          <input type="file" id="imageFile" accept="image/*" class="text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer" />
-          <span class="text-xs text-slate-500">atau</span>
-          <input type="url" id="imageUrl" value={project.image_url || ''} class="flex-1 w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Deskripsi Singkat *</label>
+          <textarea id="description" required rows="4" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition">{project.description}</textarea>
         </div>
 
-        <div id="uploadStatus" class="text-xs text-slate-400 hidden"></div>
-        {project.image_url ? (
-          <img id="imagePreview" src={project.image_url} class="w-full h-48 object-cover rounded-xl border border-slate-800 mt-2" alt="Preview Gambar" />
-        ) : (
-          <img id="imagePreview" class="hidden w-full h-48 object-cover rounded-xl border border-slate-800 mt-2" alt="Preview Gambar" />
-        )}
-      </div>
+        <!-- Cloudinary Upload / Image URL -->
+        <div class="p-6 neu-pressed rounded-2xl space-y-4">
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">Gambar Proyek (Upload / Link Direct)</label>
+          
+          <div class="flex flex-col sm:flex-row items-center gap-4">
+            <input type="file" id="imageFile" accept="image/*" class="w-full sm:w-auto text-sm text-slate-600 dark:text-neutral-300 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-wider file:bg-[#E9582A] file:text-white hover:file:bg-[#d04a1f] cursor-pointer transition-colors" />
+            <span class="text-xs font-bold text-slate-400 uppercase">atau</span>
+            <input type="url" id="imageUrl" value={project.image_url || ''} class="flex-1 w-full px-4 py-3 text-slate-900 dark:text-white neu-flat border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] text-sm" placeholder="URL Foto (https://...)" />
+          </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label class="block text-sm font-medium text-slate-300">Link Demo / Live Website</label>
-          <input type="url" id="demoUrl" value={project.demo_url || ''} class="w-full px-4 py-2.5 mt-1 bg-slate-800 border border-slate-700 rounded-xl text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+          <div id="uploadStatus" class="text-xs font-bold hidden uppercase tracking-wider mt-2"></div>
+          {project.image_url ? (
+            <img id="imagePreview" src={project.image_url} class="w-full h-56 object-cover rounded-xl mt-4 border-2 border-transparent neu-flat" alt="Preview Gambar" />
+          ) : (
+            <img id="imagePreview" class="hidden w-full h-56 object-cover rounded-xl mt-4 border-2 border-transparent neu-flat" alt="Preview Gambar" />
+          )}
         </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-300">Link Repository (GitHub)</label>
-          <input type="url" id="repoUrl" value={project.repo_url || ''} class="w-full px-4 py-2.5 mt-1 bg-slate-800 border border-slate-700 rounded-xl text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Link Demo / Live Website</label>
+            <input type="url" id="demoUrl" value={project.demo_url || ''} class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Link Repository (GitHub)</label>
+            <input type="url" id="repoUrl" value={project.repo_url || ''} class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
+          </div>
         </div>
-      </div>
 
-      <div class="flex items-center space-x-3">
-        <input type="checkbox" id="featured" checked={Boolean(project.featured)} class="w-5 h-5 rounded text-blue-600 bg-slate-800 border-slate-700 focus:ring-blue-500" />
-        <label for="featured" class="text-sm font-medium text-slate-300">Tampilkan sebagai Proyek Unggulan (Featured)</label>
-      </div>
+        <div class="flex items-center space-x-3 pt-2">
+          <input type="checkbox" id="featured" checked={Boolean(project.featured)} class="w-5 h-5 rounded text-[#E9582A] neu-pressed border-none focus:ring-[#E9582A] focus:ring-offset-0 bg-transparent" />
+          <label for="featured" class="text-sm font-bold text-slate-600 dark:text-neutral-300">Tampilkan sebagai Proyek Unggulan (Featured)</label>
+        </div>
 
-      <div id="formAlert" class="hidden p-3 text-sm rounded-xl"></div>
+        <div id="formAlert" class="hidden p-4 text-sm font-bold rounded-xl uppercase tracking-wider text-center"></div>
 
-      <button type="submit" id="submitBtn" class="w-full py-3 font-medium text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow-lg transition">
-        Update Proyek
-      </button>
-    </form>
+        <button type="submit" id="submitBtn" class="w-full py-4 mt-4 text-white font-bold bg-[#E9582A] hover:bg-[#d04a1f] rounded-xl shadow-md transition-all text-sm uppercase tracking-wider">
+          Update Proyek
+        </button>
+      </form>
+    </div>
   </div>
 
   <script define:vars={{ id, cloudName, uploadPreset }}>
@@ -112,6 +102,7 @@ const uploadPreset = Astro.locals.runtime?.env?.PUBLIC_CLOUDINARY_UPLOAD_PRESET 
     const uploadStatus = document.getElementById("uploadStatus");
     const form = document.getElementById("editProjectForm");
     const formAlert = document.getElementById("formAlert");
+    const submitBtn = document.getElementById("submitBtn");
 
     imageFileInput?.addEventListener("change", async (e) => {
       const file = e.target.files[0];
@@ -124,6 +115,8 @@ const uploadPreset = Astro.locals.runtime?.env?.PUBLIC_CLOUDINARY_UPLOAD_PRESET 
 
       uploadStatus.textContent = "Mengunggah gambar ke Cloudinary...";
       uploadStatus.classList.remove("hidden");
+      uploadStatus.classList.add("text-blue-500");
+      uploadStatus.classList.remove("text-green-500", "text-red-500");
 
       const formData = new FormData();
       formData.append("file", file);
@@ -141,20 +134,34 @@ const uploadPreset = Astro.locals.runtime?.env?.PUBLIC_CLOUDINARY_UPLOAD_PRESET 
           imagePreview.src = data.secure_url;
           imagePreview.classList.remove("hidden");
           uploadStatus.textContent = "✓ Gambar berhasil diperbarui!";
-          uploadStatus.className = "text-xs text-green-400";
+          uploadStatus.classList.remove("text-blue-500", "text-red-500");
+          uploadStatus.classList.add("text-green-500");
         } else {
           uploadStatus.textContent = "Gagal mengunggah gambar.";
-          uploadStatus.className = "text-xs text-red-400";
+          uploadStatus.classList.remove("text-blue-500", "text-green-500");
+          uploadStatus.classList.add("text-red-500");
         }
       } catch (err) {
         uploadStatus.textContent = "Terjadi kesalahan saat upload gambar.";
-        uploadStatus.className = "text-xs text-red-400";
+        uploadStatus.classList.remove("text-blue-500", "text-green-500");
+        uploadStatus.classList.add("text-red-500");
+      }
+    });
+
+    imageUrlInput?.addEventListener("input", () => {
+      if (imageUrlInput.value) {
+        imagePreview.src = imageUrlInput.value;
+        imagePreview.classList.remove("hidden");
       }
     });
 
     form?.addEventListener("submit", async (e) => {
       e.preventDefault();
       formAlert.classList.add("hidden");
+      if(submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Menyimpan...";
+      }
 
       const payload = {
         title: document.getElementById("title").value,
@@ -179,15 +186,22 @@ const uploadPreset = Astro.locals.runtime?.env?.PUBLIC_CLOUDINARY_UPLOAD_PRESET 
           window.location.href = "/admin";
         } else {
           formAlert.textContent = data.error || "Gagal meng-update data";
-          formAlert.className = "p-3 text-sm text-red-400 bg-red-950/50 border border-red-800 rounded-xl";
+          formAlert.className = "p-4 text-sm font-bold bg-red-100 text-red-600 border border-red-300 rounded-xl uppercase tracking-wider text-center";
           formAlert.classList.remove("hidden");
+          if(submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Update Proyek";
+          }
         }
       } catch (err) {
         formAlert.textContent = "Terjadi kesalahan koneksi";
-        formAlert.className = "p-3 text-sm text-red-400 bg-red-950/50 border border-red-800 rounded-xl";
+        formAlert.className = "p-4 text-sm font-bold bg-red-100 text-red-600 border border-red-300 rounded-xl uppercase tracking-wider text-center";
         formAlert.classList.remove("hidden");
+        if(submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Update Proyek";
+        }
       }
     });
   </script>
-</body>
-</html>
+</MainLayout>
