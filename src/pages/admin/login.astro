@@ -2,14 +2,14 @@
 export const prerender = false;
 
 import { isAuthenticated } from "../../lib/auth";
-import MainLayout from "../../layouts/MainLayout.astro";
+import AdminLayout from "../../layouts/AdminLayout.astro";
 
 if (isAuthenticated(Astro)) {
   return Astro.redirect("/admin");
 }
 ---
 
-<MainLayout title="Login Admin | Portofolio">
+<AdminLayout title="Login Admin | Portofolio">
   <div class="max-w-md mx-auto mt-16 px-6 relative z-10">
     <div class="text-center mb-8">
       <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-2 uppercase tracking-widest">
@@ -92,4 +92,4 @@ if (isAuthenticated(Astro)) {
       }
     });
   </script>
-</MainLayout>
+</AdminLayout>

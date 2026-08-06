@@ -1,6 +1,6 @@
 ---
 import { isAuthenticated } from "../../../lib/auth";
-import MainLayout from "../../../layouts/MainLayout.astro";
+import AdminLayout from "../../../layouts/AdminLayout.astro";
 
 if (!isAuthenticated(Astro)) {
   return Astro.redirect("/admin/login");
@@ -10,7 +10,7 @@ const cloudName = Astro.locals.runtime?.env?.PUBLIC_CLOUDINARY_CLOUD_NAME || imp
 const uploadPreset = Astro.locals.runtime?.env?.PUBLIC_CLOUDINARY_UPLOAD_PRESET || import.meta.env.PUBLIC_CLOUDINARY_UPLOAD_PRESET || "";
 ---
 
-<MainLayout title="Tambah Proyek Baru | Admin">
+<AdminLayout title="Tambah Proyek Baru | Admin">
   <div class="max-w-4xl mx-auto py-12 px-6">
     <div class="mb-10">
       <a href="/admin" class="text-sm font-bold text-slate-500 dark:text-neutral-400 hover:text-[#E9582A] uppercase tracking-wider transition-colors">← Kembali ke Dashboard</a>
@@ -190,4 +190,4 @@ const uploadPreset = Astro.locals.runtime?.env?.PUBLIC_CLOUDINARY_UPLOAD_PRESET 
       }
     });
   </script>
-</MainLayout>
+</AdminLayout>

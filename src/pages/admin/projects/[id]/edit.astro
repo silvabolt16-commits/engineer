@@ -1,7 +1,7 @@
 ---
 import { isAuthenticated } from "../../../../lib/auth";
 import { getDB, getProjectById } from "../../../../lib/d1";
-import MainLayout from "../../../../layouts/MainLayout.astro";
+import AdminLayout from "../../../../layouts/AdminLayout.astro";
 
 if (!isAuthenticated(Astro)) {
   return Astro.redirect("/admin/login");
@@ -204,4 +204,4 @@ const uploadPreset = Astro.locals.runtime?.env?.PUBLIC_CLOUDINARY_UPLOAD_PRESET 
       }
     });
   </script>
-</MainLayout>
+</AdminLayout>

@@ -3,7 +3,7 @@ export const prerender = false;
 
 import { isAuthenticated } from "../../lib/auth";
 import { getDB, getAllProjects } from "../../lib/d1";
-import MainLayout from "../../layouts/MainLayout.astro";
+import AdminLayout from "../../layouts/AdminLayout.astro";
 
 if (!isAuthenticated(Astro)) {
   return Astro.redirect("/admin/login");
@@ -13,7 +13,7 @@ const db = getDB(Astro.locals);
 const projects = await getAllProjects(db);
 ---
 
-<MainLayout title="Dashboard Admin | Portofolio">
+<AdminLayout title="Dashboard Admin | Portofolio">
   <div class="max-w-6xl mx-auto py-12 px-6">
     <div class="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
       <div class="text-center md:text-left">
@@ -122,4 +122,4 @@ const projects = await getAllProjects(db);
       });
     });
   </script>
-</MainLayout>
+</AdminLayout>
