@@ -6,10 +6,17 @@ export const POST: APIRoute = async (context) => {
     const body = await context.request.json();
     const { password } = body;
 
-    const expectedPassword =
-      context.locals.runtime?.env?.ADMIN_PASSWORD ||
-      import.meta.env.ADMIN_PASSWORD ||
-      "admin123";
+    let expectedPassword = import.meta.env.ADMIN_PASSWORD || "admin123";
+    
+    try {
+      // Compatibility for older Astro versions or if runtime env is provided without throwing
+      const runtimeEnv = (context.locals as any).runtime?.env;
+      if (runtimeEnv?.ADMIN_PASSWORD) {
+        expectedPassword = runtimeEnv.ADMIN_PASSWORD;
+      }
+    } catch (e) {
+      // Ignore Astro v6 getter throw: "Astro.locals.runtime.env has been removed..."
+    }
 
     if (password === expectedPassword) {
       setAdminSession(context);
@@ -23,9 +30,9 @@ export const POST: APIRoute = async (context) => {
       JSON.stringify({ success: false, message: "Kata sandi salah!" }),
       { status: 401, headers: { "Content-Type": "application/json" } }
     );
-  } catch (error) {
+  } catch (error: any) {
     return new Response(
-      JSON.stringify({ success: false, message: "Format request tidak valid" }),
+      JSON.stringify({ success: false, message: "Format request tidak valid: " + error?.message }),
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
