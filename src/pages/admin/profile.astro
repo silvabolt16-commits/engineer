@@ -42,6 +42,19 @@ if (!profile) {
           </div>
 
           <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Badge Hero (cth: HIRE ME)</label>
+            <input type="text" name="heroBadge" value={profile?.heroBadge || ''} class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Tagline Singkat</label>
+            <input type="text" name="tagline" value={profile?.tagline || ''} class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Status Ketersediaan</label>
+            <input type="text" name="availabilityText" value={profile?.availabilityText || ''} class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
+          </div>
+          <div>
             <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Lokasi</label>
             <input type="text" name="location" value={profile?.location || ''} class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
           </div>
@@ -71,8 +84,13 @@ if (!profile) {
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Bio Singkat</label>
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Bio Singkat (Utama)</label>
           <textarea name="bio" rows="4" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition">{profile?.bio || ''}</textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Ringkasan CV (Untuk Halaman Print CV)</label>
+          <textarea name="cvSummary" rows="4" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition">{profile?.cvSummary || ''}</textarea>
         </div>
 
 
