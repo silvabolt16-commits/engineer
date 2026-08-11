@@ -215,7 +215,7 @@ const skillStyles = [
       <p class="text-slate-500 dark:text-neutral-400 font-medium text-lg">Professional history and industry contributions.</p>
     </div>
     
-    <div class="grid grid-cols-1 gap-6 md:gap-12 max-w-5xl mx-auto">
+    <div class="grid grid-cols-1 gap-6 md:gap-12 w-full">
       {experiences.map((exp, index) => (
         <a href={`/experience/${exp.id}`} class={`group/card reveal-up flex flex-row md:flex-row ${index % 2 !== 0 ? 'md:flex-row-reverse' : ''} gap-3 md:gap-8 items-center neu-flat neu-flat-hover border-none rounded-2xl md:rounded-[2rem] p-2.5 md:p-4 transition-all duration-400 cursor-pointer`}>
           <!-- Image Section -->
