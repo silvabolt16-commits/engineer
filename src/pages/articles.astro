@@ -27,32 +27,32 @@ function formatDateSingle(dateStr: string) {
     </div>
 
     <!-- Grid List Artikel -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-24">
+    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 pb-24">
       {articles.map((article) => (
-        <a href={`/articles/${article.slug}`} class="block group/card bg-slate-50 dark:bg-[#111] border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden hover:bg-white dark:hover:bg-[#1a1a1a] hover:border-slate-300 dark:hover:border-white/20 hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(255,255,255,0.02)] transition-all duration-500 hover:-translate-y-1 cursor-pointer h-full flex flex-col">
+        <a href={`/articles/${article.slug}`} class="block group/card bg-slate-50 dark:bg-[#111] border border-slate-200 dark:border-white/10 rounded-xl md:rounded-3xl overflow-hidden hover:bg-white dark:hover:bg-[#1a1a1a] hover:border-slate-300 dark:hover:border-white/20 hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(255,255,255,0.02)] transition-all duration-500 hover:-translate-y-1 cursor-pointer h-full flex flex-col">
           <!-- Cover Image -->
-          <div class="w-full h-[200px] relative overflow-hidden bg-slate-200 dark:bg-[#222] shrink-0">
+          <div class="w-full h-[100px] md:h-[200px] relative overflow-hidden bg-slate-200 dark:bg-[#222] shrink-0">
             {article.image ? (
               <img src={article.image} alt={article.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" />
             ) : (
               <div class="w-full h-full flex items-center justify-center text-slate-400 dark:text-neutral-600">No Image</div>
             )}
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-            <div class="absolute bottom-4 left-4">
-              <div class="inline-block bg-[#2a85ff] text-white text-[11px] font-bold px-3 py-1 rounded-[4px] tracking-wider border border-white/10">
+            <div class="absolute bottom-2 left-2 md:bottom-4 md:left-4">
+              <div class="inline-block bg-[#2a85ff] text-white text-[9px] md:text-[11px] font-bold px-2 md:px-3 py-0.5 md:py-1 rounded-[4px] tracking-wider border border-white/10">
                 {article.category}
               </div>
             </div>
           </div>
 
           <!-- Text Section -->
-          <div class="p-6 flex flex-col flex-1">
-            <div class="text-[12px] font-bold text-slate-400 dark:text-neutral-500 mb-2">{formatDateSingle(article.date)}</div>
-            <h3 class="text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-3 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#60a5fa] transition-colors">{article.title}</h3>
-            <p class="text-[14px] text-slate-500 dark:text-neutral-400 leading-relaxed font-medium line-clamp-3 mb-6">{article.summary}</p>
+          <div class="p-3 md:p-6 flex flex-col flex-1">
+            <div class="text-[10px] md:text-[12px] font-bold text-slate-400 dark:text-neutral-500 mb-1 md:mb-2">{formatDateSingle(article.date)}</div>
+            <h3 class="text-[13px] md:text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-1 md:mb-3 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#60a5fa] transition-colors line-clamp-2">{article.title}</h3>
+            <p class="hidden md:block text-[14px] text-slate-500 dark:text-neutral-400 leading-relaxed font-medium line-clamp-3 mb-6">{article.summary}</p>
 
-            <div class="text-[13px] font-bold text-[#2a85ff] dark:text-[#60a5fa] flex items-center gap-1 uppercase tracking-widest mt-auto">
-              Read Article <span class="text-lg leading-none transition-transform group-hover/card:translate-x-1">&rarr;</span>
+            <div class="text-[10px] md:text-[13px] font-bold text-[#2a85ff] dark:text-[#60a5fa] flex items-center gap-1 uppercase tracking-widest mt-auto">
+              Read <span class="hidden md:inline">Article</span> <span class="text-base md:text-lg leading-none transition-transform group-hover/card:translate-x-1">&rarr;</span>
             </div>
           </div>
         </a>
