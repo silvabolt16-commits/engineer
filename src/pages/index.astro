@@ -209,7 +209,7 @@ const skillStyles = [
 
           <!-- Text Section -->
           <div class="flex-1 flex flex-col p-1 md:p-8 text-left min-w-0">
-            <div class="inline-block bg-[#2a85ff]/10 dark:bg-[#2a85ff]/20 text-[#2a85ff] dark:text-[#60a5fa] text-[10px] md:text-[12px] font-bold px-2.5 md:px-4 py-1 md:py-1.5 rounded-full tracking-wider mb-2 md:mb-4 w-max">
+            <div class="bg-[#2a85ff]/10 dark:bg-[#2a85ff]/20 text-[#2a85ff] dark:text-[#60a5fa] text-[9px] md:text-[12px] font-bold px-2 md:px-4 py-0.5 md:py-1.5 rounded-full tracking-wider mb-1.5 md:mb-4 truncate max-w-full">
               {exp.data.duration}
             </div>
             <h3 class="text-[15px] md:text-[28px] font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight mb-0.5 md:mb-2 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#38bdf8] transition-colors">{exp.data.title}</h3>
@@ -300,7 +300,7 @@ const skillStyles = [
       <div class="flex w-full relative">
         <div id="project-track" class="flex items-start gap-8 w-max px-4 py-8 will-change-transform">
           {marqueeProjects.map((proj, index) => (
-            <a href={`/projects/${proj.id}`} class="w-[350px] md:w-[420px] shrink-0 block group/card neu-flat neu-flat-hover border-none rounded-3xl overflow-hidden transition-all duration-500">
+            <a href={`/projects/${proj.id}`} class="w-[280px] md:w-[420px] shrink-0 block group/card neu-flat neu-flat-hover border-none rounded-2xl md:rounded-3xl overflow-hidden transition-all duration-500">
               <div class="pointer-events-none">
                 <!-- Cover Image -->
                 <div class="w-full h-[200px] relative overflow-hidden bg-slate-200 dark:bg-[#222]">
