@@ -20,8 +20,12 @@ const {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://fajriawwaluddin.com');
 
 let faviconUrl = profile.avatar || '';
+let favicon48 = '';
+let favicon192 = '';
 if (faviconUrl && faviconUrl.includes('cloudinary.com')) {
   faviconUrl = faviconUrl.replace('/upload/', '/upload/c_thumb,g_face,w_120,h_120,r_max/');
+  favicon48 = profile.avatar.replace('/upload/', '/upload/c_thumb,g_face,w_48,h_48,r_max,f_png/');
+  favicon192 = profile.avatar.replace('/upload/', '/upload/c_thumb,g_face,w_192,h_192,r_max,f_png/');
 }
 ---
 <html lang="id">
@@ -30,10 +34,11 @@ if (faviconUrl && faviconUrl.includes('cloudinary.com')) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
 
-    <!-- Circular Favicon / Tab Icon (Synced with Profile Avatar) -->
+    <!-- Favicon: Google Search prefers PNG, 48x48 multiples -->
+    <link rel="icon" type="image/png" sizes="48x48" href={favicon48 || faviconUrl} />
+    <link rel="icon" type="image/png" sizes="192x192" href={favicon192 || faviconUrl} />
     <link rel="icon" href={faviconUrl} />
-    <link rel="shortcut icon" href={faviconUrl} />
-    <link rel="apple-touch-icon" href={faviconUrl} />
+    <link rel="apple-touch-icon" sizes="192x192" href={favicon192 || faviconUrl} />
     
     <!-- SEO & Metadata -->
     <meta name="description" content={description} />
