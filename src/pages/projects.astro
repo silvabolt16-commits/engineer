@@ -4,6 +4,29 @@ import MainLayout from '../layouts/MainLayout.astro';
 
 const db = getDB(Astro.locals);
 const projects = await getAllProjects(db);
+
+function formatDuration(durationStr: string) {
+  if (!durationStr || !durationStr.includes('|')) return durationStr;
+  const [start, end] = durationStr.split('|');
+  const formatDate = (dateStr: string) => {
+    if (dateStr === 'present') return 'Sekarang';
+    if (!dateStr) return '';
+    try {
+      const [year, month] = dateStr.split('-');
+      if (!year || !month) return dateStr;
+      const date = new Date(parseInt(year), parseInt(month) - 1);
+      return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    } catch (e) {
+      return dateStr;
+    }
+  };
+  
+  const formattedStart = formatDate(start);
+  const formattedEnd = formatDate(end);
+  if (!formattedEnd) return formattedStart;
+  if (!formattedStart) return formattedEnd;
+  return `${formattedStart} - ${formattedEnd}`;
+}
 ---
 
 <MainLayout title="Projects - Fajri Awwaluddin">
@@ -30,7 +53,10 @@ const projects = await getAllProjects(db);
 
           <!-- Text Section -->
           <div class="px-2 pb-2">
-            <span class="inline-block px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-bold tracking-widest uppercase rounded-full mb-3">{project.category}</span>
+            <div class="flex items-center gap-3 mb-3">
+              <span class="inline-block px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-bold tracking-widest uppercase rounded-full">{project.category}</span>
+              {project.date && <span class="text-[11px] font-bold text-slate-400 dark:text-neutral-500">{formatDuration(project.date)}</span>}
+            </div>
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 leading-tight group-hover:text-[#E9582A] transition-colors">{project.title}</h3>
             <p class="text-sm text-slate-500 dark:text-neutral-400 font-medium line-clamp-2 mb-6">{project.description}</p>
 

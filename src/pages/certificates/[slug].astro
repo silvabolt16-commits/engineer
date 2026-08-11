@@ -20,7 +20,28 @@ const issuer = cert.issuer || '';
 let date = cert.date || '';
 const description = cert.description || '';
 
-if (date && !date.includes('|')) {
+if (date && date.includes('|')) {
+  const [start, end] = date.split('|');
+  const formatDate = (dateStr: string) => {
+    if (dateStr === 'present') return 'Sekarang';
+    if (!dateStr) return '';
+    try {
+      const [year, month] = dateStr.split('-');
+      if (!year || !month) return dateStr;
+      const d = new Date(parseInt(year), parseInt(month) - 1);
+      return d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    } catch (e) {
+      return dateStr;
+    }
+  };
+  const formattedStart = formatDate(start);
+  const formattedEnd = formatDate(end);
+  if (formattedStart && formattedEnd) {
+    date = `${formattedStart} - ${formattedEnd}`;
+  } else {
+    date = formattedStart || formattedEnd || date;
+  }
+} else if (date) {
   try {
     const [year, month] = date.split('-');
     if (year && month) {

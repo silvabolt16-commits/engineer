@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS projects (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
   slug TEXT NOT NULL,
+  date TEXT,
   description TEXT NOT NULL,
   content TEXT,
   image_url TEXT,

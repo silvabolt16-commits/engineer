@@ -20,7 +20,31 @@ const tags = project.tags ? project.tags.split(',').map((t: string) => t.trim())
 const title = project.title || 'Project';
 const description = project.description || '';
 const tech = project.category || 'Engineering';
+let date = project.date || '';
 const link = project.repo_url || project.demo_url || '#';
+
+if (date && date.includes('|')) {
+  const [start, end] = date.split('|');
+  const formatDate = (dateStr: string) => {
+    if (dateStr === 'present') return 'Sekarang';
+    if (!dateStr) return '';
+    try {
+      const [year, month] = dateStr.split('-');
+      if (!year || !month) return dateStr;
+      const d = new Date(parseInt(year), parseInt(month) - 1);
+      return d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    } catch (e) {
+      return dateStr;
+    }
+  };
+  const formattedStart = formatDate(start);
+  const formattedEnd = formatDate(end);
+  if (formattedStart && formattedEnd) {
+    date = `${formattedStart} - ${formattedEnd}`;
+  } else {
+    date = formattedStart || formattedEnd || date;
+  }
+}
 ---
 
 <MainLayout 
@@ -31,8 +55,15 @@ const link = project.repo_url || project.demo_url || '#';
   <!-- Header Section -->
   <div class="pt-32 pb-12 px-6 md:px-8">
     <div class="max-w-[1400px] mx-auto">
-      <div class="inline-block bg-[#E9582A] shadow-md text-white text-[12px] font-bold px-3 py-1.5 rounded-[4px] tracking-widest uppercase mb-6 border-none">
-        {tech}
+      <div class="inline-flex flex-wrap items-center gap-3 mb-6">
+        <div class="inline-block bg-[#E9582A] shadow-md text-white text-[12px] font-bold px-3 py-1.5 rounded-[4px] tracking-widest uppercase border-none">
+          {tech}
+        </div>
+        {date && (
+          <div class="inline-block bg-[#E9582A]/10 text-[#E9582A] text-[12px] font-bold px-3 py-1.5 rounded-[4px] tracking-widest uppercase">
+            {date}
+          </div>
+        )}
       </div>
       <h1 class="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight mb-4 text-slate-900 dark:text-white leading-[1.1]">{title}</h1>
       <p class="text-xl md:text-2xl text-slate-500 dark:text-neutral-400 font-medium mb-8 max-w-3xl leading-relaxed">{description}</p>

@@ -29,7 +29,7 @@ export function getDB(locals?: any) {
 export async function getAllProjects(db: any): Promise<Project[]> {
   if (!db) return [];
   try {
-    const { results } = await db.prepare("SELECT * FROM projects ORDER BY created_at DESC, id DESC").all();
+    const { results } = await db.prepare("SELECT * FROM projects ORDER BY featured DESC, date DESC, created_at DESC, id DESC").all();
     return (results as Project[]) || [];
   } catch (error) {
     console.error("Error fetching projects from D1:", error);
