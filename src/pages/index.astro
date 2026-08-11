@@ -298,12 +298,12 @@ const skillStyles = [
       <div class="absolute inset-y-0 right-0 w-20 md:w-48 bg-gradient-to-l from-[#ecf0f3] dark:from-[#1a1a1a] to-transparent z-20 pointer-events-none transition-colors duration-300"></div>
       
       <div class="flex w-full relative">
-        <div id="project-track" class="flex items-start gap-8 w-max px-4 py-8 will-change-transform">
+        <div id="project-track" class="flex items-start gap-4 md:gap-8 w-max px-4 py-8 will-change-transform">
           {marqueeProjects.map((proj, index) => (
-            <a href={`/projects/${proj.id}`} class="w-[280px] md:w-[420px] shrink-0 block group/card neu-flat neu-flat-hover border-none rounded-2xl md:rounded-3xl overflow-hidden transition-all duration-500">
+            <a href={`/projects/${proj.id}`} class="w-[220px] md:w-[420px] shrink-0 block group/card neu-flat neu-flat-hover border-none rounded-xl md:rounded-3xl overflow-hidden transition-all duration-500">
               <div class="pointer-events-none">
                 <!-- Cover Image -->
-                <div class="w-full h-[200px] relative overflow-hidden bg-slate-200 dark:bg-[#222]">
+                <div class="w-full h-[140px] md:h-[200px] relative overflow-hidden bg-slate-200 dark:bg-[#222]">
                   {(() => {
                     const rawPhotos = proj.data.photos;
                     const photos = Array.isArray(rawPhotos) ? rawPhotos : (typeof rawPhotos === 'string' ? [rawPhotos] : []);
@@ -314,29 +314,29 @@ const skillStyles = [
                     );
                   })()}
                   <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <div class="absolute bottom-4 left-4">
-                    <div class="inline-block bg-white/20 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-[4px] tracking-wider border border-white/30">
+                  <div class="absolute bottom-2 left-2 md:bottom-4 md:left-4">
+                    <div class="inline-block bg-white/20 backdrop-blur-md text-white text-[9px] md:text-[11px] font-bold px-2 py-0.5 md:px-3 md:py-1 rounded-[4px] tracking-wider border border-white/30">
                       {proj.data.tech}
                     </div>
                   </div>
                 </div>
 
                 <!-- Text Section -->
-                <div class="p-6">
-                  <h3 class="text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-2 group-hover/card:text-[#E9582A] transition-colors">{proj.data.title}</h3>
-                  <p class="text-[14px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-6">{proj.data.description}</p>
+                <div class="p-3 md:p-6">
+                  <h3 class="text-[14px] md:text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-1 md:mb-2 group-hover/card:text-[#E9582A] transition-colors">{proj.data.title}</h3>
+                  <p class="text-[12px] md:text-[14px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-3 md:mb-6">{proj.data.description}</p>
 
                   <!-- Tags -->
-                  <div class="flex flex-wrap gap-2 mb-6">
+                  <div class="flex flex-wrap gap-1.5 md:gap-2 mb-3 md:mb-6">
                     {Array.isArray(proj.data.tags) ? proj.data.tags.map((tag: string) => (
-                      <span class="bg-slate-200/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 text-[11px] font-bold px-2 py-1 rounded-md">{tag}</span>
+                      <span class="bg-slate-200/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 text-[9px] md:text-[11px] font-bold px-1.5 py-0.5 md:px-2 md:py-1 rounded-md">{tag}</span>
                     )) : (typeof proj.data.tags === 'string' ? proj.data.tags.split(',').map((t: string) => (
-                      <span class="bg-slate-200/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 text-[11px] font-bold px-2 py-1 rounded-md">{t.trim()}</span>
+                      <span class="bg-slate-200/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 text-[9px] md:text-[11px] font-bold px-1.5 py-0.5 md:px-2 md:py-1 rounded-md">{t.trim()}</span>
                     )) : null)}
                   </div>
 
-                  <div class="text-[13px] font-bold text-[#E9582A] flex items-center gap-1 uppercase tracking-widest mt-auto">
-                    View Project <span class="text-lg leading-none transition-transform group-hover/card:translate-x-1">&rarr;</span>
+                  <div class="text-[11px] md:text-[13px] font-bold text-[#E9582A] flex items-center gap-1 uppercase tracking-widest mt-auto">
+                    <span class="hidden md:inline">View Project</span><span class="md:hidden">Details</span> <span class="text-base md:text-lg leading-none transition-transform group-hover/card:translate-x-1">&rarr;</span>
                   </div>
                 </div>
               </div>

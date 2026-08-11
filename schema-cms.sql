@@ -77,3 +77,19 @@ CREATE TABLE IF NOT EXISTS articles (
   body TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS projects (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL,
+  description TEXT NOT NULL,
+  content TEXT,
+  image_url TEXT,
+  category TEXT DEFAULT 'Web',
+  tags TEXT,
+  demo_url TEXT,
+  repo_url TEXT,
+  featured INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
