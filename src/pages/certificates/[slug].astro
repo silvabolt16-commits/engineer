@@ -1,24 +1,24 @@
 ---
-export const prerender = true;
+export const prerender = false;
 
-import { getCollection, render } from '../../firebase/content';
+import { marked } from 'marked';
+import { getDB, getBySlugFromTable } from '../../lib/d1';
 import MainLayout from '../../layouts/MainLayout.astro';
 
-export async function getStaticPaths() {
-  const certificates = await getCollection('certificates');
-  return certificates.map((cert) => ({
-    params: { slug: cert.id },
-    props: { cert },
-  }));
+const { slug } = Astro.params;
+const db = getDB(Astro.locals);
+const cert = await getBySlugFromTable(db, 'certificates', slug as string);
+
+if (!cert) {
+  return Astro.redirect('/#certificates');
 }
 
-const { cert } = Astro.props;
-const { Content } = await render(cert || {});
+const Content = marked.parse(cert.body || '');
 
-const title = cert?.data?.title || 'Certificate';
-const issuer = cert?.data?.issuer || '';
-const date = cert?.data?.date || '';
-const description = cert?.data?.description || '';
+const title = cert.title || 'Certificate';
+const issuer = cert.issuer || '';
+const date = cert.date || '';
+const description = cert.description || '';
 ---
 
 <MainLayout 
@@ -33,13 +33,19 @@ const description = cert?.data?.description || '';
     <h1 class="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.1] mb-6">{title}</h1>
     <p class="text-xl md:text-2xl text-slate-500 dark:text-neutral-400 font-medium mb-12">{issuer}</p>
 
-    <!-- Hero Image placeholder -->
-    <div class="w-full rounded-[2rem] overflow-hidden neu-flat border-none flex items-center justify-center py-24 mb-16">
-      <div class="text-center text-slate-400 dark:text-neutral-600">
-        <svg class="w-20 h-20 mx-auto mb-6 opacity-50 text-[#10b981]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        <p class="font-bold text-lg tracking-wide uppercase">Sertifikat Resmi / Dokumen Pendukung</p>
+    <!-- Hero Image / Certificate Photo -->
+    {cert.link && cert.link.startsWith('http') ? (
+      <div class="w-full rounded-[2rem] overflow-hidden mb-16 shadow-xl border-4 border-white dark:border-slate-800 relative group">
+        <img src={cert.link} class="w-full h-auto object-cover" alt={title} />
       </div>
-    </div>
+    ) : (
+      <div class="w-full rounded-[2rem] overflow-hidden neu-flat border-none flex items-center justify-center py-24 mb-16">
+        <div class="text-center text-slate-400 dark:text-neutral-600">
+          <svg class="w-20 h-20 mx-auto mb-6 opacity-50 text-[#10b981]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <p class="font-bold text-lg tracking-wide uppercase">Sertifikat Resmi / Dokumen Pendukung</p>
+        </div>
+      </div>
+    )}
   </div>
 
   <!-- Content Section -->

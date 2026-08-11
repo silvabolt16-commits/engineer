@@ -1,8 +1,8 @@
 ---
-import { getCollection } from '../firebase/content';
+import { getDB, getAllFromTable } from '../lib/d1';
 import MainLayout from '../layouts/MainLayout.astro';
-
-const experiences = (await getCollection('experiences')).sort((a, b) => parseInt(b.data.duration) - parseInt(a.data.duration));
+const db = getDB(Astro.locals);
+const experiences = (await getAllFromTable(db, 'experiences')).sort((a: any, b: any) => parseInt(b.duration) - parseInt(a.duration));
 
 // Gandakan 4 kali agar efek infinite scroll (marquee) mulus di layar ultra-wide
 const marqueeItems = [...experiences, ...experiences, ...experiences, ...experiences];
@@ -27,7 +27,7 @@ const marqueeItems = [...experiences, ...experiences, ...experiences, ...experie
         <div class="flex animate-marquee-experience items-start gap-8 w-max px-4">
 
           {marqueeItems.map((exp, index) => (
-            <a href={`/experience/${exp.id}`} class="w-[420px] shrink-0 block group bg-transparent border border-transparent rounded-2xl overflow-hidden hover:bg-white hover:border-slate-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500 hover:-translate-y-1 cursor-pointer">
+            <a href={`/experience/${exp.slug}`} class="w-[420px] shrink-0 block group bg-transparent border border-transparent rounded-2xl overflow-hidden hover:bg-white hover:border-slate-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500 hover:-translate-y-1 cursor-pointer">
               <div class="flex flex-col p-6 outline-none">
 
                 <div class="flex items-center gap-5 mb-4">
@@ -40,13 +40,13 @@ const marqueeItems = [...experiences, ...experiences, ...experiences, ...experie
 
                   <div class="flex-1">
                     <div class="inline-block bg-[#2a85ff] text-white text-[11px] font-bold px-3 py-1 rounded-[4px] tracking-wider mb-2">
-                      {exp.data.duration}
+                      {exp.duration}
                     </div>
-                    <h2 class="text-[18px] font-extrabold text-slate-900 leading-tight tracking-tight">{exp.data.title}</h2>
+                    <h2 class="text-[18px] font-extrabold text-slate-900 leading-tight tracking-tight">{exp.title}</h2>
                   </div>
                 </div>
 
-                <div class="text-[14px] font-medium text-slate-600 mb-4">{exp.data.company}</div>
+                <div class="text-[14px] font-medium text-slate-600 mb-4">{exp.company}</div>
 
                 <!-- Toggle Indicator -->
                 <div class="text-[12px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-widest group-hover:text-[#E9582A] transition-colors mt-auto">

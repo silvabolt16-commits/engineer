@@ -1,22 +1,30 @@
 ---
-import { getCollection } from '../firebase/content';
-import { getProfile } from '../firebase/content';
-const profileData = await getProfile();
+import { getDB, getProfile, getAllFromTable } from '../lib/d1';
+const db = getDB(Astro.locals);
+const profileData = await getProfile(db) || {} as any;
 
 const profile = {
-  name: profileData.name.toUpperCase(),
-  phone: profileData.phone,
-  email: profileData.email,
-  linkedin: profileData.linkedin.replace(/^https?:\/\//, ''),
-  summary: profileData.cvSummary,
+  name: (profileData.name || '').toUpperCase(),
+  phone: profileData.phone || '',
+  email: profileData.email || '',
+  linkedin: (profileData.linkedin || '').replace(/^https?:\/\//, ''),
+  summary: profileData.cvSummary || '',
 };
 
-const education = profileData.education;
-const skills = profileData.skills.map((skill) => ({ category: skill.category, items: skill.items.join(', ') }));
+let rawEducation = await getAllFromTable(db, 'education') || [];
+const education = rawEducation.map((edu: any) => ({
+  ...edu,
+  achievements: typeof edu.achievements === 'string' ? JSON.parse(edu.achievements || '[]') : (edu.achievements || [])
+}));
 
-const experiences = (await getCollection('experiences'))
-  .sort((a, b) => parseInt(b.data.duration) - parseInt(a.data.duration))
-  .map((exp) => exp.data);
+let rawSkills = await getAllFromTable(db, 'skills') || [];
+const skills = rawSkills.map((skill: any) => {
+  const itemsArray = typeof skill.items === 'string' ? JSON.parse(skill.items || '[]') : (skill.items || []);
+  return { category: skill.category, items: itemsArray.join(', ') };
+});
+
+const experiences = (await getAllFromTable(db, 'experiences') || [])
+  .sort((a: any, b: any) => parseInt(b.duration) - parseInt(a.duration));
 ---
 <!DOCTYPE html>
 <html lang="id">
@@ -140,7 +148,7 @@ const experiences = (await getCollection('experiences'))
               <span class="text-[10.5px] whitespace-nowrap">{exp.duration}</span>
             </div>
             <ul class="list-disc list-outside ml-6 space-y-0.5">
-              {(Array.isArray(exp.details) ? exp.details : (typeof exp.details === 'string' ? exp.details.split(',').map((t: string) => t.trim()) : [])).map((detail: string) => (
+              {(typeof exp.details === 'string' ? (exp.details.startsWith('[') ? JSON.parse(exp.details) : exp.details.split(',').map((t: string) => t.trim())) : (exp.details || [])).map((detail: string) => (
                 <li class="leading-snug pl-1">{detail}</li>
               ))}
             </ul>

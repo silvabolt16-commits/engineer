@@ -1,28 +1,26 @@
 ---
-export const prerender = true;
+export const prerender = false;
 
-import { getCollection, render } from '../../firebase/content';
+import { marked } from 'marked';
+import { getDB, getProjectBySlug } from '../../lib/d1';
 import MainLayout from '../../layouts/MainLayout.astro';
 
-export async function getStaticPaths() {
-  const projects = await getCollection('projects');
-  return projects.map((project) => ({
-    params: { slug: project.id },
-    props: { project },
-  }));
+const { slug } = Astro.params;
+const db = getDB(Astro.locals);
+const project = await getProjectBySlug(db, slug as string);
+
+if (!project) {
+  return Astro.redirect('/#projects');
 }
 
-const { project } = Astro.props;
-const { Content } = await render(project || {});
+const Content = marked.parse(project.content || '');
 
-const rawPhotos = project?.data?.photos;
-const photos = Array.isArray(rawPhotos) ? rawPhotos : (typeof rawPhotos === 'string' ? [rawPhotos] : []);
-const rawTags = project?.data?.tags;
-const tags = Array.isArray(rawTags) ? rawTags : (typeof rawTags === 'string' ? rawTags.split(',').map((t: string) => t.trim()) : []);
-const title = project?.data?.title || 'Project';
-const description = project?.data?.description || '';
-const tech = project?.data?.tech || 'Engineering';
-const link = project?.data?.link || '#';
+const photos = project.image_url ? [project.image_url] : [];
+const tags = project.tags ? project.tags.split(',').map((t: string) => t.trim()) : [];
+const title = project.title || 'Project';
+const description = project.description || '';
+const tech = project.category || 'Engineering';
+const link = project.repo_url || project.demo_url || '#';
 ---
 
 <MainLayout 

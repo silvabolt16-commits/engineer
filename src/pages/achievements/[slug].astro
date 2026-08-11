@@ -1,24 +1,24 @@
 ---
-export const prerender = true;
+export const prerender = false;
 
-import { getCollection, render } from '../../firebase/content';
+import { marked } from 'marked';
+import { getDB, getBySlugFromTable } from '../../lib/d1';
 import MainLayout from '../../layouts/MainLayout.astro';
 
-export async function getStaticPaths() {
-  const achievements = await getCollection('achievements');
-  return achievements.map((achievement) => ({
-    params: { slug: achievement.id },
-    props: { achievement },
-  }));
+const { slug } = Astro.params;
+const db = getDB(Astro.locals);
+const achievement = await getBySlugFromTable(db, 'achievements', slug as string);
+
+if (!achievement) {
+  return Astro.redirect('/#achievements');
 }
 
-const { achievement } = Astro.props;
-const { Content } = await render(achievement || {});
+const Content = marked.parse(achievement.body || '');
 
-const title = achievement?.data?.title || 'Achievement';
-const issuer = achievement?.data?.issuer || '';
-const date = achievement?.data?.date || '';
-const description = achievement?.data?.description || '';
+const title = achievement.title || 'Achievement';
+const issuer = achievement.issuer || '';
+const date = achievement.date || '';
+const description = achievement.description || '';
 ---
 
 <MainLayout 
@@ -34,12 +34,18 @@ const description = achievement?.data?.description || '';
     <p class="text-xl md:text-2xl text-slate-500 dark:text-neutral-400 font-medium mb-12">{issuer}</p>
 
     <!-- Hero Image placeholder -->
-    <div class="w-full rounded-[2rem] overflow-hidden neu-flat border-none flex items-center justify-center py-24 mb-16 relative">
-      <div class="text-center text-slate-400 dark:text-neutral-600 relative z-10">
-        <svg class="w-20 h-20 mx-auto mb-6 text-[#E9582A] opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
-        <p class="font-bold text-lg tracking-wide uppercase text-slate-500 dark:text-neutral-400">Dokumentasi Penghargaan</p>
+    {achievement.image && achievement.image.startsWith('http') ? (
+      <div class="w-full rounded-[2rem] overflow-hidden mb-16 shadow-xl border-4 border-white dark:border-slate-800 relative group">
+        <img src={achievement.image} class="w-full h-auto object-cover" alt={title} />
       </div>
-    </div>
+    ) : (
+      <div class="w-full rounded-[2rem] overflow-hidden neu-flat border-none flex items-center justify-center py-24 mb-16 relative">
+        <div class="text-center text-slate-400 dark:text-neutral-600 relative z-10">
+          <svg class="w-20 h-20 mx-auto mb-6 text-[#E9582A] opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+          <p class="font-bold text-lg tracking-wide uppercase text-slate-500 dark:text-neutral-400">Dokumentasi Penghargaan</p>
+        </div>
+      </div>
+    )}
   </div>
 
   <!-- Content Section -->

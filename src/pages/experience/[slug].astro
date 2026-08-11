@@ -1,27 +1,35 @@
 ---
-export const prerender = true;
+export const prerender = false;
 
-import { getCollection, render } from '../../firebase/content';
+import { marked } from 'marked';
+import { getDB, getBySlugFromTable } from '../../lib/d1';
 import MainLayout from '../../layouts/MainLayout.astro';
 
-export async function getStaticPaths() {
-  const experiences = await getCollection('experiences');
-  return experiences.map((exp) => ({
-    params: { slug: exp.id },
-    props: { exp },
-  }));
+const { slug } = Astro.params;
+const db = getDB(Astro.locals);
+const exp = await getBySlugFromTable(db, 'experiences', slug as string);
+
+if (!exp) {
+  return Astro.redirect('/#experience');
 }
 
-const { exp } = Astro.props;
-const { Content } = await render(exp || {});
+const Content = marked.parse(exp.body || '');
 
-const rawPhotos = exp?.data?.photos;
-const photos = Array.isArray(rawPhotos) ? rawPhotos : (typeof rawPhotos === 'string' ? [rawPhotos] : []);
-const rawDetails = exp?.data?.details;
-const details = Array.isArray(rawDetails) ? rawDetails : (typeof rawDetails === 'string' ? rawDetails.split(',').map((t: string) => t.trim()) : []);
-const title = exp?.data?.title || 'Experience';
-const company = exp?.data?.company || '';
-const duration = exp?.data?.duration || '';
+const rawPhotos = exp.photos;
+let photos: string[] = [];
+try {
+  photos = typeof rawPhotos === 'string' ? JSON.parse(rawPhotos) : (rawPhotos || []);
+} catch(e) {}
+
+const rawDetails = exp.details;
+let details: string[] = [];
+try {
+  details = typeof rawDetails === 'string' ? JSON.parse(rawDetails) : (rawDetails || []);
+} catch(e) {}
+
+const title = exp.title || 'Experience';
+const company = exp.company || '';
+const duration = exp.duration || '';
 ---
 
 <MainLayout 
@@ -47,17 +55,6 @@ const duration = exp?.data?.duration || '';
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">Job Description</h2>
       <div class="prose prose-lg md:prose-xl prose-slate dark:prose-invert max-w-none mb-12 text-slate-600 dark:text-neutral-400 leading-relaxed prose-a:text-[#E9582A] hover:prose-a:text-[#d04a1f] prose-img:rounded-3xl prose-headings:font-extrabold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-white" set:html={Content}>
       </div>
-
-      {details.length > 0 && (
-        <>
-          <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">Key Responsibilities</h2>
-          <ul class="list-disc list-outside ml-6 space-y-3 text-slate-600 dark:text-neutral-400 text-lg md:text-xl mb-12">
-            {details.map((detail: string) => (
-              <li>{detail}</li>
-            ))}
-          </ul>
-        </>
-      )}
     </div>
 
     <!-- Photo Documentation Gallery -->

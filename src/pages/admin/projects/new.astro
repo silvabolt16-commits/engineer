@@ -6,8 +6,14 @@ if (!isAuthenticated(Astro)) {
   return Astro.redirect("/admin/login");
 }
 
-const cloudName = Astro.locals.runtime?.env?.PUBLIC_CLOUDINARY_CLOUD_NAME || import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME || "";
-const uploadPreset = Astro.locals.runtime?.env?.PUBLIC_CLOUDINARY_UPLOAD_PRESET || import.meta.env.PUBLIC_CLOUDINARY_UPLOAD_PRESET || "";
+let cloudName = import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME || "";
+let uploadPreset = import.meta.env.PUBLIC_CLOUDINARY_UPLOAD_PRESET || "";
+
+try {
+  const runtimeEnv = (Astro.locals as any).runtime?.env;
+  if (runtimeEnv?.PUBLIC_CLOUDINARY_CLOUD_NAME) cloudName = runtimeEnv.PUBLIC_CLOUDINARY_CLOUD_NAME;
+  if (runtimeEnv?.PUBLIC_CLOUDINARY_UPLOAD_PRESET) uploadPreset = runtimeEnv.PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+} catch (e) {}
 ---
 
 <AdminLayout title="Tambah Proyek Baru | Admin">
@@ -44,12 +50,11 @@ const uploadPreset = Astro.locals.runtime?.env?.PUBLIC_CLOUDINARY_UPLOAD_PRESET 
 
         <!-- Cloudinary Upload / Image URL -->
         <div class="p-6 neu-pressed rounded-2xl space-y-4">
-          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">Gambar Proyek (Upload / Link Direct)</label>
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">Gambar Proyek (Upload)</label>
           
           <div class="flex flex-col sm:flex-row items-center gap-4">
             <input type="file" id="imageFile" accept="image/*" class="w-full sm:w-auto text-sm text-slate-600 dark:text-neutral-300 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-wider file:bg-[#E9582A] file:text-white hover:file:bg-[#d04a1f] cursor-pointer transition-colors" />
-            <span class="text-xs font-bold text-slate-400 uppercase">atau</span>
-            <input type="url" id="imageUrl" class="flex-1 w-full px-4 py-3 text-slate-900 dark:text-white neu-flat border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] text-sm" placeholder="URL Foto (https://...)" />
+            <input type="hidden" id="imageUrl" />
           </div>
 
           <div id="uploadStatus" class="text-xs font-bold hidden uppercase tracking-wider mt-2"></div>
@@ -91,18 +96,61 @@ const uploadPreset = Astro.locals.runtime?.env?.PUBLIC_CLOUDINARY_UPLOAD_PRESET 
     const submitBtn = document.getElementById("submitBtn");
 
     imageFileInput?.addEventListener("change", async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+      const fileInput = e.target.files[0];
+      if (!fileInput) return;
 
       if (!cloudName || !uploadPreset) {
         alert("Konfigurasi Cloudinary belum diset di environment variable. Silakan tempel URL gambar langsung.");
         return;
       }
 
-      uploadStatus.textContent = "Mengunggah gambar ke Cloudinary...";
+      uploadStatus.textContent = "Memproses dan kompresi gambar...";
       uploadStatus.classList.remove("hidden");
       uploadStatus.classList.add("text-blue-500");
       uploadStatus.classList.remove("text-green-500", "text-red-500");
+
+      // Client-side compression to WebP
+      const compressImage = (file) => {
+        return new Promise((resolve) => {
+          if (!file.type.match(/image.*/)) {
+            resolve(file); return;
+          }
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              let width = img.width;
+              let height = img.height;
+              const MAX_SIZE = 1920;
+              if (width > height && width > MAX_SIZE) {
+                height *= MAX_SIZE / width;
+                width = MAX_SIZE;
+              } else if (height > MAX_SIZE) {
+                width *= MAX_SIZE / height;
+                height = MAX_SIZE;
+              }
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, width, height);
+              canvas.toBlob((blob) => {
+                const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".webp", {
+                  type: 'image/webp',
+                  lastModified: Date.now()
+                });
+                resolve(newFile);
+              }, 'image/webp', 0.85);
+            };
+            img.src = event.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      };
+
+      const file = await compressImage(fileInput);
+
+      uploadStatus.textContent = "Mengunggah gambar ke Cloudinary...";
 
       const formData = new FormData();
       formData.append("file", file);

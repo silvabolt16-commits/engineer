@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { getDB, getProjectById } from "../../../lib/d1";
 import { isAuthenticated } from "../../../lib/auth";
+import { deleteFromCloudinary } from "../../../lib/cloudinary";
 
 export const GET: APIRoute = async (context) => {
   const db = getDB(context.locals);
@@ -46,8 +47,19 @@ export const PUT: APIRoute = async (context) => {
   }
 
   try {
+    const oldProject = await getProjectById(db, id);
     const body = await context.request.json();
     const { title, slug, description, content, image_url, category, tags, demo_url, repo_url, featured } = body;
+
+    // Cloudinary Auto-Cleanup
+    if (oldProject && oldProject.image_url && typeof oldProject.image_url === 'string' && oldProject.image_url.includes('cloudinary') && oldProject.image_url !== image_url) {
+      const cloudName = import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME;
+      const apiKey = (import.meta.env.PUBLIC_CLOUDINARY_API_KEY || "").trim(); 
+      const apiSecret = (import.meta.env.CLOUDINARY_API_SECRET || "").trim(); 
+      if (cloudName && apiKey && apiSecret) {
+        deleteFromCloudinary(oldProject.image_url, cloudName, apiKey, apiSecret).catch(() => {});
+      }
+    }
 
     await db.prepare(`
       UPDATE projects
@@ -98,7 +110,19 @@ export const DELETE: APIRoute = async (context) => {
   }
 
   try {
+    const oldProject = await getProjectById(db, id);
     await db.prepare("DELETE FROM projects WHERE id = ?").bind(id).run();
+
+    // Cloudinary Auto-Cleanup
+    if (oldProject && oldProject.image_url && typeof oldProject.image_url === 'string' && oldProject.image_url.includes('cloudinary')) {
+      const cloudName = import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME;
+      const apiKey = (import.meta.env.PUBLIC_CLOUDINARY_API_KEY || "").trim(); 
+      const apiSecret = (import.meta.env.CLOUDINARY_API_SECRET || "").trim(); 
+      if (cloudName && apiKey && apiSecret) {
+        deleteFromCloudinary(oldProject.image_url, cloudName, apiKey, apiSecret).catch(() => {});
+      }
+    }
+
     return new Response(JSON.stringify({ success: true, message: "Proyek berhasil dihapus" }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
