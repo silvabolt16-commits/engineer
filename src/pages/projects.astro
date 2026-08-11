@@ -58,7 +58,9 @@ function formatDuration(durationStr: string) {
               {project.date && <span class="text-[9px] md:text-[11px] font-bold text-slate-400 dark:text-neutral-500">{formatDuration(project.date)}</span>}
             </div>
             <h3 class="text-sm md:text-xl font-bold text-slate-900 dark:text-white mb-1 md:mb-2 leading-tight group-hover:text-[#E9582A] transition-colors line-clamp-2">{project.title}</h3>
-            <p class="hidden md:block text-sm text-slate-500 dark:text-neutral-400 font-medium line-clamp-2 mb-6">{project.description}</p>
+            <div class="hidden md:block mb-6">
+              <p class="text-sm text-slate-500 dark:text-neutral-400 font-medium line-clamp-2">{project.description}</p>
+            </div>
 
             <!-- Tags -->
             <div class="hidden md:flex flex-wrap gap-2 mb-6">

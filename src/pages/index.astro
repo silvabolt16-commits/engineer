@@ -272,7 +272,9 @@ const skillStyles = [
             </div>
             <h3 class="text-[14px] md:text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-0.5 md:mb-2 tracking-tight group-hover:text-[#E9582A] dark:group-hover:text-[#fb923c] transition-colors">{cert.data.title}</h3>
             <p class="text-[12px] md:text-[14px] font-bold text-slate-500 dark:text-neutral-400 mb-0.5 md:mb-2 truncate">{cert.data.issuer}</p>
-            <p class="hidden md:block text-[13.5px] text-slate-600 dark:text-neutral-300 leading-relaxed font-medium line-clamp-2">{cert.data.description}</p>
+            <div class="hidden md:block mb-0.5 md:mb-2">
+              <p class="text-[13.5px] text-slate-600 dark:text-neutral-300 leading-relaxed font-medium line-clamp-2">{cert.data.description}</p>
+            </div>
             <div class="text-[10px] md:text-[12px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-widest group-hover:text-[#E9582A] transition-colors mt-1 md:mt-4">
               Details <span class="text-base md:text-lg leading-none transition-transform group-hover:translate-x-1">&rarr;</span>
             </div>
@@ -412,7 +414,9 @@ const skillStyles = [
           <div class="p-3 md:p-6 flex flex-col flex-1">
             <div class="text-[10px] md:text-[12px] font-bold text-slate-400 dark:text-slate-500 mb-1 md:mb-2">{formatDuration(article.data.date)}</div>
             <h3 class="text-[13px] md:text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-1 md:mb-3 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#60a5fa] transition-colors line-clamp-2">{article.data.title}</h3>
-            <p class="hidden md:block text-[14px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-6">{article.data.summary}</p>
+            <div class="hidden md:block mb-6">
+              <p class="text-[14px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3">{article.data.summary}</p>
+            </div>
             
             <div class="text-[10px] md:text-[13px] font-bold text-[#2a85ff] dark:text-[#60a5fa] flex items-center gap-1 uppercase tracking-widest mt-auto">
               Read <span class="hidden md:inline">Article</span> <span class="text-base md:text-lg leading-none transition-transform group-hover/card:translate-x-1">&rarr;</span>

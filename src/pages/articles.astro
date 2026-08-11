@@ -49,7 +49,9 @@ function formatDateSingle(dateStr: string) {
           <div class="p-3 md:p-6 flex flex-col flex-1">
             <div class="text-[10px] md:text-[12px] font-bold text-slate-400 dark:text-neutral-500 mb-1 md:mb-2">{formatDateSingle(article.date)}</div>
             <h3 class="text-[13px] md:text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-1 md:mb-3 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#60a5fa] transition-colors line-clamp-2">{article.title}</h3>
-            <p class="hidden md:block text-[14px] text-slate-500 dark:text-neutral-400 leading-relaxed font-medium line-clamp-3 mb-6">{article.summary}</p>
+            <div class="hidden md:block mb-6">
+              <p class="text-[14px] text-slate-500 dark:text-neutral-400 leading-relaxed font-medium line-clamp-3">{article.summary}</p>
+            </div>
 
             <div class="text-[10px] md:text-[13px] font-bold text-[#2a85ff] dark:text-[#60a5fa] flex items-center gap-1 uppercase tracking-widest mt-auto">
               Read <span class="hidden md:inline">Article</span> <span class="text-base md:text-lg leading-none transition-transform group-hover/card:translate-x-1">&rarr;</span>
