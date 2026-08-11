@@ -9,7 +9,8 @@ const TABLE_SCHEMA: Record<string, string[]> = {
   achievements: ['slug', 'title', 'date', 'issuer', 'description', 'image', 'body'],
   articles: ['slug', 'title', 'date', 'category', 'summary', 'image', 'body'],
   skills: ['category', 'items'],
-  education: ['institution', 'degree', 'duration', 'achievements']
+  education: ['institution', 'degree', 'duration', 'achievements'],
+  documents: ['title', 'category', 'file_url']
 };
 
 export const GET: APIRoute = async (context) => {

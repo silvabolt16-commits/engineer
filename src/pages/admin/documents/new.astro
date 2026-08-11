@@ -1,0 +1,148 @@
+---
+export const prerender = false;
+import { isAuthenticated } from "../../../lib/auth";
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+
+if (!isAuthenticated(Astro)) {
+  return Astro.redirect("/admin/login");
+}
+
+const cloudName = import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME || "";
+const uploadPreset = import.meta.env.PUBLIC_CLOUDINARY_UPLOAD_PRESET || "";
+---
+
+<AdminLayout title="Upload Dokumen Pribadi | Admin">
+  <div class="max-w-4xl mx-auto pt-6 pb-6 md:pt-10 md:pb-8 px-6">
+    <div class="mb-10">
+      <a href="/admin/documents" class="text-sm font-bold text-slate-500 dark:text-neutral-400 hover:text-[#E9582A] uppercase tracking-wider transition-colors">&larr; Kembali ke Daftar</a>
+      <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-4 uppercase tracking-widest">
+        Upload <span class="text-[#E9582A]">Dokumen</span>
+      </h1>
+    </div>
+
+    <div class="neu-flat rounded-3xl p-8 md:p-10">
+      <form id="uploadForm" class="space-y-8">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Judul Dokumen</label>
+          <input type="text" name="title" required placeholder="Contoh: Ijazah S1 Teknik Informatika" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
+        </div>
+        
+        <div>
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Kategori</label>
+          <select name="category" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition">
+            <option value="Pendidikan">Pendidikan (Ijazah, Transkrip)</option>
+            <option value="Identitas">Identitas (KTP, KK, Paspor)</option>
+            <option value="Sertifikasi">Sertifikasi & Pelatihan</option>
+            <option value="Karir">Karir (CV, Portofolio, Paklaring)</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+
+        <div class="p-6 neu-pressed rounded-2xl space-y-4">
+          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">File Dokumen (PDF, JPG, PNG)</label>
+          <div class="flex flex-col sm:flex-row items-center gap-4">
+            <input type="file" id="fileInput" accept=".pdf,image/*" required class="w-full sm:w-auto text-sm text-slate-600 dark:text-neutral-300 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-wider file:bg-[#E9582A] file:text-white hover:file:bg-[#d04a1f] cursor-pointer transition-colors" />
+          </div>
+          <div id="uploadStatus" class="text-xs font-bold hidden uppercase tracking-wider mt-2"></div>
+          <input type="hidden" name="file_url" id="fileUrl" required />
+          <div id="previewContainer" class="mt-4 text-sm font-bold text-[#E9582A]"></div>
+        </div>
+
+        <div class="pt-6 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+          <button type="submit" id="submitBtn" class="px-8 py-4 bg-[#E9582A] hover:bg-[#d04a1f] text-white font-bold rounded-xl shadow-md transition-all text-sm uppercase tracking-wider disabled:opacity-50">
+            Simpan Dokumen
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script define:vars={{ cloudName, uploadPreset }}>
+    const fileInput = document.getElementById('fileInput');
+    const fileUrl = document.getElementById('fileUrl');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const previewContainer = document.getElementById('previewContainer');
+    const submitBtn = document.getElementById('submitBtn');
+    const form = document.getElementById('uploadForm');
+
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (!cloudName || !uploadPreset) {
+        alert("Konfigurasi Cloudinary belum diset di environment variable.");
+        return;
+      }
+
+      uploadStatus.textContent = "Mengunggah file ke server...";
+      uploadStatus.classList.remove("hidden");
+      uploadStatus.className = "text-xs font-bold uppercase tracking-wider mt-2 text-blue-500";
+      submitBtn.disabled = true;
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", uploadPreset);
+
+        // Upload directly as auto resource_type to support PDF and images
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error?.message || "Gagal mengunggah file");
+        }
+
+        const data = await res.json();
+        fileUrl.value = data.secure_url;
+        
+        uploadStatus.textContent = "File berhasil diunggah!";
+        uploadStatus.className = "text-xs font-bold uppercase tracking-wider mt-2 text-green-500";
+        previewContainer.innerHTML = `<a href="${data.secure_url}" target="_blank" class="underline">Lihat File Preview: ${file.name}</a>`;
+        
+        submitBtn.disabled = false;
+      } catch (error) {
+        uploadStatus.textContent = `Error: ${error.message}`;
+        uploadStatus.className = "text-xs font-bold uppercase tracking-wider mt-2 text-red-500";
+        fileInput.value = '';
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!fileUrl.value) {
+        alert("Harap unggah file terlebih dahulu.");
+        return;
+      }
+      
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      submitBtn.textContent = "Menyimpan...";
+      submitBtn.disabled = true;
+
+      try {
+        const res = await fetch(`/api/cms/documents`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        if (res.ok) {
+          window.location.href = `/admin/documents`;
+        } else {
+          const error = await res.json();
+          alert("Gagal menyimpan: " + (error.error || "Unknown error"));
+          submitBtn.textContent = "Simpan Dokumen";
+          submitBtn.disabled = false;
+        }
+      } catch (err) {
+        alert("Terjadi kesalahan jaringan.");
+        submitBtn.textContent = "Simpan Dokumen";
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</AdminLayout>

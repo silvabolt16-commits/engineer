@@ -9,7 +9,8 @@ const TABLE_SCHEMA: Record<string, string[]> = {
   achievements: ['slug', 'title', 'date', 'issuer', 'description', 'image', 'body'],
   articles: ['slug', 'title', 'date', 'category', 'summary', 'image', 'body'],
   skills: ['category', 'items'],
-  education: ['institution', 'degree', 'duration', 'achievements']
+  education: ['institution', 'degree', 'duration', 'achievements'],
+  documents: ['title', 'category', 'file_url']
 };
 
 export const GET: APIRoute = async (context) => {
@@ -65,7 +66,7 @@ export const PUT: APIRoute = async (context) => {
       const apiSecret = (import.meta.env.CLOUDINARY_API_SECRET || "").trim(); 
       
       if (cloudName && apiKey && apiSecret) {
-        ['photos', 'image', 'link'].forEach(col => {
+        ['photos', 'image', 'link', 'file_url'].forEach(col => {
           if (schema.includes(col) && oldItem[col]) {
             let oldUrls: string[] = [];
             try {
@@ -144,7 +145,7 @@ export const DELETE: APIRoute = async (context) => {
       const apiSecret = (import.meta.env.CLOUDINARY_API_SECRET || "").trim(); 
       
       if (cloudName && apiKey && apiSecret) {
-        ['photos', 'image', 'link'].forEach(col => {
+        ['photos', 'image', 'link', 'file_url'].forEach(col => {
           if (TABLE_SCHEMA[table].includes(col) && item[col]) {
             let oldUrls: string[] = [];
             try {
