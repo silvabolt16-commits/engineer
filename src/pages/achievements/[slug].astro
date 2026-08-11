@@ -57,7 +57,7 @@ if (date && date.includes('|')) {
   description={description}
 >
   <!-- Article Header -->
-  <div class="max-w-[1400px] mx-auto px-6 md:px-8 pt-16 md:pt-20 pb-6 md:pb-8">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-8 pt-6 md:pt-10 pb-6 md:pb-8">
     <div class="inline-block text-[#E9582A] font-extrabold tracking-widest uppercase mb-4 text-sm bg-[#E9582A]/10 px-4 py-2 rounded-lg">
       {date}
     </div>
@@ -70,7 +70,7 @@ if (date && date.includes('|')) {
         <img src={achievement.image} class="w-full h-auto object-cover" alt={title} />
       </div>
     ) : (
-      <div class="w-full rounded-[2rem] overflow-hidden neu-flat border-none flex items-center justify-center py-10 md:py-6 md:py-8 mb-8 md:mb-10 relative">
+      <div class="w-full rounded-[2rem] overflow-hidden neu-flat border-none flex items-center justify-center pt-6 pb-10 md:pt-10 md:pb-16 mb-8 md:mb-10 relative">
         <div class="text-center text-slate-400 dark:text-neutral-600 relative z-10">
           <svg class="w-20 h-20 mx-auto mb-6 text-[#E9582A] opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
           <p class="font-bold text-lg tracking-wide uppercase text-slate-500 dark:text-neutral-400">Dokumentasi Penghargaan</p>
