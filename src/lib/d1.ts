@@ -29,7 +29,7 @@ export function getDB(locals?: any) {
 export async function getAllProjects(db: any): Promise<Project[]> {
   if (!db) return [];
   try {
-    const { results } = await db.prepare("SELECT * FROM projects ORDER BY created_at DESC").all();
+    const { results } = await db.prepare("SELECT * FROM projects ORDER BY created_at DESC, id DESC").all();
     return (results as Project[]) || [];
   } catch (error) {
     console.error("Error fetching projects from D1:", error);
@@ -112,7 +112,7 @@ export async function getAllFromTable(db: any, table: string) {
   try {
     let query = `SELECT * FROM ${table}`;
     if (['experiences', 'certificates', 'achievements', 'articles'].includes(table)) {
-      query += ` ORDER BY created_at DESC`;
+      query += ` ORDER BY created_at DESC, id DESC`;
     }
     const { results } = await db.prepare(query).all();
     return results || [];
