@@ -336,20 +336,10 @@ if (faviconUrl && faviconUrl.includes('cloudinary.com')) {
 
             document.documentElement.classList.add('circle-transition');
             
-            // Get click coordinates robustly
-            let x = e.clientX;
-            let y = e.clientY;
-            
-            if (!x && !y && e.touches && e.touches.length > 0) {
-              x = e.touches[0].clientX;
-              y = e.touches[0].clientY;
-            }
-            
-            if (!x && !y) {
-              const rect = e.currentTarget.getBoundingClientRect();
-              x = rect.left + rect.width / 2;
-              y = rect.top + rect.height / 2;
-            }
+            // Always use the button's screen position for reliable coordinates on all devices
+            const _r = this.getBoundingClientRect();
+            const x = _r.left + _r.width / 2;
+            const y = _r.top + _r.height / 2;
             const endRadius = Math.hypot(
               Math.max(x, window.innerWidth - x),
               Math.max(y, window.innerHeight - y)
