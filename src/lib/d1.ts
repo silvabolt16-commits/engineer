@@ -111,8 +111,10 @@ export async function getAllFromTable(db: any, table: string) {
   if (!db) return [];
   try {
     let query = `SELECT * FROM ${table}`;
-    if (['experiences', 'certificates', 'achievements', 'articles'].includes(table)) {
-      query += ` ORDER BY created_at DESC, id DESC`;
+    if (['experiences', 'education'].includes(table)) {
+      query += ` ORDER BY duration DESC, created_at DESC, id DESC`;
+    } else if (['certificates', 'achievements', 'articles'].includes(table)) {
+      query += ` ORDER BY date DESC, created_at DESC, id DESC`;
     }
     const { results } = await db.prepare(query).all();
     return results || [];

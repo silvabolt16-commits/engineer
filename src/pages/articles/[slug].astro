@@ -18,8 +18,18 @@ const Content = marked.parse(article.body || '');
 const title = article.title || 'Article';
 const summary = article.summary || '';
 const category = article.category || 'General';
-const date = article.date || '';
+let date = article.date || '';
 const image = article.image || undefined;
+
+if (date && !date.includes('|')) {
+  try {
+    const [year, month] = date.split('-');
+    if (year && month) {
+      const d = new Date(parseInt(year), parseInt(month) - 1);
+      date = d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    }
+  } catch (e) {}
+}
 ---
 
 <MainLayout 

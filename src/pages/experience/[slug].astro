@@ -29,7 +29,23 @@ try {
 
 const title = exp.title || 'Experience';
 const company = exp.company || '';
-const duration = exp.duration || '';
+let duration = exp.duration || '';
+
+if (duration && duration.includes('|')) {
+  const [start, end] = duration.split('|');
+  const formatDate = (dateStr: string) => {
+    if (dateStr === 'present') return 'Sekarang';
+    if (!dateStr) return '';
+    try {
+      const [year, month] = dateStr.split('-');
+      const date = new Date(parseInt(year), parseInt(month) - 1);
+      return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    } catch (e) {
+      return dateStr;
+    }
+  };
+  duration = `${formatDate(start)} - ${formatDate(end)}`;
+}
 ---
 
 <MainLayout 

@@ -78,8 +78,42 @@ for (const col of schema) {
                 <textarea name={col} id={`${col}HiddenInput`} class="hidden">{formData[col]}</textarea>
                 <div id={`${col}PreviewContainer`} class="flex flex-wrap gap-4 mt-4"></div>
               </div>
+              </div>
             );
           }
+
+          if (col === 'duration') {
+            return (
+              <div>
+                <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Duration (Bulan Mulai - Bulan Selesai)</label>
+                <div class="flex items-center gap-2">
+                  <input type="month" id="durationStart" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
+                  <span class="text-slate-500 font-bold">-</span>
+                  <input type="month" id="durationEnd" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
+                  <div class="flex items-center ml-2 shrink-0">
+                    <input type="checkbox" id="durationPresent" class="w-4 h-4 rounded text-[#E9582A] focus:ring-[#E9582A]" />
+                    <label for="durationPresent" class="ml-1 text-xs font-bold text-slate-500 cursor-pointer">Sekarang</label>
+                  </div>
+                </div>
+                <input type="hidden" name="duration" id="durationHidden" value={formData[col]} />
+              </div>
+            );
+          }
+
+          if (col === 'date') {
+            return (
+              <div>
+                <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">{col}</label>
+                <input
+                  type="month"
+                  name={col}
+                  value={formData[col]}
+                  class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition"
+                />
+              </div>
+            );
+          }
+
           return (
             <div>
               <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">{col}</label>
@@ -118,6 +152,38 @@ for (const col of schema) {
   </div>
 
   <script define:vars={{ table, id, schema, cloudName, uploadPreset }}>
+
+    // Handle duration inputs
+    const durationStart = document.getElementById('durationStart');
+    const durationEnd = document.getElementById('durationEnd');
+    const durationPresent = document.getElementById('durationPresent');
+    const durationHidden = document.getElementById('durationHidden');
+    
+    if (durationPresent && durationEnd && durationHidden) {
+      const savedDuration = durationHidden.value;
+      if (savedDuration && savedDuration.includes('|')) {
+        const [start, end] = savedDuration.split('|');
+        durationStart.value = start;
+        if (end === 'present') {
+          durationPresent.checked = true;
+          durationEnd.disabled = true;
+          durationEnd.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+          durationEnd.value = end;
+        }
+      }
+
+      durationPresent.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          durationEnd.value = '';
+          durationEnd.disabled = true;
+          durationEnd.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+          durationEnd.disabled = false;
+          durationEnd.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+      });
+    }
 
     ['photos', 'image', 'link'].forEach(colId => {
       const fileInput = document.getElementById(`${colId}FileInput`);
@@ -284,6 +350,15 @@ for (const col of schema) {
     document.getElementById("editForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const submitBtn = document.getElementById("submitBtn");
+
+      if (durationHidden && durationStart) {
+        const start = durationStart.value;
+        const end = durationPresent.checked ? 'present' : durationEnd.value;
+        if (start) {
+          durationHidden.value = `${start}|${end}`;
+        }
+      }
+
       submitBtn.innerText = "Menyimpan...";
       submitBtn.disabled = true;
 

@@ -17,8 +17,18 @@ const Content = marked.parse(cert.body || '');
 
 const title = cert.title || 'Certificate';
 const issuer = cert.issuer || '';
-const date = cert.date || '';
+let date = cert.date || '';
 const description = cert.description || '';
+
+if (date && !date.includes('|')) {
+  try {
+    const [year, month] = date.split('-');
+    if (year && month) {
+      const d = new Date(parseInt(year), parseInt(month) - 1);
+      date = d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    }
+  } catch (e) {}
+}
 ---
 
 <MainLayout 

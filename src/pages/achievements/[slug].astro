@@ -17,8 +17,18 @@ const Content = marked.parse(achievement.body || '');
 
 const title = achievement.title || 'Achievement';
 const issuer = achievement.issuer || '';
-const date = achievement.date || '';
+let date = achievement.date || '';
 const description = achievement.description || '';
+
+if (date && !date.includes('|')) {
+  try {
+    const [year, month] = date.split('-');
+    if (year && month) {
+      const d = new Date(parseInt(year), parseInt(month) - 1);
+      date = d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    }
+  } catch (e) {}
+}
 ---
 
 <MainLayout 

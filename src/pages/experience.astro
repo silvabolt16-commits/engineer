@@ -2,7 +2,26 @@
 import { getDB, getAllFromTable } from '../lib/d1';
 import MainLayout from '../layouts/MainLayout.astro';
 const db = getDB(Astro.locals);
-const experiences = (await getAllFromTable(db, 'experiences')).sort((a: any, b: any) => parseInt(b.duration) - parseInt(a.duration));
+const experiences = await getAllFromTable(db, 'experiences');
+
+function formatDuration(durationStr: string) {
+  if (!durationStr || !durationStr.includes('|')) return durationStr;
+  
+  const [start, end] = durationStr.split('|');
+  const formatDate = (dateStr: string) => {
+    if (dateStr === 'present') return 'Sekarang';
+    if (!dateStr) return '';
+    try {
+      const [year, month] = dateStr.split('-');
+      const date = new Date(parseInt(year), parseInt(month) - 1);
+      return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    } catch (e) {
+      return dateStr;
+    }
+  };
+  
+  return `${formatDate(start)} - ${formatDate(end)}`;
+}
 
 // Gandakan 4 kali agar efek infinite scroll (marquee) mulus di layar ultra-wide
 const marqueeItems = [...experiences, ...experiences, ...experiences, ...experiences];
@@ -40,7 +59,7 @@ const marqueeItems = [...experiences, ...experiences, ...experiences, ...experie
 
                   <div class="flex-1">
                     <div class="inline-block bg-[#2a85ff] text-white text-[11px] font-bold px-3 py-1 rounded-[4px] tracking-wider mb-2">
-                      {exp.duration}
+                      {formatDuration(exp.duration)}
                     </div>
                     <h2 class="text-[18px] font-extrabold text-slate-900 leading-tight tracking-tight">{exp.title}</h2>
                   </div>

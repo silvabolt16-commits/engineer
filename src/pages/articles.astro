@@ -2,7 +2,19 @@
 import { getDB, getAllFromTable } from '../lib/d1';
 import MainLayout from '../layouts/MainLayout.astro';
 const db = getDB(Astro.locals);
-const articles = (await getAllFromTable(db, 'articles')).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+const articles = await getAllFromTable(db, 'articles');
+
+function formatDateSingle(dateStr: string) {
+  if (!dateStr || dateStr.includes('|')) return dateStr;
+  try {
+    const [year, month] = dateStr.split('-');
+    if (!year || !month) return dateStr;
+    const date = new Date(parseInt(year), parseInt(month) - 1);
+    return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+  } catch (e) {
+    return dateStr;
+  }
+}
 ---
 
 <MainLayout title="Articles - Fajri Awwaluddin">
@@ -35,7 +47,7 @@ const articles = (await getAllFromTable(db, 'articles')).sort((a, b) => new Date
 
           <!-- Text Section -->
           <div class="p-6 flex flex-col flex-1">
-            <div class="text-[12px] font-bold text-slate-400 dark:text-neutral-500 mb-2">{article.date}</div>
+            <div class="text-[12px] font-bold text-slate-400 dark:text-neutral-500 mb-2">{formatDateSingle(article.date)}</div>
             <h3 class="text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-3 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#60a5fa] transition-colors">{article.title}</h3>
             <p class="text-[14px] text-slate-500 dark:text-neutral-400 leading-relaxed font-medium line-clamp-3 mb-6">{article.summary}</p>
 
