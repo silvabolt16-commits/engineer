@@ -190,11 +190,11 @@ const skillStyles = [
       <p class="text-slate-500 dark:text-neutral-400 font-medium text-lg">Professional history and industry contributions.</p>
     </div>
     
-    <div class="grid grid-cols-1 gap-12 max-w-5xl mx-auto">
+    <div class="grid grid-cols-1 gap-6 md:gap-12 max-w-5xl mx-auto">
       {experiences.map((exp, index) => (
-        <a href={`/experience/${exp.id}`} class={`group/card reveal-up flex flex-col md:flex-row ${index % 2 !== 0 ? 'md:flex-row-reverse' : ''} gap-8 items-center neu-flat neu-flat-hover border-none rounded-[2rem] p-4 transition-all duration-400 cursor-pointer`}>
+        <a href={`/experience/${exp.id}`} class={`group/card reveal-up flex flex-row md:flex-row ${index % 2 !== 0 ? 'md:flex-row-reverse' : ''} gap-3 md:gap-8 items-center neu-flat neu-flat-hover border-none rounded-2xl md:rounded-[2rem] p-2.5 md:p-4 transition-all duration-400 cursor-pointer`}>
           <!-- Image Section -->
-          <div class="w-full md:w-1/2 h-[240px] md:h-[300px] rounded-3xl overflow-hidden shrink-0 relative">
+          <div class="w-[110px] h-[110px] md:w-1/2 md:h-[300px] rounded-xl md:rounded-3xl overflow-hidden shrink-0 relative">
             {(() => {
               const rawPhotos = exp.data.photos;
               const photos = Array.isArray(rawPhotos) ? rawPhotos : (typeof rawPhotos === 'string' ? [rawPhotos] : []);
@@ -204,19 +204,19 @@ const skillStyles = [
                 <div class="w-full h-full bg-slate-100 dark:bg-[#222] flex items-center justify-center text-slate-400 dark:text-neutral-500">No Image</div>
               );
             })()}
-            <div class="absolute inset-0 ring-1 ring-inset ring-black/10 dark:ring-white/10 rounded-3xl"></div>
+            <div class="absolute inset-0 ring-1 ring-inset ring-black/10 dark:ring-white/10 rounded-xl md:rounded-3xl"></div>
           </div>
 
           <!-- Text Section -->
-          <div class="w-full md:w-1/2 flex flex-col p-4 md:p-8 text-left">
-            <div class="inline-block bg-[#2a85ff]/10 dark:bg-[#2a85ff]/20 text-[#2a85ff] dark:text-[#60a5fa] text-[12px] font-bold px-4 py-1.5 rounded-full tracking-wider mb-4 w-max">
+          <div class="flex-1 flex flex-col p-1 md:p-8 text-left min-w-0">
+            <div class="inline-block bg-[#2a85ff]/10 dark:bg-[#2a85ff]/20 text-[#2a85ff] dark:text-[#60a5fa] text-[10px] md:text-[12px] font-bold px-2.5 md:px-4 py-1 md:py-1.5 rounded-full tracking-wider mb-2 md:mb-4 w-max">
               {exp.data.duration}
             </div>
-            <h3 class="text-[24px] md:text-[28px] font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight mb-2 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#38bdf8] transition-colors">{exp.data.title}</h3>
-            <div class="text-[16px] font-bold text-slate-600 dark:text-slate-300 mb-4">{exp.data.company}</div>
-            <p class="text-[15px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-6">{exp.body || exp.data?.description || ''}</p>
-            <div class="text-[13px] font-bold text-[#E9582A] flex items-center gap-1 uppercase tracking-widest mt-auto">
-              Read Details <span class="text-xl leading-none transition-transform group-hover/card:translate-x-2">&rarr;</span>
+            <h3 class="text-[15px] md:text-[28px] font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight mb-0.5 md:mb-2 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#38bdf8] transition-colors">{exp.data.title}</h3>
+            <div class="text-[12px] md:text-[16px] font-bold text-slate-600 dark:text-slate-300 mb-1 md:mb-4">{exp.data.company}</div>
+            <p class="hidden md:block text-[15px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-6">{exp.body || exp.data?.description || ''}</p>
+            <div class="text-[11px] md:text-[13px] font-bold text-[#E9582A] flex items-center gap-1 uppercase tracking-widest mt-auto">
+              Details <span class="text-base md:text-xl leading-none transition-transform group-hover/card:translate-x-2">&rarr;</span>
             </div>
           </div>
         </a>
@@ -231,23 +231,23 @@ const skillStyles = [
       <p class="text-slate-500 dark:text-slate-400 font-medium text-lg">Recognition of expertise and industry safety standards.</p>
     </div>
     
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-8">
       {certificates.map((cert) => (
-        <a href={`/certificates/${cert.id}`} class="block reveal-up group neu-flat neu-flat-hover border-none rounded-2xl p-6 flex flex-col sm:flex-row gap-6 transition-all duration-300 cursor-pointer">
-          <div class="w-full sm:w-32 h-32 rounded-xl neu-pressed border-none shrink-0 flex items-center justify-center text-[#10b981] dark:text-emerald-400 transition-colors duration-300">
-            <svg class="w-12 h-12 opacity-80 transition-transform duration-500 ease-out group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <a href={`/certificates/${cert.id}`} class="block reveal-up group neu-flat neu-flat-hover border-none rounded-xl md:rounded-2xl p-3 md:p-6 flex flex-row gap-3 md:gap-6 transition-all duration-300 cursor-pointer">
+          <div class="w-14 h-14 md:w-32 md:h-32 rounded-lg md:rounded-xl neu-pressed border-none shrink-0 flex items-center justify-center text-[#10b981] dark:text-emerald-400 transition-colors duration-300">
+            <svg class="w-7 h-7 md:w-12 md:h-12 opacity-80 transition-transform duration-500 ease-out group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           </div>
-          <div class="flex-1 flex flex-col justify-center">
-            <div class="mb-2">
-              <span class="inline-block bg-[#10b981] dark:bg-[#10b981]/20 text-white dark:text-[#34d399] text-[11px] font-bold px-3 py-1 rounded-[4px] tracking-wider">
+          <div class="flex-1 flex flex-col justify-center min-w-0">
+            <div class="mb-1 md:mb-2">
+              <span class="inline-block bg-[#10b981] dark:bg-[#10b981]/20 text-white dark:text-[#34d399] text-[10px] md:text-[11px] font-bold px-2 md:px-3 py-0.5 md:py-1 rounded-[4px] tracking-wider">
                 {cert.data.date}
               </span>
             </div>
-            <h3 class="text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-2 tracking-tight group-hover:text-[#E9582A] dark:group-hover:text-[#fb923c] transition-colors">{cert.data.title}</h3>
-            <p class="text-[14px] font-bold text-slate-500 dark:text-neutral-400 mb-2">{cert.data.issuer}</p>
-            <p class="text-[13.5px] text-slate-600 dark:text-neutral-300 leading-relaxed font-medium line-clamp-2">{cert.data.description}</p>
-            <div class="text-[12px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-widest group-hover:text-[#E9582A] transition-colors mt-4">
-              Read Details <span class="text-lg leading-none transition-transform group-hover:translate-x-1">&rarr;</span>
+            <h3 class="text-[14px] md:text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-0.5 md:mb-2 tracking-tight group-hover:text-[#E9582A] dark:group-hover:text-[#fb923c] transition-colors">{cert.data.title}</h3>
+            <p class="text-[12px] md:text-[14px] font-bold text-slate-500 dark:text-neutral-400 mb-0.5 md:mb-2 truncate">{cert.data.issuer}</p>
+            <p class="hidden md:block text-[13.5px] text-slate-600 dark:text-neutral-300 leading-relaxed font-medium line-clamp-2">{cert.data.description}</p>
+            <div class="text-[10px] md:text-[12px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-widest group-hover:text-[#E9582A] transition-colors mt-1 md:mt-4">
+              Details <span class="text-base md:text-lg leading-none transition-transform group-hover:translate-x-1">&rarr;</span>
             </div>
           </div>
         </a>
@@ -263,20 +263,20 @@ const skillStyles = [
       <p class="text-slate-500 dark:text-neutral-400 font-medium text-lg">Academic awards and non-academic competitions.</p>
     </div>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+    <div class="grid grid-cols-2 md:grid-cols-2 gap-3 md:gap-6 relative z-10">
       {achievements.map((achievement) => (
-        <a href={`/achievements/${achievement.id}`} class="block reveal-up group neu-pressed border-none rounded-2xl p-6 transition-all duration-300 cursor-pointer">
-          <div class="flex items-start gap-4 h-full">
-            <div class="w-12 h-12 rounded-full neu-flat text-orange-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
-              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+        <a href={`/achievements/${achievement.id}`} class="block reveal-up group neu-pressed border-none rounded-xl md:rounded-2xl p-3 md:p-6 transition-all duration-300 cursor-pointer">
+          <div class="flex flex-col md:flex-row md:items-start gap-2 md:gap-4 h-full">
+            <div class="w-9 h-9 md:w-12 md:h-12 rounded-full neu-flat text-orange-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+              <svg class="w-4 h-4 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
             </div>
-            <div class="flex flex-col h-full w-full">
-              <div class="text-orange-500 text-[12px] font-bold tracking-widest mb-1">{achievement.data.date}</div>
-              <h3 class="text-[18px] font-bold text-slate-900 dark:text-white mb-1 group-hover:text-orange-500 transition-colors">{achievement.data.title}</h3>
-              <p class="text-slate-500 dark:text-neutral-400 text-[13px] font-medium mb-3">{achievement.data.issuer}</p>
-              <p class="text-slate-600 dark:text-neutral-300 text-[14px] leading-relaxed mb-4">{achievement.data.description}</p>
-              <div class="text-[12px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-widest group-hover:text-orange-500 transition-colors mt-auto pt-2">
-                Read Details <span class="text-lg leading-none transition-transform group-hover:translate-x-1">&rarr;</span>
+            <div class="flex flex-col h-full w-full min-w-0">
+              <div class="text-orange-500 text-[10px] md:text-[12px] font-bold tracking-widest mb-0.5 md:mb-1">{achievement.data.date}</div>
+              <h3 class="text-[13px] md:text-[18px] font-bold text-slate-900 dark:text-white mb-0.5 md:mb-1 group-hover:text-orange-500 transition-colors leading-tight">{achievement.data.title}</h3>
+              <p class="text-slate-500 dark:text-neutral-400 text-[11px] md:text-[13px] font-medium mb-1 md:mb-3 truncate">{achievement.data.issuer}</p>
+              <p class="hidden md:block text-slate-600 dark:text-neutral-300 text-[14px] leading-relaxed mb-4">{achievement.data.description}</p>
+              <div class="text-[10px] md:text-[12px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-widest group-hover:text-orange-500 transition-colors mt-auto pt-1 md:pt-2">
+                Details <span class="text-base md:text-lg leading-none transition-transform group-hover:translate-x-1">&rarr;</span>
               </div>
             </div>
           </div>
@@ -362,32 +362,32 @@ const skillStyles = [
       <p class="text-slate-500 dark:text-neutral-400 font-medium text-lg">Thoughts, opinions, and guides on industry and technology.</p>
     </div>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8">
       {articles.slice(0, 4).map((article) => (
-        <a href={`/articles/${article.id}`} class="block reveal-up group/card neu-flat neu-flat-hover border-none rounded-3xl overflow-hidden transition-all duration-500 cursor-pointer h-full flex flex-col">
+        <a href={`/articles/${article.id}`} class="block reveal-up group/card neu-flat neu-flat-hover border-none rounded-xl md:rounded-3xl overflow-hidden transition-all duration-500 cursor-pointer h-full flex flex-col">
           <!-- Cover Image -->
-          <div class="w-full h-[200px] relative overflow-hidden bg-slate-200 dark:bg-[#222] shrink-0">
+          <div class="w-full h-[100px] md:h-[200px] relative overflow-hidden bg-slate-200 dark:bg-[#222] shrink-0">
             {article.data.image ? (
               <img src={article.data.image} alt={article.data.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" loading="lazy" decoding="async" />
             ) : (
               <div class="w-full h-full flex items-center justify-center text-slate-400 dark:text-neutral-600">No Image</div>
             )}
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-            <div class="absolute bottom-4 left-4">
-              <div class="inline-block bg-[#2a85ff] text-white text-[11px] font-bold px-3 py-1 rounded-[4px] tracking-wider border border-white/10">
+            <div class="absolute bottom-2 left-2 md:bottom-4 md:left-4">
+              <div class="inline-block bg-[#2a85ff] text-white text-[9px] md:text-[11px] font-bold px-2 md:px-3 py-0.5 md:py-1 rounded-[4px] tracking-wider border border-white/10">
                 {article.data.category}
               </div>
             </div>
           </div>
 
           <!-- Text Section -->
-          <div class="p-6 flex flex-col flex-1">
-            <div class="text-[12px] font-bold text-slate-400 dark:text-slate-500 mb-2">{article.data.date}</div>
-            <h3 class="text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-3 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#60a5fa] transition-colors">{article.data.title}</h3>
-            <p class="text-[14px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-6">{article.data.summary}</p>
+          <div class="p-3 md:p-6 flex flex-col flex-1">
+            <div class="text-[10px] md:text-[12px] font-bold text-slate-400 dark:text-slate-500 mb-1 md:mb-2">{article.data.date}</div>
+            <h3 class="text-[13px] md:text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-1 md:mb-3 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#60a5fa] transition-colors line-clamp-2">{article.data.title}</h3>
+            <p class="hidden md:block text-[14px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3 mb-6">{article.data.summary}</p>
             
-            <div class="text-[13px] font-bold text-[#2a85ff] dark:text-[#60a5fa] flex items-center gap-1 uppercase tracking-widest mt-auto">
-              Read Article <span class="text-lg leading-none transition-transform group-hover/card:translate-x-1">&rarr;</span>
+            <div class="text-[10px] md:text-[13px] font-bold text-[#2a85ff] dark:text-[#60a5fa] flex items-center gap-1 uppercase tracking-widest mt-auto">
+              Read <span class="hidden md:inline">Article</span> <span class="text-base md:text-lg leading-none transition-transform group-hover/card:translate-x-1">&rarr;</span>
             </div>
           </div>
         </a>
