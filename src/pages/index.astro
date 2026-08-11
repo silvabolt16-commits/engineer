@@ -24,7 +24,7 @@ experiences = experiences.map(exp => ({
     photos: JSON.parse(exp.photos || '[]')
   },
   body: exp.body
-})).sort((a, b) => parseInt(b.data.duration) - parseInt(a.data.duration));
+}));
 
 certificates = certificates.map(cert => ({
   id: cert.slug,
