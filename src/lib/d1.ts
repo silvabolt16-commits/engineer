@@ -23,9 +23,6 @@ export interface Project {
 import { env } from "cloudflare:workers";
 
 export function getDB(locals?: any) {
-  if (locals?.runtime?.env?.DB) {
-    return locals.runtime.env.DB;
-  }
   try {
     return env.DB;
   } catch (error) {
