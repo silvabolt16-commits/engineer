@@ -99,11 +99,20 @@ const uploadPreset = import.meta.env.PUBLIC_CLOUDINARY_UPLOAD_PRESET || "";
         }
 
         const data = await res.json();
-        fileUrl.value = data.secure_url;
+        
+        let urlToSave = data.secure_url;
+        // Cloudinary sometimes forces PDFs to be uploaded as images depending on the upload preset.
+        // This causes a 401 Unauthorized when trying to view them due to security restrictions.
+        // Adding fl_attachment forces it to download, bypassing the restriction.
+        if (urlToSave.includes('/image/upload/') && urlToSave.toLowerCase().endsWith('.pdf')) {
+          urlToSave = urlToSave.replace('/image/upload/', '/image/upload/fl_attachment/');
+        }
+
+        fileUrl.value = urlToSave;
         
         uploadStatus.textContent = "File berhasil diunggah!";
         uploadStatus.className = "text-xs font-bold uppercase tracking-wider mt-2 text-green-500";
-        previewContainer.innerHTML = `<a href="${data.secure_url}" target="_blank" class="underline">Lihat File Preview: ${file.name}</a>`;
+        previewContainer.innerHTML = `<a href="${urlToSave}" target="_blank" class="underline">Lihat File Preview: ${file.name}</a>`;
         
         submitBtn.disabled = false;
       } catch (error) {
