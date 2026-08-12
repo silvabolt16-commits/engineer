@@ -23,6 +23,9 @@ export interface Project {
 import { env } from "cloudflare:workers";
 
 export function getDB(locals?: any) {
+  if (locals?.runtime?.env?.DB) {
+    return locals.runtime.env.DB;
+  }
   try {
     return env.DB;
   } catch (error) {
@@ -71,7 +74,7 @@ export async function getProfile(db: any) {
   try {
     const profile = await db.prepare("SELECT * FROM profiles WHERE id = 1").first();
     if (!profile) return null;
-    
+
     // Also fetch skills and education to compose the full profile object if needed
     const { results: skillsRows } = await db.prepare("SELECT * FROM skills").all();
     const skills = skillsRows.map((s: any) => ({
