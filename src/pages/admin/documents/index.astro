@@ -21,36 +21,64 @@ const documents = await getAllFromTable(db, 'documents');
       <p class="text-sm text-slate-500 dark:text-neutral-400 mt-2">Upload dan kelola dokumen penting seperti CV, Ijazah, KK (Hanya dapat diakses oleh Admin).</p>
     </div>
 
-    <div class="flex items-center justify-between mb-8 border-b border-slate-200 dark:border-slate-800 pb-2">
+    <div class="flex flex-col sm:flex-row items-center justify-between mb-8 border-b border-slate-200 dark:border-slate-800 pb-4 gap-4">
       <h2 class="text-lg font-bold text-slate-800 dark:text-white uppercase tracking-widest">Daftar Dokumen</h2>
-      <a href="/admin/documents/new" class="px-4 py-2 bg-[#E9582A] hover:bg-[#d04a1f] text-white font-bold rounded-xl shadow-md transition-all text-[10px] uppercase tracking-wider">
+      <a href="/admin/documents/new" class="px-4 py-2 bg-[#E9582A] hover:bg-[#d04a1f] text-white font-bold rounded-xl shadow-md transition-all text-[10px] uppercase tracking-wider shrink-0">
         + Upload Dokumen
       </a>
     </div>
 
     {documents.length > 0 ? (
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {documents.map((doc: any) => (
-          <div class="neu-flat rounded-3xl overflow-hidden flex flex-col justify-between group transition-all p-6">
-            <div>
-              <div class="flex items-center gap-3 mb-4">
-                <div class="w-12 h-12 rounded-full neu-pressed flex items-center justify-center text-[#E9582A] text-xl">
-                  {doc.file_url?.toLowerCase().endsWith('.pdf') ? '📄' : '🖼️'}
-                </div>
-                <div>
-                  <h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight">{doc.title}</h3>
-                  <p class="text-xs text-slate-500 dark:text-neutral-400 font-bold uppercase tracking-wider mt-1">{doc.category || 'Lainnya'}</p>
+      <>
+        {/* Toolbar Aksi Massal */}
+        <div class="neu-flat rounded-2xl p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <input type="checkbox" id="selectAll" class="w-5 h-5 rounded text-[#E9582A] focus:ring-[#E9582A] cursor-pointer" />
+            <label for="selectAll" class="text-sm font-bold text-slate-700 dark:text-neutral-200 cursor-pointer uppercase tracking-wider">Pilih Semua</label>
+            <span id="selectedCount" class="text-xs font-bold text-slate-400 ml-2">(0 Terpilih)</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <button id="bulkDownloadBtn" disabled class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold rounded-xl transition-all text-[10px] uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed">
+              ⬇️ Download Terpilih
+            </button>
+            <button id="bulkDeleteBtn" disabled class="px-4 py-2.5 bg-red-100 dark:bg-red-900/30 text-red-400 font-bold rounded-xl transition-all text-[10px] uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed">
+              🗑️ Hapus Terpilih
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {documents.map((doc: any) => (
+            <div class="neu-flat rounded-3xl overflow-hidden flex flex-col justify-between group transition-all p-6 relative">
+              
+              {/* Checkbox Individual */}
+              <div class="absolute top-4 right-4 z-10">
+                <input type="checkbox" class="doc-checkbox w-5 h-5 rounded text-[#E9582A] focus:ring-[#E9582A] cursor-pointer" data-id={doc.id} data-url={doc.file_url} />
+              </div>
+
+              <div>
+                <div class="flex items-center gap-3 mb-4 pr-8">
+                  <div class="w-12 h-12 shrink-0 rounded-full neu-pressed flex items-center justify-center text-[#E9582A] text-xl">
+                    {doc.file_url?.toLowerCase().includes('.pdf') ? '📄' : '🖼️'}
+                  </div>
+                  <div class="truncate">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight truncate" title={doc.title}>{doc.title}</h3>
+                    <p class="text-xs text-slate-500 dark:text-neutral-400 font-bold uppercase tracking-wider mt-1 truncate">{doc.category || 'Lainnya'}</p>
+                  </div>
                 </div>
               </div>
+              
+              <div class="pt-6 mt-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-2 justify-between items-center">
+                <div class="flex gap-2">
+                  <a href={doc.file_url} target="_blank" class="px-3 py-2 neu-flat rounded-xl text-[10px] font-bold text-[#2a85ff] dark:text-[#60a5fa] hover:text-[#0056b3] dark:hover:text-[#93c5fd] neu-flat-hover transition-all uppercase tracking-wider">Preview</a>
+                  <a href={doc.file_url} download class="px-3 py-2 neu-flat rounded-xl text-[10px] font-bold text-green-500 hover:text-green-600 neu-flat-hover transition-all uppercase tracking-wider">Download</a>
+                </div>
+                <button data-id={doc.id} class="deleteBtn px-3 py-2 neu-pressed rounded-xl text-[10px] font-bold text-red-500 hover:text-red-600 transition-all uppercase tracking-wider">Hapus</button>
+              </div>
             </div>
-            
-            <div class="pt-6 mt-4 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center">
-              <a href={doc.file_url} target="_blank" class="px-5 py-2.5 neu-flat rounded-xl text-xs font-bold text-[#2a85ff] dark:text-[#60a5fa] hover:text-[#0056b3] dark:hover:text-[#93c5fd] neu-flat-hover transition-all uppercase tracking-wider">Lihat File</a>
-              <button data-id={doc.id} class="deleteBtn px-5 py-2.5 neu-pressed rounded-xl text-xs font-bold text-red-500 hover:text-red-600 transition-all uppercase tracking-wider">Hapus</button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </>
     ) : (
       <div class="text-center py-20 neu-flat rounded-3xl mt-12">
         <p class="text-slate-500 dark:text-neutral-400 mb-6 font-medium">Belum ada dokumen yang diupload.</p>
@@ -65,15 +93,113 @@ const documents = await getAllFromTable(db, 'documents');
   </div>
 
   <script>
+    // Konfigurasi Hapus Tunggal
     document.querySelectorAll(".deleteBtn").forEach((btn) => {
       btn.addEventListener("click", async (e: any) => {
         const id = e.target.getAttribute("data-id");
         if (confirm("Yakin ingin menghapus dokumen ini secara permanen? File di Cloudinary juga akan terhapus.")) {
+          e.target.textContent = "MENGHAPUS...";
+          e.target.disabled = true;
           const res = await fetch(`/api/cms/documents/${id}`, { method: "DELETE" });
           if (res.ok) window.location.reload();
           else alert("Gagal menghapus dokumen.");
         }
       });
     });
+
+    // Konfigurasi Aksi Massal (Select All, Bulk Delete, Bulk Download)
+    const selectAllCheckbox = document.getElementById("selectAll") as HTMLInputElement;
+    const docCheckboxes = document.querySelectorAll(".doc-checkbox") as NodeListOf<HTMLInputElement>;
+    const selectedCount = document.getElementById("selectedCount");
+    const bulkDownloadBtn = document.getElementById("bulkDownloadBtn") as HTMLButtonElement;
+    const bulkDeleteBtn = document.getElementById("bulkDeleteBtn") as HTMLButtonElement;
+
+    if (selectAllCheckbox && docCheckboxes) {
+      const updateSelectionState = () => {
+        const checkedCount = Array.from(docCheckboxes).filter(cb => cb.checked).length;
+        if (selectedCount) selectedCount.textContent = `(${checkedCount} Terpilih)`;
+        
+        // Update Checkbox 'Pilih Semua' state
+        selectAllCheckbox.checked = checkedCount === docCheckboxes.length && docCheckboxes.length > 0;
+        selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < docCheckboxes.length;
+
+        // Update Buttons state
+        if (checkedCount > 0) {
+          bulkDownloadBtn.disabled = false;
+          bulkDeleteBtn.disabled = false;
+          bulkDownloadBtn.classList.add("bg-[#2a85ff]", "text-white", "hover:bg-[#0056b3]");
+          bulkDownloadBtn.classList.remove("bg-slate-200", "dark:bg-slate-800", "text-slate-500");
+          bulkDeleteBtn.classList.add("bg-red-500", "text-white", "hover:bg-red-600");
+          bulkDeleteBtn.classList.remove("bg-red-100", "dark:bg-red-900/30", "text-red-400");
+        } else {
+          bulkDownloadBtn.disabled = true;
+          bulkDeleteBtn.disabled = true;
+          bulkDownloadBtn.classList.remove("bg-[#2a85ff]", "text-white", "hover:bg-[#0056b3]");
+          bulkDownloadBtn.classList.add("bg-slate-200", "dark:bg-slate-800", "text-slate-500");
+          bulkDeleteBtn.classList.remove("bg-red-500", "text-white", "hover:bg-red-600");
+          bulkDeleteBtn.classList.add("bg-red-100", "dark:bg-red-900/30", "text-red-400");
+        }
+      };
+
+      // Event Listeners
+      selectAllCheckbox.addEventListener("change", (e: any) => {
+        const isChecked = e.target.checked;
+        docCheckboxes.forEach(cb => cb.checked = isChecked);
+        updateSelectionState();
+      });
+
+      docCheckboxes.forEach(cb => {
+        cb.addEventListener("change", updateSelectionState);
+      });
+
+      // Aksi Hapus Massal
+      bulkDeleteBtn.addEventListener("click", async () => {
+        const selectedIds = Array.from(docCheckboxes)
+                                .filter(cb => cb.checked)
+                                .map(cb => cb.getAttribute("data-id"));
+                                
+        if (selectedIds.length === 0) return;
+
+        if (confirm(`Yakin ingin menghapus ${selectedIds.length} dokumen yang dipilih? File secara fisik di Cloudinary juga akan terhapus.`)) {
+          bulkDeleteBtn.textContent = "MENGHAPUS...";
+          bulkDeleteBtn.disabled = true;
+
+          try {
+            // Delete sequentially to avoid overwhelming the server / Cloudinary rate limits
+            for (const id of selectedIds) {
+              await fetch(`/api/cms/documents/${id}`, { method: "DELETE" });
+            }
+            window.location.reload();
+          } catch (err) {
+            alert("Terjadi kesalahan saat menghapus beberapa dokumen.");
+            window.location.reload();
+          }
+        }
+      });
+
+      // Aksi Download Massal
+      bulkDownloadBtn.addEventListener("click", () => {
+        const selectedUrls = Array.from(docCheckboxes)
+                                .filter(cb => cb.checked)
+                                .map(cb => cb.getAttribute("data-url"));
+        
+        if (selectedUrls.length === 0) return;
+
+        if (confirm(`Browser Anda mungkin akan meminta izin untuk mendownload ${selectedUrls.length} file sekaligus (Multiple Files). Lanjutkan?`)) {
+          selectedUrls.forEach((url, index) => {
+            // Delay slightly between downloads to prevent browser blocking
+            setTimeout(() => {
+              const a = document.createElement("a");
+              a.href = url || "";
+              a.download = "";
+              a.target = "_blank";
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            }, index * 500);
+          });
+        }
+      });
+    }
   </script>
 </AdminLayout>
