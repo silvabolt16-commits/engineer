@@ -84,8 +84,11 @@ const uploadPreset = import.meta.env.PUBLIC_CLOUDINARY_UPLOAD_PRESET || "";
         formData.append("file", file);
         formData.append("upload_preset", uploadPreset);
 
-        // Upload directly as auto resource_type to support PDF and images
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+        // Use 'raw' for PDFs to avoid Cloudinary 401 delivery restrictions on image-classified PDFs
+        const isRaw = file.name.toLowerCase().match(/\.(pdf|zip|doc|docx|xls|xlsx|csv|txt)$/i);
+        const resourceType = isRaw ? 'raw' : 'auto';
+
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
           method: "POST",
           body: formData,
         });
