@@ -12,7 +12,7 @@ const table = Astro.params.table as string;
 const id = parseInt(Astro.params.id as string);
 
 const TABLE_SCHEMA: Record<string, string[]> = {
-  experiences: ['slug', 'title', 'title_en', 'company', 'company_en', 'duration', 'details', 'details_en', 'photos', 'body', 'body_en'],
+  experiences: ['slug', 'title', 'title_en', 'company', 'company_en', 'duration', 'photos', 'body', 'body_en'],
   certificates: ['slug', 'title', 'title_en', 'date', 'issuer', 'issuer_en', 'description', 'description_en', 'link', 'body', 'body_en'],
   achievements: ['slug', 'title', 'title_en', 'date', 'issuer', 'issuer_en', 'description', 'description_en', 'image', 'body', 'body_en'],
   articles: ['slug', 'title', 'title_en', 'date', 'category', 'category_en', 'summary', 'summary_en', 'image', 'body', 'body_en'],
