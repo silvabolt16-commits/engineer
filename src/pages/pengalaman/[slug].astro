@@ -4,6 +4,10 @@ export const prerender = false;
 import { marked } from 'marked';
 import { getDB, getBySlugFromTable } from '../../lib/d1';
 import MainLayout from '../../layouts/MainLayout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const { slug } = Astro.params;
 const db = getDB(Astro.locals);
@@ -13,7 +17,7 @@ if (!exp) {
   return Astro.redirect('/#experience');
 }
 
-const Content = marked.parse(exp.body || '');
+const Content = marked.parse((lang === 'en' && exp.body_en ? exp.body_en : exp.body) || '');
 
 const rawPhotos = exp.photos;
 let photos: string[] = [];
@@ -27,9 +31,9 @@ try {
   details = typeof rawDetails === 'string' ? JSON.parse(rawDetails) : (rawDetails || []);
 } catch(e) {}
 
-const title = exp.title || 'Experience';
-const company = exp.company || '';
-let duration = exp.duration || '';
+const title = (lang === 'en' && exp.title_en ? exp.title_en : exp.title) || 'Experience';
+const company = (lang === 'en' && exp.company_en ? exp.company_en : exp.company) || '';
+let duration = (lang === 'en' && exp.duration_en ? exp.duration_en : exp.duration) || '';
 
 if (duration && duration.includes('|')) {
   const [start, end] = duration.split('|');
@@ -68,7 +72,7 @@ if (duration && duration.includes('|')) {
   <div class="max-w-[1400px] mx-auto px-6 md:px-8 pt-6 pb-6 md:pt-10 md:pb-8 mb-8 md:mb-10">
     <!-- Main Content -->
     <div class="mb-8 md:mb-10">
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">Deskripsi Pekerjaan</h2>
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">{lang === 'en' ? 'Job Description' : 'Deskripsi Pekerjaan'}</h2>
       <div class="prose prose-lg md:prose-xl prose-slate dark:prose-invert max-w-none mb-12 text-slate-600 dark:text-neutral-400 leading-relaxed prose-a:text-[#E9582A] hover:prose-a:text-[#d04a1f] prose-img:rounded-3xl prose-headings:font-extrabold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-white" set:html={Content}>
       </div>
     </div>
@@ -76,7 +80,7 @@ if (duration && duration.includes('|')) {
     <!-- Dokumentasi Foto Gallery -->
     {photos.length > 0 && (
       <div>
-        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-8 border-b border-slate-200 dark:border-white/10 pb-4">Dokumentasi Foto</h2>
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-8 border-b border-slate-200 dark:border-white/10 pb-4">{lang === 'en' ? 'Photo Documentation' : 'Dokumentasi Foto'}</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {photos.map((photo: string) => (
             <div class="neu-flat border-none p-3 rounded-[2rem] overflow-hidden transition-all duration-300 hover:-translate-y-2">

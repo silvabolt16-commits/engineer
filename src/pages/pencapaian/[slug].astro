@@ -4,6 +4,10 @@ export const prerender = false;
 import { marked } from 'marked';
 import { getDB, getBySlugFromTable } from '../../lib/d1';
 import MainLayout from '../../layouts/MainLayout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const { slug } = Astro.params;
 const db = getDB(Astro.locals);
@@ -13,12 +17,12 @@ if (!achievement) {
   return Astro.redirect('/#achievements');
 }
 
-const Content = marked.parse(achievement.body || '');
+const Content = marked.parse((lang === 'en' && achievement.body_en ? achievement.body_en : achievement.body) || '');
 
-const title = achievement.title || 'Achievement';
-const issuer = achievement.issuer || '';
-let date = achievement.date || '';
-const description = achievement.description || '';
+const title = (lang === 'en' && achievement.title_en ? achievement.title_en : achievement.title) || 'Achievement';
+const issuer = (lang === 'en' && achievement.issuer_en ? achievement.issuer_en : achievement.issuer) || '';
+let date = (lang === 'en' && achievement.date_en ? achievement.date_en : achievement.date) || '';
+const description = (lang === 'en' && achievement.description_en ? achievement.description_en : achievement.description) || '';
 
 if (date && date.includes('|')) {
   const [start, end] = date.split('|');
@@ -77,7 +81,7 @@ if (date && date.includes('|')) {
       <div class="w-full rounded-[2rem] overflow-hidden neu-flat border-none flex items-center justify-center pt-6 pb-10 md:pt-10 md:pb-16 mb-8 md:mb-10 relative">
         <div class="text-center text-slate-400 dark:text-neutral-600 relative z-10">
           <svg class="w-20 h-20 mx-auto mb-6 text-[#E9582A] opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
-          <p class="font-bold text-lg tracking-wide uppercase text-slate-500 dark:text-neutral-400">Dokumentasi Penghargaan</p>
+          <p class="font-bold text-lg tracking-wide uppercase text-slate-500 dark:text-neutral-400">{lang === 'en' ? 'Achievement Documentation' : 'Dokumentasi Penghargaan'}</p>
         </div>
       </div>
     )}
@@ -94,7 +98,7 @@ if (date && date.includes('|')) {
     <div class="mt-20 pt-8 border-t border-slate-200 dark:border-white/10">
       <a href="/#pencapaian" class="inline-flex items-center gap-2 text-slate-500 dark:text-neutral-400 hover:text-[#E9582A] dark:hover:text-[#E9582A] font-bold transition-colors">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-        Kembali ke Beranda
+        {lang === 'en' ? 'Back to Home' : 'Kembali ke Beranda'}
       </a>
     </div>
   </div>
