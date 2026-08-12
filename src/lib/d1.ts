@@ -74,11 +74,26 @@ export async function getProfile(db: any) {
 
     // Also fetch skills and education to compose the full profile object if needed
     const { results: skillsRows } = await db.prepare("SELECT * FROM skills").all();
+    const parseSafe = (str: any) => {
+      if (!str) return [];
+      try {
+        const parsed = JSON.parse(str);
+        if (Array.isArray(parsed)) return parsed;
+        return [str];
+      } catch (e) {
+        // If it's a newline-separated list, split it
+        if (typeof str === 'string' && str.includes('\n')) {
+          return str.split('\n').map((s: string) => s.trim()).filter(Boolean);
+        }
+        return [str];
+      }
+    };
+
     const skills = skillsRows.map((s: any) => ({
       category: s.category,
       category_en: s.category_en,
-      items: JSON.parse(s.items || '[]'),
-      items_en: JSON.parse(s.items_en || '[]')
+      items: parseSafe(s.items),
+      items_en: parseSafe(s.items_en)
     }));
 
     const { results: educationRows } = await db.prepare("SELECT * FROM education").all();

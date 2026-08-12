@@ -103,9 +103,20 @@ articles = articles.map(art => ({
 if (!skills || skills.length === 0) {
   skills = profile.skills || [];
 } else {
+  const parseSafe = (str: any) => {
+    if (!str) return [];
+    if (typeof str !== 'string') return str;
+    try {
+      const parsed = JSON.parse(str);
+      return Array.isArray(parsed) ? parsed : [str];
+    } catch {
+      return str.includes('\n') ? str.split('\n').map((s: string) => s.trim()).filter(Boolean) : [str];
+    }
+  };
+
   skills = skills.map((s: any) => ({
     category: lang === 'en' && s.category_en ? s.category_en : s.category,
-    items: typeof s.items === 'string' ? JSON.parse((lang === 'en' && s.items_en ? s.items_en : s.items) || '[]') : s.items
+    items: parseSafe(lang === 'en' && s.items_en ? s.items_en : s.items)
   }));
 }
 
