@@ -1,0 +1,77 @@
+---
+import { getDB, getAllFromTable } from '../lib/d1';
+import MainLayout from '../layouts/MainLayout.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const db = getDB(Astro.locals);
+let articles = await getAllFromTable(db, 'articles');
+
+articles = articles.map((a: any) => ({
+  ...a,
+  title: lang === 'en' && a.title_en ? a.title_en : a.title,
+  summary: lang === 'en' && a.summary_en ? a.summary_en : a.summary,
+  category: lang === 'en' && a.category_en ? a.category_en : a.category
+}));
+
+function formatDateSingle(dateStr: string) {
+  if (!dateStr || dateStr.includes('|')) return dateStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret').replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli').replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober').replace('Nov', 'November').replace('Dec', 'Desember');
+  try {
+    const [year, month] = dateStr.split('-');
+    if (!year || !month) return dateStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret').replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli').replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober').replace('Nov', 'November').replace('Dec', 'Desember');
+    const date = new Date(parseInt(year), parseInt(month) - 1);
+    return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+  } catch (e) {
+    return dateStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret').replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli').replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober').replace('Nov', 'November').replace('Dec', 'Desember');
+  }
+}
+---
+
+<MainLayout title={t('nav.articles') + " - Fajri Awwaluddin"}>
+  <div class="pt-6 pb-10 md:pt-10 md:pb-16 max-w-[1400px] mx-auto px-8 relative">
+
+    <!-- Header -->
+    <div class="text-center mb-8 md:mb-10 max-w-2xl mx-auto">
+      <h1 class="text-[40px] md:text-[50px] font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">{t('nav.articles')}</h1>
+      <p class="text-slate-500 dark:text-slate-400 font-medium text-lg">{t('featured.articles.subtitle')}</p>
+    </div>
+
+    <!-- Grid List Artikel -->
+    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 pb-24">
+      {articles.map((article: any) => (
+        <a href={lang === 'en' ? `/en/artikel/${article.slug}` : `/artikel/${article.slug}`} class="block group/card bg-slate-50 dark:bg-[#111] border border-slate-200 dark:border-white/10 rounded-xl md:rounded-3xl overflow-hidden hover:bg-white dark:hover:bg-[#1a1a1a] hover:border-slate-300 dark:hover:border-white/20 hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(255,255,255,0.02)] transition-all duration-500 hover:-translate-y-1 cursor-pointer h-full flex flex-col">
+          <!-- Cover Image -->
+          <div class="w-full h-[100px] md:h-[200px] relative overflow-hidden bg-slate-200 dark:bg-[#222] shrink-0">
+            {article.image ? (
+              <img src={article.image} alt={article.title} class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out" />
+            ) : (
+              <div class="w-full h-full flex items-center justify-center text-slate-400 dark:text-neutral-600">Tanpa Gambar</div>
+            )}
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            <div class="absolute bottom-2 left-2 md:bottom-4 md:left-4">
+              <div class="inline-block bg-white/20 backdrop-blur-md text-white text-[9px] md:text-[11px] font-bold px-2 md:px-3 py-0.5 md:py-1 rounded-[3px] md:rounded-[4px] tracking-wider border border-white/30">
+                {article.category}
+              </div>
+            </div>
+          </div>
+
+          <!-- Text Section -->
+          <div class="p-3 md:p-6 flex flex-col flex-1">
+            <div class="text-[10px] md:text-[12px] font-bold text-slate-400 dark:text-neutral-500 mb-1 md:mb-2">{formatDateSingle(article.date)}</div>
+            <h3 class="text-[13px] md:text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-1 md:mb-3 group-hover/card:text-[#E9582A] dark:group-hover/card:text-[#60a5fa] transition-colors line-clamp-2">{article.title}</h3>
+            <div class="hidden md:block mb-6">
+              <p class="text-[14px] text-slate-500 dark:text-neutral-400 leading-relaxed font-medium line-clamp-3">{article.summary}</p>
+            </div>
+
+            <div class="text-[10px] md:text-[13px] font-bold text-[#E9582A] dark:text-[#60a5fa] flex items-center gap-1 uppercase tracking-widest mt-auto">
+              {t('btn.read_article')} <span class="text-base md:text-lg leading-none transition-transform group-hover/card:translate-x-1">&rarr;</span>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+
+  </div>
+</MainLayout>

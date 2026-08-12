@@ -10,12 +10,56 @@ if (!isAuthenticated(Astro)) {
 const table = Astro.params.table as string;
 
 const TABLE_SCHEMA: Record<string, string[]> = {
-  experiences: ['slug', 'title', 'company', 'duration', 'details', 'photos', 'body'],
-  certificates: ['slug', 'title', 'date', 'issuer', 'description', 'link', 'body'],
-  achievements: ['slug', 'title', 'date', 'issuer', 'description', 'image', 'body'],
-  articles: ['slug', 'title', 'date', 'category', 'summary', 'image', 'body'],
-  skills: ['category', 'items'],
-  education: ['institution', 'degree', 'duration', 'achievements']
+  experiences: ['slug', 'title', 'title_en', 'company', 'company_en', 'duration', 'details', 'details_en', 'photos', 'body', 'body_en'],
+  certificates: ['slug', 'title', 'title_en', 'date', 'issuer', 'issuer_en', 'description', 'description_en', 'link', 'body', 'body_en'],
+  achievements: ['slug', 'title', 'title_en', 'date', 'issuer', 'issuer_en', 'description', 'description_en', 'image', 'body', 'body_en'],
+  articles: ['slug', 'title', 'title_en', 'date', 'category', 'category_en', 'summary', 'summary_en', 'image', 'body', 'body_en'],
+  skills: ['category', 'category_en', 'items', 'items_en'],
+  education: ['institution', 'institution_en', 'degree', 'degree_en', 'duration', 'achievements', 'achievements_en']
+};
+
+const TABLE_NAMES: Record<string, string> = {
+  experiences: 'Pengalaman',
+  certificates: 'Sertifikat',
+  achievements: 'Pencapaian',
+  articles: 'Artikel',
+  skills: 'Keahlian',
+  education: 'Pendidikan'
+};
+const tableName = TABLE_NAMES[table] || table;
+
+const COLUMN_NAMES: Record<string, string> = {
+  title: 'Judul',
+  title_en: 'Judul (EN)',
+  company: 'Perusahaan',
+  company_en: 'Perusahaan (EN)',
+  duration: 'Durasi',
+  duration_en: 'Durasi (EN)',
+  details: 'Detail (JSON)',
+  details_en: 'Detail (JSON) (EN)',
+  photos: 'Foto',
+  body: 'Konten Utama',
+  body_en: 'Konten Utama (EN)',
+  date: 'Tanggal',
+  issuer: 'Penerbit',
+  issuer_en: 'Penerbit (EN)',
+  description: 'Deskripsi Singkat',
+  description_en: 'Deskripsi Singkat (EN)',
+  link: 'Tautan (URL)',
+  image: 'Gambar',
+  category: 'Kategori',
+  category_en: 'Kategori (EN)',
+  summary: 'Ringkasan',
+  summary_en: 'Ringkasan (EN)',
+  items: 'Item (JSON)',
+  items_en: 'Item (JSON) (EN)',
+  institution: 'Institusi',
+  institution_en: 'Institusi (EN)',
+  degree: 'Gelar',
+  degree_en: 'Gelar (EN)',
+  achievements: 'Pencapaian (JSON)',
+  achievements_en: 'Pencapaian Pendidikan (JSON) (EN)',
+  slug: 'Slug (Otomatis)'
 };
 
 const schema = TABLE_SCHEMA[table];
@@ -33,11 +77,11 @@ for (const col of schema) {
 }
 ---
 
-<AdminLayout title={`Tambah ${table} | Admin`}>
+<AdminLayout title={`Tambah ${tableName} | Admin`}>
   <div class="max-w-4xl mx-auto pt-6 pb-6 md:pt-10 md:pb-8 px-6">
     <div class="mb-10">
       <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-4 uppercase tracking-widest">
-        Tambah <span class="text-[#E9582A] capitalize">{table}</span>
+        Tambah <span class="text-[#E9582A] capitalize">{tableName}</span>
       </h1>
     </div>
 
@@ -51,7 +95,7 @@ for (const col of schema) {
             const isMultiple = col === 'photos';
             return (
               <div class="p-6 neu-pressed rounded-2xl space-y-4">
-                <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">{col} (Upload)</label>
+                <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">{COLUMN_NAMES[col] || col} (Unggah)</label>
                 <div class="flex flex-col sm:flex-row items-center gap-4">
                   <input type="file" id={`${col}FileInput`} accept="image/*" multiple={isMultiple} class="w-full sm:w-auto text-sm text-slate-600 dark:text-neutral-300 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-wider file:bg-[#E9582A] file:text-white hover:file:bg-[#d04a1f] cursor-pointer transition-colors" />
                 </div>
@@ -82,8 +126,8 @@ for (const col of schema) {
 
           return (
             <div>
-              <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">{col}</label>
-              {col === 'body' || col === 'description' || col === 'summary' || col === 'details' || col === 'photos' || col === 'items' || col === 'achievements' ? (
+              <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">{COLUMN_NAMES[col] || col}</label>
+              {col === 'body' || col === 'body_en' || col === 'description' || col === 'description_en' || col === 'summary' || col === 'summary_en' || col === 'details' || col === 'details_en' || col === 'items' || col === 'items_en' || col === 'achievements' || col === 'achievements_en' ? (
                 <textarea
                   name={col}
                   rows={col === 'body' ? 8 : 4}
@@ -97,7 +141,7 @@ for (const col of schema) {
                   class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition"
                 />
               )}
-              {(col === 'details' || col === 'photos' || col === 'items' || col === 'achievements') && (
+              {(col === 'details' || col === 'details_en' || col === 'items' || col === 'items_en' || col === 'achievements' || col === 'achievements_en') && (
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-2">Pisahkan setiap item dengan baris baru (Enter).</p>
               )}
             </div>

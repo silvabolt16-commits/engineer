@@ -4,6 +4,10 @@ export const prerender = false;
 import { marked } from 'marked';
 import { getDB, getBySlugFromTable } from '../../lib/d1';
 import MainLayout from '../../layouts/MainLayout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const { slug } = Astro.params;
 const db = getDB(Astro.locals);
@@ -13,11 +17,11 @@ if (!article) {
   return Astro.redirect('/#articles');
 }
 
-const Content = marked.parse(article.body || '');
+const Content = marked.parse((lang === 'en' && article.body_en ? article.body_en : article.body) || '');
 
-const title = article.title || 'Article';
-const summary = article.summary || '';
-const category = article.category || 'General';
+const title = (lang === 'en' && article.title_en ? article.title_en : article.title) || 'Article';
+const summary = (lang === 'en' && article.summary_en ? article.summary_en : article.summary) || '';
+const category = (lang === 'en' && article.category_en ? article.category_en : article.category) || 'General';
 let date = article.date || '';
 const image = article.image || undefined;
 
@@ -28,11 +32,11 @@ if (date && date.includes('|')) {
     if (!dateStr) return '';
     try {
       const [year, month] = dateStr.split('-');
-      if (!year || !month) return dateStr;
+      if (!year || !month) return dateStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret').replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli').replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober').replace('Nov', 'November').replace('Dec', 'Desember');
       const d = new Date(parseInt(year), parseInt(month) - 1);
       return d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
     } catch (e) {
-      return dateStr;
+      return dateStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret').replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli').replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober').replace('Nov', 'November').replace('Dec', 'Desember');
     }
   };
   const formattedStart = formatDate(start);
@@ -43,6 +47,10 @@ if (date && date.includes('|')) {
     date = formattedStart || formattedEnd || date;
   }
 } else if (date) {
+  date = date.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret')
+      .replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli')
+      .replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober')
+      .replace('Nov', 'November').replace('Dec', 'Desember');
   try {
     const [year, month] = date.split('-');
     if (year && month) {
@@ -63,7 +71,7 @@ if (date && date.includes('|')) {
 
     <div class="mb-10">
       <div class="flex items-center gap-3 mb-4">
-        <span class="bg-[#2a85ff] text-white text-[12px] font-bold px-3 py-1 rounded-[4px] tracking-wider">
+        <span class="inline-block bg-white/20 backdrop-blur-md text-slate-800 dark:text-white text-[12px] font-bold px-3 py-1 rounded-[4px] tracking-wider border border-white/30">
           {category}
         </span>
         <span class="text-slate-400 dark:text-slate-500 text-sm font-bold">{date}</span>

@@ -49,7 +49,7 @@ export const PUT: APIRoute = async (context) => {
   try {
     const oldProject = await getProjectById(db, id);
     const body = await context.request.json();
-    const { title, slug, date, description, content, image_url, category, tags, demo_url, repo_url, featured } = body;
+    const { title, title_en, slug, date, description, description_en, content, content_en, image_url, category, category_en, tags, tags_en, demo_url, repo_url, featured } = body;
 
     // Cloudinary Auto-Cleanup
     if (oldProject && oldProject.image_url && typeof oldProject.image_url === 'string' && oldProject.image_url.includes('cloudinary') && oldProject.image_url !== image_url) {
@@ -63,17 +63,22 @@ export const PUT: APIRoute = async (context) => {
 
     await db.prepare(`
       UPDATE projects
-      SET title = ?, slug = ?, date = ?, description = ?, content = ?, image_url = ?, category = ?, tags = ?, demo_url = ?, repo_url = ?, featured = ?, updated_at = CURRENT_TIMESTAMP
+      SET title = ?, title_en = ?, slug = ?, date = ?, description = ?, description_en = ?, content = ?, content_en = ?, image_url = ?, category = ?, category_en = ?, tags = ?, tags_en = ?, demo_url = ?, repo_url = ?, featured = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `).bind(
       title,
+      title_en || "",
       slug,
       date || "",
       description,
+      description_en || "",
       content || "",
+      content_en || "",
       image_url || "",
       category || "Web",
+      category_en || "",
       tags || "",
+      tags_en || "",
       demo_url || "",
       repo_url || "",
       featured ? 1 : 0,

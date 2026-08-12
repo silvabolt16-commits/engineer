@@ -23,8 +23,8 @@ const documents = await getAllFromTable(db, 'documents');
 
     <div class="flex flex-col sm:flex-row items-center justify-between mb-8 border-b border-slate-200 dark:border-slate-800 pb-4 gap-4">
       <h2 class="text-lg font-bold text-slate-800 dark:text-white uppercase tracking-widest">Daftar Dokumen</h2>
-      <a href="/admin/documents/new" class="px-4 py-2 bg-[#E9582A] hover:bg-[#d04a1f] text-white font-bold rounded-xl shadow-md transition-all text-[10px] uppercase tracking-wider shrink-0 flex items-center justify-center gap-1">
-        <span class="material-symbols-outlined text-[14px]">add</span> Upload Dokumen
+      <a href="/admin/documents/new" title="Upload Dokumen" class="w-10 h-10 bg-[#E9582A] hover:bg-[#d04a1f] text-white rounded-xl shadow-md transition-all flex items-center justify-center">
+        <span class="material-symbols-outlined text-[20px]">add</span>
       </a>
     </div>
 
@@ -84,11 +84,8 @@ const documents = await getAllFromTable(db, 'documents');
     ) : (
       <div class="text-center py-20 neu-flat rounded-3xl mt-12">
         <p class="text-slate-500 dark:text-neutral-400 mb-6 font-medium">Belum ada dokumen yang diupload.</p>
-        <a
-          href="/admin/documents/new"
-          class="inline-block px-8 py-4 bg-[#E9582A] hover:bg-[#d04a1f] text-white font-bold rounded-xl shadow-md transition-all text-sm uppercase tracking-wider"
-        >
-          Upload Dokumen Pertama
+        <a href="/admin/documents/new" title="Upload Dokumen Baru" class="inline-flex w-16 h-16 bg-[#E9582A] hover:bg-[#d04a1f] text-white rounded-2xl shadow-md transition-all items-center justify-center">
+          <span class="material-symbols-outlined text-[32px]">add</span>
         </a>
       </div>
     )}

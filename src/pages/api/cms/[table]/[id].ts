@@ -4,12 +4,12 @@ import { getDB, getByIdFromTable, deleteByIdFromTable } from "../../../../lib/d1
 import { deleteFromCloudinary } from "../../../../lib/cloudinary";
 
 const TABLE_SCHEMA: Record<string, string[]> = {
-  experiences: ['slug', 'title', 'company', 'duration', 'details', 'photos', 'body'],
-  certificates: ['slug', 'title', 'date', 'issuer', 'description', 'link', 'body'],
-  achievements: ['slug', 'title', 'date', 'issuer', 'description', 'image', 'body'],
-  articles: ['slug', 'title', 'date', 'category', 'summary', 'image', 'body'],
-  skills: ['category', 'items'],
-  education: ['institution', 'degree', 'duration', 'achievements'],
+  experiences: ['slug', 'title', 'title_en', 'company', 'company_en', 'duration', 'details', 'details_en', 'photos', 'body', 'body_en'],
+  certificates: ['slug', 'title', 'title_en', 'date', 'issuer', 'issuer_en', 'description', 'description_en', 'link', 'body', 'body_en'],
+  achievements: ['slug', 'title', 'title_en', 'date', 'issuer', 'issuer_en', 'description', 'description_en', 'image', 'body', 'body_en'],
+  articles: ['slug', 'title', 'title_en', 'date', 'category', 'category_en', 'summary', 'summary_en', 'image', 'body', 'body_en'],
+  skills: ['category', 'category_en', 'items', 'items_en'],
+  education: ['institution', 'institution_en', 'degree', 'degree_en', 'duration', 'achievements', 'achievements_en'],
   documents: ['title', 'category', 'file_url']
 };
 

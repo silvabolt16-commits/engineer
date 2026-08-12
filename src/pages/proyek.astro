@@ -1,23 +1,49 @@
 ---
 import { getDB, getAllProjects } from '../lib/d1';
 import MainLayout from '../layouts/MainLayout.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const db = getDB(Astro.locals);
-const projects = await getAllProjects(db);
+let projects = await getAllProjects(db);
+
+projects = projects.map(p => ({
+  ...p,
+  title: lang === 'en' && p.title_en ? p.title_en : p.title,
+  description: lang === 'en' && p.description_en ? p.description_en : p.description,
+  category: lang === 'en' && p.category_en ? p.category_en : p.category
+}));
 
 function formatDuration(durationStr: string) {
-  if (!durationStr || !durationStr.includes('|')) return durationStr;
+  if (!durationStr) return durationStr;
+  if (!durationStr.includes('|')) {
+    try {
+      const [year, month] = durationStr.split('-');
+      if (year && month) {
+        const date = new Date(parseInt(year), parseInt(month) - 1);
+        return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+      }
+    } catch(e) {}
+    // Additional manual fallback if the DB contains hardcoded english like 'Aug 2026'
+    const str = durationStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret')
+      .replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli')
+      .replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober')
+      .replace('Nov', 'November').replace('Dec', 'Desember');
+    return str;
+  }
   const [start, end] = durationStr.split('|');
   const formatDate = (dateStr: string) => {
     if (dateStr === 'present') return 'Sekarang';
     if (!dateStr) return '';
     try {
       const [year, month] = dateStr.split('-');
-      if (!year || !month) return dateStr;
+      if (!year || !month) return dateStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret').replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli').replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober').replace('Nov', 'November').replace('Dec', 'Desember');
       const date = new Date(parseInt(year), parseInt(month) - 1);
       return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
     } catch (e) {
-      return dateStr;
+      return dateStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret').replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli').replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober').replace('Nov', 'November').replace('Dec', 'Desember');
     }
   };
   
@@ -29,17 +55,17 @@ function formatDuration(durationStr: string) {
 }
 ---
 
-<MainLayout title="Projects - Fajri Awwaluddin">
+<MainLayout title={t('nav.projects') + " - Fajri Awwaluddin"}>
   <section class="pt-6 pb-10 md:pt-10 md:pb-16 max-w-[1400px] mx-auto px-8">
     <div class="mb-8 md:mb-10 text-center max-w-2xl mx-auto">
-      <h1 class="text-[36px] md:text-[44px] font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">Projects</h1>
-      <p class="text-slate-500 dark:text-neutral-400 font-medium text-lg">Technical works, research, and systems built.</p>
+      <h1 class="text-[36px] md:text-[44px] font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">{t('nav.projects')}</h1>
+      <p class="text-slate-500 dark:text-neutral-400 font-medium text-lg">{t('featured.projects.subtitle')}</p>
     </div>
 
     <!-- Grid (Project List) -->
     <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 pb-24">
       {projects.map((project) => (
-        <a href={`/projects/${project.slug}`} class="group neu-flat border-none p-2 md:p-4 rounded-xl md:rounded-3xl block h-full flex flex-col">
+        <a href={lang === 'en' ? `/en/proyek/${project.slug}` : `/proyek/${project.slug}`} class="group neu-flat border-none p-2 md:p-4 rounded-xl md:rounded-3xl block h-full flex flex-col">
           <!-- Cover Image -->
           <div class="w-full h-[100px] md:h-[240px] relative overflow-hidden bg-slate-200 dark:bg-[#222] rounded-lg md:rounded-2xl mb-2 md:mb-4 shrink-0">
             {project.image_url ? (
@@ -72,7 +98,7 @@ function formatDuration(durationStr: string) {
             </div>
 
             <div class="text-[10px] md:text-[13px] font-bold text-[#E9582A] flex items-center gap-1 uppercase tracking-widest mt-auto">
-              View <span class="hidden md:inline">Project</span> <span class="text-base md:text-lg leading-none transition-transform group-hover/card:translate-x-1">&rarr;</span>
+              <span class="hidden md:inline">{t('btn.view_project')}</span><span class="md:hidden">{t('btn.view_project')}</span> <span class="text-base md:text-lg leading-none transition-transform group-hover/card:translate-x-1">&rarr;</span>
             </div>
           </div>
         </a>

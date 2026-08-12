@@ -60,7 +60,7 @@ let experiences = (await getAllFromTable(db, 'experiences') || []);
 let certificates = await getAllFromTable(db, 'certificates') || [];
 let achievements = await getAllFromTable(db, 'achievements') || [];
 let skillsData = await getAllFromTable(db, 'skills') || [];
-let allProjects = await getAllProjects(db);
+let allProyek = await getAllProjects(db);
 
 const url = new URL(Astro.request.url);
 const categoryQuery = url.searchParams.get("category");
@@ -73,7 +73,7 @@ const certsQuery = url.searchParams.get("certs");
 const projsQuery = url.searchParams.get("projs");
 
 if (categoryQuery && categoryQuery !== "all") {
-  allProjects = allProjects.filter((p) => p.category === categoryQuery);
+  allProyek = allProyek.filter((p) => p.category === categoryQuery);
 }
 
 // FILTER BY IDS FROM URL PARAMS
@@ -91,12 +91,12 @@ if (certsQuery !== null) {
 }
 if (projsQuery !== null) {
   const ids = projsQuery.split(',').filter(Boolean).map(id => parseInt(id));
-  allProjects = allProjects.filter((p: any) => ids.includes(p.id));
+  allProyek = allProyek.filter((p: any) => ids.includes(p.id));
 }
 experiences.sort((a: any, b: any) => parseDateForSort(b.duration) - parseDateForSort(a.duration));
 certificates.sort((a: any, b: any) => parseDateForSort(b.date) - parseDateForSort(a.date));
 achievements.sort((a: any, b: any) => parseDateForSort(b.date) - parseDateForSort(a.date));
-allProjects.sort((a: any, b: any) => parseDateForSort(b.date) - parseDateForSort(a.date));
+allProyek.sort((a: any, b: any) => parseDateForSort(b.date) - parseDateForSort(a.date));
 
 let skills = skillsData.map((skill: any) => {
   const itemsArray = Array.isArray(skill.items) ? skill.items : (typeof skill.items === 'string' ? JSON.parse(skill.items || '[]') : (skill.items || []));
@@ -110,25 +110,25 @@ if (skillsQuery !== null) {
   }).filter((s: any) => s.items.length > 0);
 }
 
-const chunkedExperiences = [];
+const chunkedPengalaman = [];
 for (let i = 0; i < experiences.length; i += 2) {
-  chunkedExperiences.push(experiences.slice(i, i + 2));
+  chunkedPengalaman.push(experiences.slice(i, i + 2));
 }
 
-const chunkedAchievements = [];
+const chunkedPencapaian = [];
 for (let i = 0; i < achievements.length; i += 4) {
-  chunkedAchievements.push(achievements.slice(i, i + 4));
+  chunkedPencapaian.push(achievements.slice(i, i + 4));
 }
 
-const chunkedCertificates = [];
+const chunkedSertifikat = [];
 for (let i = 0; i < certificates.length; i += 4) {
-  chunkedCertificates.push(certificates.slice(i, i + 4));
+  chunkedSertifikat.push(certificates.slice(i, i + 4));
 }
 
-const chunkedProjects = [];
+const chunkedProyek = [];
 // For landscape, we can easily fit 2 projects per slide via grid
-for (let i = 0; i < allProjects.length; i += 2) {
-  chunkedProjects.push(allProjects.slice(i, i + 2));
+for (let i = 0; i < allProyek.length; i += 2) {
+  chunkedProyek.push(allProyek.slice(i, i + 2));
 }
 
 // Generate QR Code URL
@@ -146,7 +146,7 @@ function formatDuration(durationStr: string) {
       const date = new Date(parseInt(year), parseInt(month) - 1);
       return date.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
     } catch (e) {
-      return dateStr;
+      return dateStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret').replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli').replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober').replace('Nov', 'November').replace('Dec', 'Desember');
     }
   };
   return `${formatDate(start)} - ${formatDate(end)}`;
@@ -160,7 +160,7 @@ function formatDateSingle(dateStr: string) {
     const date = new Date(parseInt(year), parseInt(month) - 1);
     return date.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
   } catch (e) {
-    return dateStr;
+    return dateStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret').replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli').replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober').replace('Nov', 'November').replace('Dec', 'Desember');
   }
 }
 ---
@@ -351,7 +351,7 @@ function formatDateSingle(dateStr: string) {
   </div>
 
   <!-- SLIDES: EXPERIENCE -->
-  {chunkedExperiences.length > 0 && chunkedExperiences.map((pageExps, pageIndex) => (
+  {chunkedPengalaman.length > 0 && chunkedPengalaman.map((pageExps, pageIndex) => (
     <div class="page page-break bg-white flex flex-col relative p-12">
       <div class="absolute top-0 left-0 w-full h-3 bg-[#1e293b]"></div>
       <div class="absolute top-0 right-16 w-32 h-10 bg-[#E9582A] rounded-b-xl flex items-center justify-center text-white font-extrabold text-[12px] uppercase tracking-widest shadow-md">02 / Track</div>
@@ -411,7 +411,7 @@ function formatDateSingle(dateStr: string) {
   ))}
 
   <!-- SLIDES: AWARDS -->
-  {chunkedAchievements.length > 0 && chunkedAchievements.map((pageAchs, pageIndex) => (
+  {chunkedPencapaian.length > 0 && chunkedPencapaian.map((pageAchs, pageIndex) => (
     <div class="page page-break bg-white flex flex-col relative p-12">
       <div class="absolute top-0 left-0 w-full h-3 bg-[#1e293b]"></div>
       <div class="absolute top-0 right-16 w-32 h-10 bg-[#E9582A] rounded-b-xl flex items-center justify-center text-white font-extrabold text-[12px] uppercase tracking-widest shadow-md">03 / Awards</div>
@@ -451,7 +451,7 @@ function formatDateSingle(dateStr: string) {
   ))}
 
   <!-- SLIDES: CERTIFICATES -->
-  {chunkedCertificates.length > 0 && chunkedCertificates.map((pageCerts, pageIndex) => (
+  {chunkedSertifikat.length > 0 && chunkedSertifikat.map((pageCerts, pageIndex) => (
     <div class="page page-break bg-white flex flex-col relative p-12">
       <div class="absolute top-0 left-0 w-full h-3 bg-[#1e293b]"></div>
       <div class="absolute top-0 right-16 w-32 h-10 bg-[#E9582A] rounded-b-xl flex items-center justify-center text-white font-extrabold text-[12px] uppercase tracking-widest shadow-md">04 / Certs</div>
@@ -491,9 +491,9 @@ function formatDateSingle(dateStr: string) {
   ))}
 
   <!-- SLIDES: PORTFOLIO PROJECTS -->
-  {chunkedProjects.length > 0 ? (
-    chunkedProjects.map((pageProjects, pageIndex) => (
-      <div class={`page ${pageIndex === chunkedProjects.length - 1 ? '' : 'page-break'} bg-slate-50 flex flex-col relative px-12 py-10`}>
+  {chunkedProyek.length > 0 ? (
+    chunkedProyek.map((pageProyek, pageIndex) => (
+      <div class={`page ${pageIndex === chunkedProyek.length - 1 ? '' : 'page-break'} bg-slate-50 flex flex-col relative px-12 py-10`}>
         <!-- Header Decor -->
         <div class="absolute top-0 left-0 w-full h-3 bg-[#1e293b]"></div>
         <div class="absolute top-0 right-16 w-32 h-10 bg-[#E9582A] rounded-b-xl flex items-center justify-center text-white font-extrabold text-[12px] uppercase tracking-widest shadow-md">05 / Karya</div>
@@ -510,9 +510,9 @@ function formatDateSingle(dateStr: string) {
           </div>
         )}
 
-        <!-- 2 Columns Grid for Projects (because landscape is wide) -->
-        <div class={`grid ${pageProjects.length === 2 ? 'grid-cols-2 gap-10' : 'grid-cols-1 max-w-4xl'} h-full mt-auto mb-auto`}>
-          {pageProjects.map((project: any, i: number) => {
+        <!-- 2 Columns Grid for Proyek (because landscape is wide) -->
+        <div class={`grid ${pageProyek.length === 2 ? 'grid-cols-2 gap-10' : 'grid-cols-1 max-w-4xl'} h-full mt-auto mb-auto`}>
+          {pageProyek.map((project: any, i: number) => {
             const index = pageIndex * 2 + i;
             const tags = project.tags ? project.tags.split(',').map((t: string) => t.trim()) : [];
             const parsedDesc = marked.parse(project.description || '');

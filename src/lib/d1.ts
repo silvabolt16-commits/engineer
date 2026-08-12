@@ -13,6 +13,10 @@ export interface Project {
   featured?: number;
   created_at?: string;
   updated_at?: string;
+  title_en?: string;
+  description_en?: string;
+  category_en?: string;
+  content_en?: string;
 }
 
 // @ts-ignore
@@ -72,15 +76,21 @@ export async function getProfile(db: any) {
     const { results: skillsRows } = await db.prepare("SELECT * FROM skills").all();
     const skills = skillsRows.map((s: any) => ({
       category: s.category,
-      items: JSON.parse(s.items || '[]')
+      category_en: s.category_en,
+      items: JSON.parse(s.items || '[]'),
+      items_en: JSON.parse(s.items_en || '[]')
     }));
 
     const { results: educationRows } = await db.prepare("SELECT * FROM education").all();
     const education = educationRows.map((e: any) => ({
       institution: e.institution,
+      institution_en: e.institution_en,
       degree: e.degree,
+      degree_en: e.degree_en,
       duration: e.duration,
-      achievements: JSON.parse(e.achievements || '[]')
+      duration_en: e.duration_en,
+      achievements: JSON.parse(e.achievements || '[]'),
+      achievements_en: JSON.parse(e.achievements_en || '[]')
     }));
 
     return { ...profile, skills, education };
@@ -95,11 +105,11 @@ export async function updateProfile(db: any, data: any) {
   try {
     await db.prepare(`
       UPDATE profiles 
-      SET name = ?, role = ?, heroBadge = ?, tagline = ?, availabilityText = ?, bio = ?, cvSummary = ?, avatar = ?, location = ?, phone = ?, email = ?, linkedin = ?
+      SET name = ?, role = ?, role_en = ?, heroBadge = ?, heroBadge_en = ?, tagline = ?, tagline_en = ?, availabilityText = ?, availabilityText_en = ?, bio = ?, bio_en = ?, cvSummary = ?, cvSummary_en = ?, avatar = ?, location = ?, phone = ?, email = ?, linkedin = ?
       WHERE id = 1
     `).bind(
-      data.name || '', data.role || '', data.heroBadge || '', data.tagline || '', data.availabilityText || '',
-      data.bio || '', data.cvSummary || '', data.avatar || '', data.location || '', data.phone || '', data.email || '', data.linkedin || ''
+      data.name || '', data.role || '', data.role_en || '', data.heroBadge || '', data.heroBadge_en || '', data.tagline || '', data.tagline_en || '', data.availabilityText || '', data.availabilityText_en || '',
+      data.bio || '', data.bio_en || '', data.cvSummary || '', data.cvSummary_en || '', data.avatar || '', data.location || '', data.phone || '', data.email || '', data.linkedin || ''
     ).run();
     return true;
   } catch (error) {

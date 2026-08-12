@@ -92,6 +92,24 @@ if (faviconUrl && faviconUrl.includes('cloudinary.com')) {
         background-color: var(--neu-bg-dark);
         color: #e5e5e5;
       }
+      
+      /* Fix Browser Autofill (e.g. Chrome password fill) */
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover, 
+      input:-webkit-autofill:focus, 
+      input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px var(--neu-bg-light) inset !important;
+        -webkit-text-fill-color: #333333 !important;
+        transition: background-color 5000s ease-in-out 0s;
+      }
+      html.dark input:-webkit-autofill,
+      html.dark input:-webkit-autofill:hover, 
+      html.dark input:-webkit-autofill:focus, 
+      html.dark input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px var(--neu-bg-dark) inset !important;
+        -webkit-text-fill-color: #e5e5e5 !important;
+        transition: background-color 5000s ease-in-out 0s;
+      }
 
       /* Animasi Theme Toggle: Circular */
       .circle-transition::view-transition-old(root),
@@ -130,7 +148,7 @@ if (faviconUrl && faviconUrl.includes('cloudinary.com')) {
           </div>
           <div>
             <p class="text-sm font-extrabold text-slate-800 dark:text-white uppercase tracking-widest leading-none">Admin Panel</p>
-            <p class="text-[10px] text-slate-400 dark:text-neutral-500 font-medium uppercase tracking-wider mt-0.5">Portofolio Manager</p>
+            
           </div>
         </div>
 
@@ -151,8 +169,8 @@ if (faviconUrl && faviconUrl.includes('cloudinary.com')) {
               </svg>
             </div>
           </button>
-          <a href="/" target="_blank" class="px-3 py-1.5 neu-flat rounded-xl text-xs font-bold text-slate-600 dark:text-neutral-300 uppercase tracking-wider transition-all" style="text-decoration:none;">
-            Lihat Web ↗
+          <a href="/" target="_blank" title="Lihat Web" class="w-8 h-8 neu-flat rounded-xl flex items-center justify-center text-slate-600 dark:text-neutral-300 hover:text-[#E9582A] transition-all" style="text-decoration:none;">
+            <span class="material-symbols-outlined text-[16px]">open_in_new</span>
           </a>
         </div>
       </div>

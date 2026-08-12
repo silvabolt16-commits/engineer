@@ -5,7 +5,22 @@ const db = getDB(Astro.locals);
 const experiences = await getAllFromTable(db, 'experiences');
 
 function formatDuration(durationStr: string) {
-  if (!durationStr || !durationStr.includes('|')) return durationStr;
+  if (!durationStr) return durationStr;
+  if (!durationStr.includes('|')) {
+    try {
+      const [year, month] = durationStr.split('-');
+      if (year && month) {
+        const date = new Date(parseInt(year), parseInt(month) - 1);
+        return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+      }
+    } catch(e) {}
+    // Additional manual fallback if the DB contains hardcoded english like 'Aug 2026'
+    const str = durationStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret')
+      .replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli')
+      .replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober')
+      .replace('Nov', 'November').replace('Dec', 'Desember');
+    return str;
+  }
   
   const [start, end] = durationStr.split('|');
   const formatDate = (dateStr: string) => {
@@ -16,7 +31,7 @@ function formatDuration(durationStr: string) {
       const date = new Date(parseInt(year), parseInt(month) - 1);
       return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
     } catch (e) {
-      return dateStr;
+      return dateStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret').replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli').replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober').replace('Nov', 'November').replace('Dec', 'Desember');
     }
   };
   
@@ -31,7 +46,7 @@ const marqueeItems = [...experiences, ...experiences, ...experiences, ...experie
   <div class="pt-6 pb-10 md:pt-10 md:pb-16 max-w-full overflow-hidden relative">
 
     <div class="max-w-[1400px] mx-auto px-8 mb-8 md:mb-10 text-center">
-      <h1 class="text-[40px] md:text-[50px] font-extrabold text-slate-900 mb-4 tracking-tight">Experience</h1>
+      <h1 class="text-[40px] md:text-[50px] font-extrabold text-slate-900 mb-4 tracking-tight">Pengalaman</h1>
       <p class="text-slate-500 font-medium text-lg">Riwayat profesional dan kontribusi industri.</p>
     </div>
 
@@ -46,7 +61,7 @@ const marqueeItems = [...experiences, ...experiences, ...experiences, ...experie
         <div class="flex animate-marquee-experience items-start gap-8 w-max px-4">
 
           {marqueeItems.map((exp, index) => (
-            <a href={`/experience/${exp.slug}`} class="w-[420px] shrink-0 block group bg-transparent border border-transparent rounded-2xl overflow-hidden hover:bg-white hover:border-slate-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500 hover:-translate-y-1 cursor-pointer">
+            <a href={`/pengalaman/${exp.slug}`} class="w-[420px] shrink-0 block group bg-transparent border border-transparent rounded-2xl overflow-hidden hover:bg-white hover:border-slate-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500 hover:-translate-y-1 cursor-pointer">
               <div class="flex flex-col p-6 outline-none">
 
                 <div class="flex items-center gap-5 mb-4">

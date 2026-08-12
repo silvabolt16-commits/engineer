@@ -4,6 +4,10 @@ export const prerender = false;
 import { marked } from 'marked';
 import { getDB, getProjectBySlug } from '../../lib/d1';
 import MainLayout from '../../layouts/MainLayout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const { slug } = Astro.params;
 const db = getDB(Astro.locals);
@@ -13,13 +17,13 @@ if (!project) {
   return Astro.redirect('/#projects');
 }
 
-const Content = marked.parse(project.content || '');
+const Content = marked.parse((lang === 'en' && project.content_en ? project.content_en : project.content) || '');
 
 const photos = project.image_url ? [project.image_url] : [];
 const tags = project.tags ? project.tags.split(',').map((t: string) => t.trim()) : [];
-const title = project.title || 'Project';
-const description = project.description || '';
-const tech = project.category || 'Engineering';
+const title = (lang === 'en' && project.title_en ? project.title_en : project.title) || 'Project';
+const description = (lang === 'en' && project.description_en ? project.description_en : project.description) || '';
+const tech = (lang === 'en' && project.category_en ? project.category_en : project.category) || 'Engineering';
 let date = project.date || '';
 const link = project.repo_url || project.demo_url || '#';
 
@@ -30,11 +34,11 @@ if (date && date.includes('|')) {
     if (!dateStr) return '';
     try {
       const [year, month] = dateStr.split('-');
-      if (!year || !month) return dateStr;
+      if (!year || !month) return dateStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret').replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli').replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober').replace('Nov', 'November').replace('Dec', 'Desember');
       const d = new Date(parseInt(year), parseInt(month) - 1);
       return d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
     } catch (e) {
-      return dateStr;
+      return dateStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret').replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli').replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober').replace('Nov', 'November').replace('Dec', 'Desember');
     }
   };
   const formattedStart = formatDate(start);
@@ -89,7 +93,7 @@ if (date && date.includes('|')) {
     <div class="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-16">
       <!-- Main Content -->
       <div class="md:col-span-3">
-        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">About Project</h2>
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">{t('btn.view_project').replace('Detail', 'Tentang Proyek').replace('View Project', 'About Project')}</h2>
         <div class="prose prose-lg md:prose-xl prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-neutral-400 leading-relaxed prose-a:text-[#E9582A] hover:prose-a:text-[#d04a1f] prose-img:rounded-3xl prose-headings:font-extrabold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-white" set:html={Content}>
         </div>
       </div>
@@ -97,9 +101,9 @@ if (date && date.includes('|')) {
       <!-- Sidebar -->
       <div class="md:col-span-1">
         <div class="neu-flat border-none p-8 rounded-3xl sticky top-32">
-          <h3 class="text-[12px] font-bold text-slate-400 dark:text-neutral-500 mb-6 uppercase tracking-widest border-b border-slate-200 dark:border-white/10 pb-4">Project Links</h3>
+          <h3 class="text-[12px] font-bold text-slate-400 dark:text-neutral-500 mb-6 uppercase tracking-widest border-b border-slate-200 dark:border-white/10 pb-4">{lang === 'en' ? 'Project Links' : 'Tautan Proyek'}</h3>
           <a href={link} target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-full neu-flat neu-flat-hover text-[#1b85ff] dark:text-[#60a5fa] font-bold py-3 px-4 rounded-xl transition-all border-none h-12">
-            View Repository
+            {lang === 'en' ? 'View Repository' : 'Lihat Repositori'}
           </a>
         </div>
       </div>

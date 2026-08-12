@@ -11,6 +11,16 @@ if (!isAuthenticated(Astro)) {
 const table = Astro.params.table as string;
 const allowedTables = ['experiences', 'certificates', 'achievements', 'articles', 'skills', 'education'];
 
+const TABLE_NAMES: Record<string, string> = {
+  experiences: 'Pengalaman',
+  certificates: 'Sertifikat',
+  achievements: 'Pencapaian',
+  articles: 'Artikel',
+  skills: 'Keahlian',
+  education: 'Pendidikan'
+};
+const tableName = TABLE_NAMES[table] || table;
+
 if (!allowedTables.includes(table)) {
   return Astro.redirect("/admin");
 }
@@ -19,18 +29,18 @@ const db = getDB(Astro.locals);
 const items = await getAllFromTable(db, table);
 ---
 
-<AdminLayout title={`Kelola ${table} | Admin`}>
+<AdminLayout title={`Kelola ${tableName} | Admin`}>
   <div class="max-w-6xl mx-auto pt-6 pb-6 md:pt-10 md:pb-8 px-6">
     <div class="mb-10">
       <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-4 uppercase tracking-widest">
-        Kelola <span class="text-[#E9582A] capitalize">{table}</span>
+        Kelola <span class="text-[#E9582A] capitalize">{tableName}</span>
       </h1>
     </div>
 
     <div class="flex items-center justify-between mb-8 border-b border-slate-200 dark:border-slate-800 pb-2">
-      <h2 class="text-lg font-bold text-slate-800 dark:text-white uppercase tracking-widest">Daftar {table}</h2>
-      <a href={`/admin/cms/${table}/new`} class="px-4 py-2 bg-[#E9582A] hover:bg-[#d04a1f] text-white font-bold rounded-xl shadow-md transition-all text-[10px] uppercase tracking-wider flex items-center justify-center gap-1">
-        <span class="material-symbols-outlined text-[14px]">add</span> Tambah Baru
+      <h2 class="text-lg font-bold text-slate-800 dark:text-white uppercase tracking-widest">Daftar {tableName}</h2>
+      <a href={`/admin/cms/${table}/new`} title="Tambah Baru" class="w-10 h-10 bg-[#E9582A] hover:bg-[#d04a1f] text-white rounded-xl shadow-md transition-all flex items-center justify-center">
+        <span class="material-symbols-outlined text-[20px]">add</span>
       </a>
     </div>
 
@@ -56,12 +66,9 @@ const items = await getAllFromTable(db, table);
       </div>
     ) : (
       <div class="text-center py-20 neu-flat rounded-3xl mt-12">
-        <p class="text-slate-500 dark:text-neutral-400 mb-6 font-medium">Belum ada data di tabel {table}.</p>
-        <a
-          href={`/admin/cms/${table}/new`}
-          class="inline-block px-8 py-4 bg-[#E9582A] hover:bg-[#d04a1f] text-white font-bold rounded-xl shadow-md transition-all text-sm uppercase tracking-wider"
-        >
-          Buat {table} Pertama
+        <p class="text-slate-500 dark:text-neutral-400 mb-6 font-medium">Belum ada data di tabel {tableName}.</p>
+        <a href={`/admin/cms/${table}/new`} title="Buat Baru" class="inline-flex w-16 h-16 bg-[#E9582A] hover:bg-[#d04a1f] text-white rounded-2xl shadow-md transition-all flex items-center justify-center">
+          <span class="material-symbols-outlined text-[32px]">add</span>
         </a>
       </div>
     )}

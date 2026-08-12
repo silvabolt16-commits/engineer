@@ -22,8 +22,7 @@ if (!profile) {
 <AdminLayout title="Edit Profil | Admin">
   <div class="max-w-4xl mx-auto pt-6 pb-6 md:pt-10 md:pb-8 px-6">
     <div class="mb-10">
-      <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-4 uppercase tracking-widest">
-        Edit <span class="text-[#E9582A]">Profil & Kontak</span>
+      <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-4 uppercase tracking-widest">Edit<span class="text-[#E9582A]">Profil & Kontak</span>
       </h1>
     </div>
 
@@ -36,13 +35,22 @@ if (!profile) {
             <input type="text" name="name" value={profile?.name || ''} class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Posisi / Role</label>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Posisi (ID)</label>
             <input type="text" name="role" value={profile?.role || ''} class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Posisi (EN)</label>
+            <input type="text" name="role_en" value={profile?.role_en || ''} class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" />
           </div>
 
           <input type="hidden" name="heroBadge" value={profile?.heroBadge || ''} />
+          <input type="hidden" name="heroBadge_en" value={profile?.heroBadge_en || ''} />
           <input type="hidden" name="tagline" value={profile?.tagline || ''} />
+          <input type="hidden" name="tagline_en" value={profile?.tagline_en || ''} />
           <input type="hidden" name="availabilityText" value={profile?.availabilityText || ''} />
+          <input type="hidden" name="availabilityText_en" value={profile?.availabilityText_en || ''} />
+          <input type="hidden" name="cvSummary" value={profile?.cvSummary || ''} />
+          <input type="hidden" name="cvSummary_en" value={profile?.cvSummary_en || ''} />
 
           <div>
             <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Lokasi</label>
@@ -73,9 +81,15 @@ if (!profile) {
           </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Bio Singkat (Utama)</label>
-          <textarea name="bio" rows="4" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition">{profile?.bio || ''}</textarea>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Bio Singkat (ID)</label>
+            <textarea name="bio" rows="4" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition">{profile?.bio || ''}</textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Bio Singkat (EN)</label>
+            <textarea name="bio_en" rows="4" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition">{profile?.bio_en || ''}</textarea>
+          </div>
         </div>
 
 

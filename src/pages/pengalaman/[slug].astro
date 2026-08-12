@@ -41,7 +41,7 @@ if (duration && duration.includes('|')) {
       const date = new Date(parseInt(year), parseInt(month) - 1);
       return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
     } catch (e) {
-      return dateStr;
+      return dateStr.replace('Jan', 'Januari').replace('Feb', 'Februari').replace('Mar', 'Maret').replace('Apr', 'April').replace('May', 'Mei').replace('Jun', 'Juni').replace('Jul', 'Juli').replace('Aug', 'Agustus').replace('Sep', 'September').replace('Oct', 'Oktober').replace('Nov', 'November').replace('Dec', 'Desember');
     }
   };
   duration = `${formatDate(start)} - ${formatDate(end)}`;
@@ -50,7 +50,7 @@ if (duration && duration.includes('|')) {
 
 <MainLayout 
   title={`${title} - Fajri Awwaluddin`}
-  description={`Experience as ${title} at ${company}`}
+  description={`Pengalaman sebagai ${title} di ${company}`}
   image={photos.length > 0 ? photos[0] : undefined}
 >
   <!-- Header Section -->
@@ -68,15 +68,15 @@ if (duration && duration.includes('|')) {
   <div class="max-w-[1400px] mx-auto px-6 md:px-8 pt-6 pb-6 md:pt-10 md:pb-8 mb-8 md:mb-10">
     <!-- Main Content -->
     <div class="mb-8 md:mb-10">
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">Job Description</h2>
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">Deskripsi Pekerjaan</h2>
       <div class="prose prose-lg md:prose-xl prose-slate dark:prose-invert max-w-none mb-12 text-slate-600 dark:text-neutral-400 leading-relaxed prose-a:text-[#E9582A] hover:prose-a:text-[#d04a1f] prose-img:rounded-3xl prose-headings:font-extrabold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-white" set:html={Content}>
       </div>
     </div>
 
-    <!-- Photo Documentation Gallery -->
+    <!-- Dokumentasi Foto Gallery -->
     {photos.length > 0 && (
       <div>
-        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-8 border-b border-slate-200 dark:border-white/10 pb-4">Photo Documentation</h2>
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-8 border-b border-slate-200 dark:border-white/10 pb-4">Dokumentasi Foto</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {photos.map((photo: string) => (
             <div class="neu-flat border-none p-3 rounded-[2rem] overflow-hidden transition-all duration-300 hover:-translate-y-2">

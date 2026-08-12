@@ -4,6 +4,23 @@ import { getDB, getProfile } from '../lib/d1';
 const db = getDB(Astro.locals);
 const profile = await getProfile(db) || { name: 'User', bio: '', avatar: '' };
 import { ClientRouter } from 'astro:transitions';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const currentPath = Astro.url.pathname;
+let idPath = currentPath;
+let enPath = currentPath;
+
+if (currentPath.startsWith('/en/')) {
+  idPath = currentPath.replace('/en/', '/');
+} else if (currentPath === '/en') {
+  idPath = '/';
+} else {
+  enPath = currentPath === '/' ? '/en' : `/en${currentPath}`;
+}
+
 
 export interface Props {
   title?: string;
@@ -28,7 +45,7 @@ if (faviconUrl && faviconUrl.includes('cloudinary.com')) {
   favicon192 = profile.avatar.replace('/upload/', '/upload/c_thumb,g_face,w_192,h_192,r_max,f_png/');
 }
 ---
-<html lang="id">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -111,6 +128,24 @@ if (faviconUrl && faviconUrl.includes('cloudinary.com')) {
         box-shadow: 12px 12px 20px #0d0d0d, -12px -12px 20px #272727;
         transform: translateY(-2px);
       }
+      
+      /* Fix Browser Autofill */
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover, 
+      input:-webkit-autofill:focus, 
+      input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #ecf0f3 inset !important;
+        -webkit-text-fill-color: #333333 !important;
+        transition: background-color 5000s ease-in-out 0s;
+      }
+      .dark input:-webkit-autofill,
+      .dark input:-webkit-autofill:hover, 
+      .dark input:-webkit-autofill:focus, 
+      .dark input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #1a1a1a inset !important;
+        -webkit-text-fill-color: #e5e5e5 !important;
+        transition: background-color 5000s ease-in-out 0s;
+      }
       /* Animasi Theme Toggle: Circular */
       .circle-transition::view-transition-old(root),
       .circle-transition::view-transition-new(root) {
@@ -166,28 +201,59 @@ if (faviconUrl && faviconUrl.includes('cloudinary.com')) {
         
         <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center gap-8 font-semibold text-[15px]">
-
-          <a href="/#experience" class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
-            Experience
+          <a href={lang === 'en' ? '/en' : '/'} class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
+            {t('about.title')}
             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#eb5b28] transition-all group-hover:w-full"></span>
           </a>
-          <a href="/projects" class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
-            Projects
+          <a href={lang === 'en' ? '/en#keahlian' : '/#keahlian'} class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
+            {t('skills.title')}
             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#eb5b28] transition-all group-hover:w-full"></span>
           </a>
-          <a href="/#certificates" class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
-            Certificates
+          <a href={lang === 'en' ? '/en#pengalaman' : '/#pengalaman'} class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
+            {t('nav.experiences')}
             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#eb5b28] transition-all group-hover:w-full"></span>
           </a>
-          <a href="/articles" class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
-            Articles
+          <a href={lang === 'en' ? '/en#sertifikat' : '/#sertifikat'} class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
+            {t('experiences.tab.certificates')}
+            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#eb5b28] transition-all group-hover:w-full"></span>
+          </a>
+          <a href={lang === 'en' ? '/en#pencapaian' : '/#pencapaian'} class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
+            {t('experiences.tab.achievements')}
+            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#eb5b28] transition-all group-hover:w-full"></span>
+          </a>
+          <a href={lang === 'en' ? '/en/proyek' : '/proyek'} class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
+            {t('nav.projects')}
+            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#eb5b28] transition-all group-hover:w-full"></span>
+          </a>
+          <a href={lang === 'en' ? '/en/artikel' : '/artikel'} class="desktop-nav-link text-slate-600 dark:text-neutral-300 hover:text-[#eb5b28] dark:hover:text-[#eb5b28] transition-colors relative group">
+            {t('nav.articles')}
             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#eb5b28] transition-all group-hover:w-full"></span>
           </a>
         </div>
         
         <!-- Right Actions -->
         <div class="flex items-center gap-3 sm:gap-4">
-          
+          <!-- Language Dropdown -->
+          <div class="relative">
+            <button id="lang-menu-btn" type="button" aria-label="Change Language" class="w-8 h-8 md:w-9 md:h-9 neu-flat rounded-full flex items-center justify-center text-slate-700 dark:text-neutral-200 hover:text-[#E9582A] neu-flat-hover transition-all border-none cursor-pointer">
+              <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </button>
+            
+            <!-- Dropdown Menu -->
+            <div id="lang-menu" class="hidden absolute right-0 md:right-auto md:-left-4 top-[calc(100%+8px)] w-40 z-50 neu-flat rounded-2xl p-2 bg-[#ecf0f3]/95 dark:bg-[#1a1a1a]/95 backdrop-blur-xl shadow-2xl border border-slate-300/40 dark:border-neutral-800">
+              <div class="flex flex-col gap-1 font-medium text-sm">
+                <a href={idPath} class={`w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-neutral-800/80 transition-colors flex items-center gap-3 ${lang === 'id' ? 'text-[#E9582A] bg-orange-500/10' : 'text-slate-700 dark:text-neutral-200 hover:text-[#E9582A]'}`}>
+                  <img src="https://flagcdn.com/id.svg" class="w-5 h-auto rounded-[2px] shadow-sm" alt="Indonesia Flag" />
+                  <span>Indonesia</span>
+                </a>
+                <a href={enPath} class={`w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-neutral-800/80 transition-colors flex items-center gap-3 ${lang === 'en' ? 'text-[#E9582A] bg-orange-500/10' : 'text-slate-700 dark:text-neutral-200 hover:text-[#E9582A]'}`}>
+                  <img src="https://flagcdn.com/gb.svg" class="w-5 h-auto rounded-[2px] shadow-sm" alt="UK Flag" />
+                  <span>English</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
           <!-- Theme Toggle Switch (Desktop Only) -->
           <button id="theme-toggle" type="button" aria-label="Toggle Dark Mode" class="hidden md:flex relative w-[76px] h-8 neu-pressed rounded-full transition-colors duration-500 cursor-pointer group items-center px-1.5 border-none outline-none">
             <!-- The glowing slider -->
@@ -228,25 +294,33 @@ if (faviconUrl && faviconUrl.includes('cloudinary.com')) {
       <!-- Floating Popover Dropdown Menu (Chrome Mobile 3-Dots Style) -->
       <div id="mobile-menu" class="hidden md:hidden absolute right-6 top-[calc(100%+8px)] w-64 z-50 neu-flat rounded-2xl p-2 bg-[#ecf0f3]/95 dark:bg-[#1a1a1a]/95 backdrop-blur-xl shadow-2xl border border-slate-300/40 dark:border-neutral-800">
         <div class="flex flex-col gap-1 font-medium text-sm">
-          <a href="/" class="mobile-nav-link px-3.5 py-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-neutral-800/80 hover:text-[#E9582A] dark:hover:text-[#E9582A] transition-colors flex items-center gap-3 text-slate-700 dark:text-neutral-200">
+          <a href={lang === 'en' ? '/en' : '/'} class="mobile-nav-link px-3.5 py-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-neutral-800/80 hover:text-[#E9582A] dark:hover:text-[#E9582A] transition-colors flex items-center gap-3 text-slate-700 dark:text-neutral-200">
             <svg class="w-4 h-4 text-[#E9582A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-            <span>Home</span>
+            <span>{t('about.title')}</span>
           </a>
-          <a href="/#experience" class="mobile-nav-link px-3.5 py-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-neutral-800/80 hover:text-[#E9582A] dark:hover:text-[#E9582A] transition-colors flex items-center gap-3 text-slate-700 dark:text-neutral-200">
+          <a href={lang === 'en' ? '/en#keahlian' : '/#keahlian'} class="mobile-nav-link px-3.5 py-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-neutral-800/80 hover:text-[#E9582A] dark:hover:text-[#E9582A] transition-colors flex items-center gap-3 text-slate-700 dark:text-neutral-200">
+            <svg class="w-4 h-4 text-[#E9582A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <span>{t('skills.title')}</span>
+          </a>
+          <a href={lang === 'en' ? '/en#pengalaman' : '/#pengalaman'} class="mobile-nav-link px-3.5 py-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-neutral-800/80 hover:text-[#E9582A] dark:hover:text-[#E9582A] transition-colors flex items-center gap-3 text-slate-700 dark:text-neutral-200">
             <svg class="w-4 h-4 text-[#E9582A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-            <span>Experience</span>
+            <span>{t('nav.experiences')}</span>
           </a>
-          <a href="/projects" class="mobile-nav-link px-3.5 py-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-neutral-800/80 hover:text-[#E9582A] dark:hover:text-[#E9582A] transition-colors flex items-center gap-3 text-slate-700 dark:text-neutral-200">
-            <svg class="w-4 h-4 text-[#E9582A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-            <span>Projects</span>
-          </a>
-          <a href="/#certificates" class="mobile-nav-link px-3.5 py-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-neutral-800/80 hover:text-[#E9582A] dark:hover:text-[#E9582A] transition-colors flex items-center gap-3 text-slate-700 dark:text-neutral-200">
+          <a href={lang === 'en' ? '/en#sertifikat' : '/#sertifikat'} class="mobile-nav-link px-3.5 py-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-neutral-800/80 hover:text-[#E9582A] dark:hover:text-[#E9582A] transition-colors flex items-center gap-3 text-slate-700 dark:text-neutral-200">
             <svg class="w-4 h-4 text-[#E9582A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <span>Certificates</span>
+            <span>{t('experiences.tab.certificates')}</span>
           </a>
-          <a href="/articles" class="mobile-nav-link px-3.5 py-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-neutral-800/80 hover:text-[#E9582A] dark:hover:text-[#E9582A] transition-colors flex items-center gap-3 text-slate-700 dark:text-neutral-200">
+          <a href={lang === 'en' ? '/en#pencapaian' : '/#pencapaian'} class="mobile-nav-link px-3.5 py-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-neutral-800/80 hover:text-[#E9582A] dark:hover:text-[#E9582A] transition-colors flex items-center gap-3 text-slate-700 dark:text-neutral-200">
+            <svg class="w-4 h-4 text-[#E9582A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+            <span>{t('experiences.tab.achievements')}</span>
+          </a>
+          <a href={lang === 'en' ? '/en/proyek' : '/proyek'} class="mobile-nav-link px-3.5 py-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-neutral-800/80 hover:text-[#E9582A] dark:hover:text-[#E9582A] transition-colors flex items-center gap-3 text-slate-700 dark:text-neutral-200">
+            <svg class="w-4 h-4 text-[#E9582A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+            <span>{t('nav.projects')}</span>
+          </a>
+          <a href={lang === 'en' ? '/en/artikel' : '/artikel'} class="mobile-nav-link px-3.5 py-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-neutral-800/80 hover:text-[#E9582A] dark:hover:text-[#E9582A] transition-colors flex items-center gap-3 text-slate-700 dark:text-neutral-200">
             <svg class="w-4 h-4 text-[#E9582A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
-            <span>Articles</span>
+            <span>{t('nav.articles')}</span>
           </a>
 
           <div class="my-1 border-t border-slate-300/50 dark:border-neutral-700/50"></div>
@@ -398,9 +472,6 @@ if (faviconUrl && faviconUrl.includes('cloudinary.com')) {
 
           // Mobile fallback for sections without dedicated icons
           let mobileHref = href;
-          if (href === '/#certificates' || href === '/#achievements') {
-            mobileHref = '/#experience';
-          }
 
           // Set active
           mobileLinks.forEach(link => {
@@ -456,8 +527,8 @@ if (faviconUrl && faviconUrl.includes('cloudinary.com')) {
               const top = sec.offsetTop;
               const height = sec.offsetHeight;
               if (scrollPos >= top && scrollPos < top + height) {
-                if (sec.id === 'projects') currentSection = '/projects';
-                else if (sec.id === 'articles') currentSection = '/articles';
+                if (sec.id === 'proyek') currentSection = '/proyek';
+                else if (sec.id === 'artikel') currentSection = '/artikel';
                 else currentSection = '/#' + sec.id;
               }
             });
@@ -469,9 +540,10 @@ if (faviconUrl && faviconUrl.includes('cloudinary.com')) {
           navScrollListener(); // trigger once on load
         } else {
           // Other pages
-          if (path.startsWith('/projects')) setActive('/projects');
-          else if (path.startsWith('/articles')) setActive('/articles');
-          else if (path.startsWith('/certificates')) setActive('/#certificates');
+          if (path.startsWith('/proyek')) setActive('/proyek');
+          else if (path.startsWith('/artikel')) setActive('/artikel');
+          else if (path.startsWith('/sertifikat')) setActive('/#sertifikat');
+          else if (path.startsWith('/pencapaian')) setActive('/#pencapaian');
         }
       }
 
@@ -517,15 +589,35 @@ if (faviconUrl && faviconUrl.includes('cloudinary.com')) {
         });
       }
 
+      function setupLangMenu() {
+        const langBtn = document.getElementById('lang-menu-btn');
+        const langMenu = document.getElementById('lang-menu');
+
+        if (!langBtn || !langMenu) return;
+
+        langBtn.onclick = function(e) {
+          e.stopPropagation();
+          langMenu.classList.toggle('hidden');
+        };
+
+        document.addEventListener('click', function(e) {
+          if (!langMenu.contains(e.target) && !langBtn.contains(e.target)) {
+            langMenu.classList.add('hidden');
+          }
+        });
+      }
+
       // Jalankan saat pertama load dan setiap perpindahan halaman
       setupThemeToggle();
       setupActiveNav();
       setupMobileMenu();
+      setupLangMenu();
       
       document.addEventListener('astro:page-load', () => {
         setupThemeToggle();
         setupActiveNav();
         setupMobileMenu();
+        setupLangMenu();
       });
     </script>
   </body>

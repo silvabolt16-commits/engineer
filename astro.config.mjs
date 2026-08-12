@@ -13,6 +13,13 @@ export default defineConfig({
       configPath: 'wrangler.toml',
     },
   }),
+  i18n: {
+    defaultLocale: 'id',
+    locales: ['id', 'en'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   // Override session driver to prevent auto-injection of SESSION KV Namespace binding
   session: {
     driver: 'memory',

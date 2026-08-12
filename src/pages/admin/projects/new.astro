@@ -26,19 +26,36 @@ try {
 
     <div class="neu-flat rounded-3xl p-8 md:p-10">
       <form id="createProjectForm" class="space-y-8">
-        <div>
-          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Judul Proyek *</label>
-          <input type="text" id="title" required class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" placeholder="Contoh: Aplikasi E-Commerce Mobile" />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Judul Proyek (ID) *</label>
+            <input type="text" id="title" required class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" placeholder="Contoh: Aplikasi E-Commerce Mobile" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Project Title (EN) *</label>
+            <input type="text" id="title_en" required class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" placeholder="E.g.: Mobile E-Commerce App" />
+          </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
-            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Kategori</label>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Kategori (ID)</label>
             <input type="text" id="category" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" placeholder="Web / Mobile / AI / Cloud" value="Web" />
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Tags (Dipisah Koma)</label>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Category (EN)</label>
+            <input type="text" id="category_en" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" placeholder="Web / Mobile / AI / Cloud" value="Web" />
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Tags (Dipisah Koma) (ID)</label>
             <input type="text" id="tags" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" placeholder="Astro, React, Tailwind, Cloudflare" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Tags (Comma Separated) (EN)</label>
+            <input type="text" id="tags_en" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" placeholder="Astro, React, Tailwind, Cloudflare" />
           </div>
         </div>
 
@@ -55,9 +72,15 @@ try {
           </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Deskripsi Singkat *</label>
-          <textarea id="description" required rows="4" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" placeholder="Penjelasan ringkas proyek ini..."></textarea>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Deskripsi Singkat (ID) *</label>
+            <textarea id="description" required rows="4" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" placeholder="Penjelasan ringkas proyek ini..."></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Short Description (EN) *</label>
+            <textarea id="description_en" required rows="4" class="w-full px-4 py-3.5 text-slate-900 dark:text-white neu-pressed border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9582A] transition" placeholder="Brief explanation of this project..."></textarea>
+          </div>
         </div>
 
         <!-- Cloudinary Upload / Image URL -->
@@ -228,9 +251,13 @@ try {
 
       const payload = {
         title: document.getElementById("title").value,
+        title_en: document.getElementById("title_en").value,
         category: document.getElementById("category").value,
+        category_en: document.getElementById("category_en").value,
         tags: document.getElementById("tags").value,
+        tags_en: document.getElementById("tags_en").value,
         description: document.getElementById("description").value,
+        description_en: document.getElementById("description_en").value,
         image_url: imageUrlInput.value,
         demo_url: document.getElementById("demoUrl").value.trim(),
         repo_url: document.getElementById("repoUrl").value.trim(),

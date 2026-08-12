@@ -36,7 +36,7 @@ export const POST: APIRoute = async (context) => {
 
   try {
     const body = await context.request.json();
-    const { title, slug, date, description, content, image_url, category, tags, demo_url, repo_url, featured } = body;
+    const { title, title_en, slug, date, description, description_en, content, content_en, image_url, category, category_en, tags, tags_en, demo_url, repo_url, featured } = body;
 
     if (!title || !description) {
       return new Response(JSON.stringify({ error: "Judul dan Deskripsi wajib diisi" }), {
@@ -48,17 +48,22 @@ export const POST: APIRoute = async (context) => {
     const generatedSlug = slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
     await db.prepare(`
-      INSERT INTO projects (title, slug, date, description, content, image_url, category, tags, demo_url, repo_url, featured, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      INSERT INTO projects (title, title_en, slug, date, description, description_en, content, content_en, image_url, category, category_en, tags, tags_en, demo_url, repo_url, featured, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
     `).bind(
       title,
+      title_en || "",
       generatedSlug,
       date || "",
       description,
+      description_en || "",
       content || "",
+      content_en || "",
       image_url || "",
       category || "Web",
+      category_en || "",
       tags || "",
+      tags_en || "",
       demo_url || "",
       repo_url || "",
       featured ? 1 : 0
