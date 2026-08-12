@@ -3,14 +3,28 @@ export const prerender = false;
 
 import { isAuthenticated } from "../../lib/auth";
 import AdminLayout from "../../layouts/AdminLayout.astro";
+import { getDB, getAllProjects, getProfile, getAllFromTable } from "../../lib/d1";
 
 if (!isAuthenticated(Astro)) {
   return Astro.redirect("/admin/login");
 }
+
+const db = getDB(Astro.locals);
+const projects = await getAllProjects(db);
+const profileData = await getProfile(db);
+const domain = profileData?.website || "https://fajri.awwaluddin.com"; // Fallback URL
+
+const experiences = (await getAllFromTable(db, 'experiences') as any[]).sort((a, b) => b.id - a.id);
+const skillsData = (await getAllFromTable(db, 'skills') as any[]).sort((a, b) => b.id - a.id);
+const achievements = (await getAllFromTable(db, 'achievements') as any[]).sort((a, b) => b.id - a.id);
+const certificates = (await getAllFromTable(db, 'certificates') as any[]).sort((a, b) => b.id - a.id);
+
+// Extract unique categories
+const categories = Array.from(new Set(projects.map(p => p.category || 'Web'))).filter(Boolean);
 ---
 
 <AdminLayout title="Dashboard Admin | Portofolio">
-  <div class="max-w-6xl mx-auto pt-6 pb-6 md:pt-10 md:pb-8 px-6">
+  <div class="max-w-6xl mx-auto pt-6 pb-6 md:pt-10 md:pb-8 px-6 relative">
     <div class="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
       <div class="text-center md:text-left">
         <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white uppercase tracking-widest mb-2">
@@ -31,47 +45,196 @@ if (!isAuthenticated(Astro)) {
     <!-- CMS Navigation Cards -->
     <div class="mb-8 md:mb-10">
       <h2 class="text-lg font-bold text-slate-800 dark:text-white uppercase tracking-widest mb-6 border-b border-slate-200 dark:border-slate-800 pb-2">Manajemen Konten (CMS)</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
         <a href="/admin/profile" class="neu-flat rounded-2xl p-4 text-center group hover:-translate-y-1 transition-all cursor-pointer">
-          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform">👤</div>
+          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined align-middle">person</span></div>
           <h3 class="text-xs font-bold text-slate-700 dark:text-neutral-200 uppercase tracking-wider">Profil Singkat</h3>
         </a>
         <a href="/admin/cms/experiences" class="neu-flat rounded-2xl p-4 text-center group hover:-translate-y-1 transition-all cursor-pointer">
-          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform">💼</div>
+          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined align-middle">work</span></div>
           <h3 class="text-xs font-bold text-slate-700 dark:text-neutral-200 uppercase tracking-wider">Pengalaman</h3>
         </a>
         <a href="/admin/cms/education" class="neu-flat rounded-2xl p-4 text-center group hover:-translate-y-1 transition-all cursor-pointer">
-          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform">🎓</div>
+          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined align-middle">school</span></div>
           <h3 class="text-xs font-bold text-slate-700 dark:text-neutral-200 uppercase tracking-wider">Pendidikan</h3>
         </a>
         <a href="/admin/cms/skills" class="neu-flat rounded-2xl p-4 text-center group hover:-translate-y-1 transition-all cursor-pointer">
-          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform">⚡</div>
+          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined align-middle">bolt</span></div>
           <h3 class="text-xs font-bold text-slate-700 dark:text-neutral-200 uppercase tracking-wider">Skill / Posisi</h3>
         </a>
         <a href="/admin/cms/articles" class="neu-flat rounded-2xl p-4 text-center group hover:-translate-y-1 transition-all cursor-pointer">
-          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform">📝</div>
+          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined align-middle">edit_document</span></div>
           <h3 class="text-xs font-bold text-slate-700 dark:text-neutral-200 uppercase tracking-wider">Artikel</h3>
         </a>
         <a href="/admin/cms/achievements" class="neu-flat rounded-2xl p-4 text-center group hover:-translate-y-1 transition-all cursor-pointer">
-          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform">🏆</div>
+          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined align-middle">emoji_events</span></div>
           <h3 class="text-xs font-bold text-slate-700 dark:text-neutral-200 uppercase tracking-wider">Pencapaian</h3>
         </a>
         <a href="/admin/cms/certificates" class="neu-flat rounded-2xl p-4 text-center group hover:-translate-y-1 transition-all cursor-pointer">
-          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform">📜</div>
+          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined align-middle">workspace_premium</span></div>
           <h3 class="text-xs font-bold text-slate-700 dark:text-neutral-200 uppercase tracking-wider">Pelatihan / Sert.</h3>
         </a>
         <a href="/admin/projects" class="neu-flat rounded-2xl p-4 text-center group hover:-translate-y-1 transition-all cursor-pointer">
-          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform">🚀</div>
+          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined align-middle">rocket_launch</span></div>
           <h3 class="text-xs font-bold text-slate-700 dark:text-neutral-200 uppercase tracking-wider">Proyek</h3>
         </a>
         <a href="/admin/documents" class="neu-flat rounded-2xl p-4 text-center group hover:-translate-y-1 transition-all cursor-pointer">
-          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform">📄</div>
+          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined align-middle">description</span></div>
           <h3 class="text-xs font-bold text-slate-700 dark:text-neutral-200 uppercase tracking-wider">Dokumen</h3>
         </a>
+        <!-- Cetak Portofolio Button -->
+        <button id="openPrintModalBtn" class="neu-flat rounded-2xl p-4 text-center group hover:-translate-y-1 transition-all cursor-pointer outline-none w-full">
+          <div class="w-10 h-10 mx-auto rounded-full neu-pressed flex items-center justify-center text-[#E9582A] mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined align-middle">print</span></div>
+          <h3 class="text-xs font-bold text-slate-700 dark:text-neutral-200 uppercase tracking-wider">Cetak Portofolio</h3>
+        </button>
       </div>
     </div>
+  </div>
 
+  <!-- Modal Cetak Portofolio -->
+  <div id="printModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center">
+    <div class="bg-white dark:bg-[#1a1a1a] p-8 rounded-3xl shadow-2xl max-w-md w-full mx-4 border border-slate-200 dark:border-white/10 relative transform scale-95 opacity-0 transition-all duration-300" id="printModalContent">
+      <button id="closePrintModalBtn" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-red-500 transition-colors">&times;</button>
+      
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/30 text-[#E9582A] flex items-center justify-center text-xl mx-auto mb-4"><span class="material-symbols-outlined align-middle">print</span></div>
+        <h2 class="text-xl font-extrabold text-slate-800 dark:text-white uppercase tracking-wider">Cetak Portofolio</h2>
+        <p class="text-sm text-slate-500 mt-2">Pilih kategori proyek yang ingin dicetak dalam portofolio Anda.</p>
+      </div>
 
+      <form id="printForm" class="space-y-6">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 dark:text-neutral-300 uppercase tracking-wider mb-3">Pilih Tampilan</label>
+          <div class="space-y-2 pl-2 border-l-2 border-slate-100 dark:border-slate-800 ml-1">
+            <label class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1.5 rounded-lg transition-colors">
+              <input type="radio" name="printLayout" value="text" class="w-4 h-4 text-[#E9582A] focus:ring-[#E9582A] border-slate-300" />
+              <span class="text-[13px] text-slate-700 dark:text-neutral-300 font-medium">Hanya Teks (Lebih rapi/formal)</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1.5 rounded-lg transition-colors">
+              <input type="radio" name="printLayout" value="image" checked class="w-4 h-4 text-[#E9582A] focus:ring-[#E9582A] border-slate-300" />
+              <span class="text-[13px] text-slate-700 dark:text-neutral-300 font-medium">Teks + Gambar Thumbnail (Kreatif)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center mt-4">
+          <label class="text-xs font-bold text-slate-600 dark:text-neutral-300 uppercase tracking-wider">Kustomisasi Isi PDF</label>
+          <button type="button" id="selectAllBtn" class="flex items-center gap-1.5 text-[10px] px-2 py-1 bg-slate-200 dark:bg-slate-700 rounded text-slate-700 dark:text-neutral-300 font-bold hover:bg-slate-300 dark:hover:bg-slate-600 uppercase tracking-wider transition-colors">
+            <span class="material-symbols-outlined text-[16px]">done_all</span>
+            Semua
+          </button>
+        </div>
+
+        <!-- Checklists -->
+        <div class="space-y-4 max-h-64 overflow-y-auto pr-2 border-t border-b border-slate-200 dark:border-slate-700 py-4 custom-scrollbar">
+          
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <label class="block text-xs font-bold text-slate-600 dark:text-neutral-300 uppercase tracking-wider">Pengalaman</label>
+              <button type="button" class="toggle-category-btn flex items-center gap-1 text-[10px] font-bold text-[#E9582A] hover:text-[#E9582A] uppercase tracking-wider" data-target="exps">
+                <span class="material-symbols-outlined text-[14px]">done_all</span>
+                Semua
+              </button>
+            </div>
+            <div class="space-y-2 pl-2 border-l-2 border-slate-100 dark:border-slate-800 ml-1">
+              {experiences.map(e => (
+                <label class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1.5 rounded-lg transition-colors">
+                  <input type="checkbox" name="exps" value={e.id} checked class="w-4 h-4 text-[#E9582A] rounded focus:ring-[#E9582A] border-slate-300" />
+                  <span class="text-[13px] text-slate-700 dark:text-neutral-300 font-medium">{e.title} at {e.company}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 dark:border-slate-800">
+            <div class="flex justify-between items-center mb-3">
+              <label class="block text-xs font-bold text-slate-600 dark:text-neutral-300 uppercase tracking-wider">Keahlian (Skills)</label>
+              <button type="button" class="toggle-category-btn flex items-center gap-1 text-[10px] font-bold text-[#E9582A] hover:text-[#E9582A] uppercase tracking-wider" data-target="skills">
+                <span class="material-symbols-outlined text-[14px]">done_all</span>
+                Semua
+              </button>
+            </div>
+            <div class="space-y-5">
+              {skillsData.map(s => {
+                const itemsList = typeof s.items === 'string' ? JSON.parse(s.items || '[]') : (s.items || []);
+                return (
+                  <div>
+                    <div class="text-[10px] font-extrabold text-slate-400 dark:text-neutral-500 uppercase tracking-widest mb-2">{s.category}</div>
+                    <div class="space-y-2 pl-2 border-l-2 border-slate-100 dark:border-slate-800 ml-1">
+                      {itemsList.map((item: string) => (
+                        <label class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1.5 rounded-lg transition-colors">
+                          <input type="checkbox" name="skills" value={item} checked class="w-4 h-4 text-[#E9582A] rounded focus:ring-[#E9582A] border-slate-300" />
+                          <span class="text-[13px] text-slate-700 dark:text-neutral-300 font-medium">{item}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 dark:border-slate-800">
+            <div class="flex justify-between items-center mb-2">
+              <label class="block text-xs font-bold text-slate-600 dark:text-neutral-300 uppercase tracking-wider">Penghargaan</label>
+              <button type="button" class="toggle-category-btn flex items-center gap-1 text-[10px] font-bold text-[#E9582A] hover:text-[#E9582A] uppercase tracking-wider" data-target="achs">
+                <span class="material-symbols-outlined text-[14px]">done_all</span>
+                Semua
+              </button>
+            </div>
+            <div class="space-y-2 pl-2 border-l-2 border-slate-100 dark:border-slate-800 ml-1">
+              {achievements.map(a => (
+                <label class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1.5 rounded-lg transition-colors">
+                  <input type="checkbox" name="achs" value={a.id} checked class="w-4 h-4 text-[#E9582A] rounded focus:ring-[#E9582A] border-slate-300" />
+                  <span class="text-[13px] text-slate-700 dark:text-neutral-300 font-medium">{a.title}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 dark:border-slate-800">
+            <div class="flex justify-between items-center mb-2">
+              <label class="block text-xs font-bold text-slate-600 dark:text-neutral-300 uppercase tracking-wider">Sertifikasi</label>
+              <button type="button" class="toggle-category-btn flex items-center gap-1 text-[10px] font-bold text-[#E9582A] hover:text-[#E9582A] uppercase tracking-wider" data-target="certs">
+                <span class="material-symbols-outlined text-[14px]">done_all</span>
+                Semua
+              </button>
+            </div>
+            <div class="space-y-2 pl-2 border-l-2 border-slate-100 dark:border-slate-800 ml-1">
+              {certificates.map(c => (
+                <label class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1.5 rounded-lg transition-colors">
+                  <input type="checkbox" name="certs" value={c.id} checked class="w-4 h-4 text-[#E9582A] rounded focus:ring-[#E9582A] border-slate-300" />
+                  <span class="text-[13px] text-slate-700 dark:text-neutral-300 font-medium">{c.title}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 dark:border-slate-800">
+            <div class="flex justify-between items-center mb-2">
+              <label class="block text-xs font-bold text-slate-600 dark:text-neutral-300 uppercase tracking-wider">Portofolio Khusus</label>
+              <button type="button" class="toggle-category-btn flex items-center gap-1 text-[10px] font-bold text-[#E9582A] hover:text-[#E9582A] uppercase tracking-wider" data-target="projs">
+                <span class="material-symbols-outlined text-[14px]">done_all</span>
+                Semua
+              </button>
+            </div>
+            <div class="space-y-2 pl-2 border-l-2 border-slate-100 dark:border-slate-800 ml-1">
+              {projects.map(p => (
+                <label class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1.5 rounded-lg transition-colors">
+                  <input type="checkbox" name="projs" value={p.id} checked class="w-4 h-4 text-[#E9582A] rounded focus:ring-[#E9582A] border-slate-300" />
+                  <span class="text-[13px] text-slate-700 dark:text-neutral-300 font-medium">{p.title}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-4 bg-[#E9582A] hover:bg-[#d04a20] text-white font-bold rounded-xl uppercase tracking-wider transition-colors shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined">print</span>
+          Generate PDF
+        </button>
+      </form>
+    </div>
   </div>
 
   <script>
@@ -81,5 +244,84 @@ if (!isAuthenticated(Astro)) {
       window.location.href = "/admin/login";
     });
 
+    // Print Modal Logic
+    const printModal = document.getElementById("printModal");
+    const printModalContent = document.getElementById("printModalContent");
+    const openPrintModalBtn = document.getElementById("openPrintModalBtn");
+    const closePrintModalBtn = document.getElementById("closePrintModalBtn");
+    const printForm = document.getElementById("printForm");
+
+    const openModal = () => {
+      printModal?.classList.remove("hidden");
+      // slight delay for animation
+      setTimeout(() => {
+        printModalContent?.classList.remove("scale-95", "opacity-0");
+        printModalContent?.classList.add("scale-100", "opacity-100");
+      }, 10);
+    };
+
+    const closeModal = () => {
+      printModalContent?.classList.remove("scale-100", "opacity-100");
+      printModalContent?.classList.add("scale-95", "opacity-0");
+      setTimeout(() => {
+        printModal?.classList.add("hidden");
+      }, 300);
+    };
+
+    openPrintModalBtn?.addEventListener("click", openModal);
+    closePrintModalBtn?.addEventListener("click", closeModal);
+    printModal?.addEventListener("click", (e) => {
+      if (e.target === printModal) closeModal();
+    });
+
+    // Toggle All Checkboxes
+    document.getElementById('selectAllBtn')?.addEventListener('click', () => {
+      const checkboxes = document.querySelectorAll('#printForm input[type="checkbox"]');
+      const allChecked = Array.from(checkboxes).every((cb: any) => cb.checked);
+      checkboxes.forEach((cb: any) => cb.checked = !allChecked);
+    });
+
+    // Toggle Checkboxes per Category
+    document.querySelectorAll('.toggle-category-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const targetName = (e.target as HTMLElement).getAttribute('data-target');
+        const checkboxes = document.querySelectorAll(`input[name="${targetName}"]`);
+        const allChecked = Array.from(checkboxes).every((cb: any) => cb.checked);
+        checkboxes.forEach((cb: any) => cb.checked = !allChecked);
+      });
+    });
+
+    printForm?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const layoutRadio = document.querySelector('input[name="printLayout"]:checked') as HTMLInputElement;
+      const layout = layoutRadio ? layoutRadio.value : "image";
+      
+      const getCheckedValuesArray = (name: string) => {
+        const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
+        return Array.from(checkboxes).map((cb: any) => cb.value);
+      };
+
+      const exps = getCheckedValuesArray('exps').join(',');
+      const skills = getCheckedValuesArray('skills').join('|'); // using pipe delimiter to avoid comma conflicts in skill names
+      const achs = getCheckedValuesArray('achs').join(',');
+      const certs = getCheckedValuesArray('certs').join(',');
+      const projs = getCheckedValuesArray('projs').join(',');
+
+      let url = "/admin/print-portfolio";
+      const params = new URLSearchParams();
+      params.append("layout", layout);
+      
+      params.append("exps", exps);
+      params.append("skills", skills);
+      params.append("achs", achs);
+      params.append("certs", certs);
+      params.append("projs", projs);
+
+      if (params.toString()) url += "?" + params.toString();
+      
+      window.open(url, "_blank");
+      closeModal();
+    });
   </script>
 </AdminLayout>
+

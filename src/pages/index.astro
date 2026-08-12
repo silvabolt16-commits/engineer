@@ -13,16 +13,16 @@ let articles: any[] = await getAllFromTable(db, 'articles') || [];
 let skills: any[] = await getAllFromTable(db, 'skills') || [];
 let d1Projects: any[] = await getAllProjects(db) || [];
 
-function formatDuration(durationStr) {
+function formatDuration(durationStr: string) {
   if (!durationStr || !durationStr.includes('|')) return durationStr;
   
   const [start, end] = durationStr.split('|');
-  const formatDate = (dateStr) => {
+  const formatDate = (dateStr: string) => {
     if (dateStr === 'present') return 'Sekarang';
     if (!dateStr) return '';
     try {
       const [year, month] = dateStr.split('-');
-      const date = new Date(year, parseInt(month) - 1);
+      const date = new Date(parseInt(year), parseInt(month) - 1);
       return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
     } catch (e) {
       return dateStr;
@@ -85,6 +85,7 @@ let projects = d1Projects.length > 0
         tech: p.category || 'Web',
         photos: p.image_url ? [p.image_url] : [],
         tags: p.tags ? p.tags.split(',') : [],
+        date: p.date
       }
     }))
   : [];
@@ -94,7 +95,7 @@ const marqueeProjects = [...projects, ...projects, ...projects, ...projects];
 
 // Warna & ikon kategori skill di-cycle per index (data kategorinya sendiri dari profile.json)
 const skillStyles = [
-  { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', tagHover: 'hover:border-blue-300 dark:hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400', d: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+  { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-600 dark:text-orange-400', tagHover: 'hover:border-orange-300 dark:hover:border-[#E9582A]/50 hover:text-orange-600 dark:hover:text-orange-400', d: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
   { bg: 'bg-orange-100 dark:bg-[#E9582A]/20', text: 'text-[#E9582A] dark:text-[#E9582A]', tagHover: 'hover:border-[#E9582A]/50 hover:text-[#E9582A]', d: 'M13 10V3L4 14h7v7l9-11h-7z' },
   { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-400', tagHover: 'hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:text-emerald-600 dark:hover:text-emerald-400', d: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
 ];
@@ -197,7 +198,7 @@ const skillStyles = [
                 <h3 class="font-extrabold text-slate-800 dark:text-white text-lg">{skill.category}</h3>
               </div>
               <div class="flex flex-wrap gap-2">
-                {skill.items.map((item) => (
+                {skill.items.map((item: string) => (
                   <span class={`px-3 py-1.5 neu-flat neu-flat-hover border-none rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 transition-all cursor-default ${style.tagHover}`}>{item}</span>
                 ))}
               </div>
@@ -234,10 +235,10 @@ const skillStyles = [
 
           <!-- Text Section -->
           <div class="flex-1 flex flex-col p-1 md:px-6 md:py-2 text-left min-w-0 justify-center h-full md:max-h-[300px]">
-            <div class="w-fit bg-[#2a85ff]/10 dark:bg-[#2a85ff]/20 text-[#2a85ff] dark:text-[#60a5fa] text-[9px] md:text-[12px] font-bold px-2 md:px-4 py-0.5 md:py-1.5 rounded-full tracking-wider mb-1.5 md:mb-3 whitespace-normal text-center md:text-left">
+            <div class="w-fit bg-[#2a85ff]/10 dark:bg-[#2a85ff]/20 text-[#E9582A] dark:text-[#60a5fa] text-[9px] md:text-[12px] font-bold px-2 md:px-4 py-0.5 md:py-1.5 rounded-full tracking-wider mb-1.5 md:mb-3 whitespace-normal text-center md:text-left">
               {formatDuration(exp.data.duration)}
             </div>
-            <h3 class="text-[15px] md:text-[28px] font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight mb-0.5 md:mb-2 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#38bdf8] transition-colors break-words">{exp.data.title}</h3>
+            <h3 class="text-[15px] md:text-[28px] font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight mb-0.5 md:mb-2 group-hover/card:text-[#E9582A] dark:group-hover/card:text-[#38bdf8] transition-colors break-words">{exp.data.title}</h3>
             <div class="text-[12px] md:text-[16px] font-bold text-slate-600 dark:text-slate-300 mb-1 md:mb-3 break-words">{exp.data.company}</div>
             <div class="hidden md:block mb-3 md:mb-4">
               <p class="text-[13px] md:text-[14px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-4">{exp.body || exp.data?.description || ''}</p>
@@ -413,12 +414,12 @@ const skillStyles = [
           <!-- Text Section -->
           <div class="p-3 md:p-6 flex flex-col flex-1">
             <div class="text-[10px] md:text-[12px] font-bold text-slate-400 dark:text-slate-500 mb-1 md:mb-2">{formatDuration(article.data.date)}</div>
-            <h3 class="text-[13px] md:text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-1 md:mb-3 group-hover/card:text-[#2a85ff] dark:group-hover/card:text-[#60a5fa] transition-colors line-clamp-2">{article.data.title}</h3>
+            <h3 class="text-[13px] md:text-[20px] font-extrabold text-slate-900 dark:text-white leading-tight mb-1 md:mb-3 group-hover/card:text-[#E9582A] dark:group-hover/card:text-[#60a5fa] transition-colors line-clamp-2">{article.data.title}</h3>
             <div class="hidden md:block mb-6">
               <p class="text-[14px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium line-clamp-3">{article.data.summary}</p>
             </div>
             
-            <div class="text-[10px] md:text-[13px] font-bold text-[#2a85ff] dark:text-[#60a5fa] flex items-center gap-1 uppercase tracking-widest mt-auto">
+            <div class="text-[10px] md:text-[13px] font-bold text-[#E9582A] dark:text-[#60a5fa] flex items-center gap-1 uppercase tracking-widest mt-auto">
               Read <span class="hidden md:inline">Article</span> <span class="text-base md:text-lg leading-none transition-transform group-hover/card:translate-x-1">&rarr;</span>
             </div>
           </div>
@@ -427,7 +428,7 @@ const skillStyles = [
     </div>
 
     <div class="mt-16 flex justify-center pb-4 relative z-10">
-      <a href="/articles" class="inline-flex items-center gap-2 neu-flat neu-flat-hover border-none text-slate-600 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 px-8 py-4 rounded-full font-bold transition-all duration-300">
+      <a href="/articles" class="inline-flex items-center gap-2 neu-flat neu-flat-hover border-none text-slate-600 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-400 px-8 py-4 rounded-full font-bold transition-all duration-300">
         View All Articles 
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
       </a>
@@ -624,3 +625,4 @@ const skillStyles = [
   setupScrollReveal();
   document.addEventListener('astro:page-load', setupScrollReveal);
 </script>
+

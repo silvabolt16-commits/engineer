@@ -258,7 +258,7 @@ for (const col of schema) {
 
         statusText.textContent = "Memproses gambar...";
         statusText.classList.remove("hidden");
-        statusText.classList.add("text-blue-500");
+        statusText.classList.add("text-[#E9582A]");
         statusText.classList.remove("text-green-500", "text-red-500");
 
         let uploadedUrls = [];
@@ -322,11 +322,11 @@ for (const col of schema) {
           }
 
           statusText.textContent = "Berhasil diunggah!";
-          statusText.classList.replace("text-blue-500", "text-green-500");
+          statusText.classList.replace("text-[#E9582A]", "text-green-500");
           renderPreview();
         } catch(err) {
           statusText.textContent = "Error: " + err.message;
-          statusText.classList.replace("text-blue-500", "text-red-500");
+          statusText.classList.replace("text-[#E9582A]", "text-red-500");
         }
       });
     });

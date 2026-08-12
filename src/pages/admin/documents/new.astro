@@ -76,7 +76,7 @@ const uploadPreset = import.meta.env.PUBLIC_CLOUDINARY_UPLOAD_PRESET || "";
 
       uploadStatus.textContent = "Mengunggah file ke server...";
       uploadStatus.classList.remove("hidden");
-      uploadStatus.className = "text-xs font-bold uppercase tracking-wider mt-2 text-blue-500";
+      uploadStatus.className = "text-xs font-bold uppercase tracking-wider mt-2 text-[#E9582A]";
       submitBtn.disabled = true;
 
       try {
@@ -158,3 +158,4 @@ const uploadPreset = import.meta.env.PUBLIC_CLOUDINARY_UPLOAD_PRESET || "";
     });
   </script>
 </AdminLayout>
+

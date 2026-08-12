@@ -166,7 +166,7 @@ try {
 
       uploadStatus.textContent = "Memproses dan kompresi gambar...";
       uploadStatus.classList.remove("hidden");
-      uploadStatus.classList.add("text-blue-500");
+      uploadStatus.classList.add("text-[#E9582A]");
       uploadStatus.classList.remove("text-green-500", "text-red-500");
 
       // Client-side compression to WebP
@@ -228,16 +228,16 @@ try {
           imagePreview.src = data.secure_url;
           imagePreview.classList.remove("hidden");
           uploadStatus.textContent = "✓ Gambar berhasil diperbarui!";
-          uploadStatus.classList.remove("text-blue-500", "text-red-500");
+          uploadStatus.classList.remove("text-[#E9582A]", "text-red-500");
           uploadStatus.classList.add("text-green-500");
         } else {
           uploadStatus.textContent = "Gagal mengunggah gambar.";
-          uploadStatus.classList.remove("text-blue-500", "text-green-500");
+          uploadStatus.classList.remove("text-[#E9582A]", "text-green-500");
           uploadStatus.classList.add("text-red-500");
         }
       } catch (err) {
         uploadStatus.textContent = "Terjadi kesalahan saat upload gambar.";
-        uploadStatus.classList.remove("text-blue-500", "text-green-500");
+        uploadStatus.classList.remove("text-[#E9582A]", "text-green-500");
         uploadStatus.classList.add("text-red-500");
       }
     });

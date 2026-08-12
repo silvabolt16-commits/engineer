@@ -7,6 +7,7 @@ export interface Project {
   image_url?: string;
   category?: string;
   tags?: string;
+  date?: string;
   demo_url?: string;
   repo_url?: string;
   featured?: number;

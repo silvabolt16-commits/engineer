@@ -23,8 +23,8 @@ const documents = await getAllFromTable(db, 'documents');
 
     <div class="flex flex-col sm:flex-row items-center justify-between mb-8 border-b border-slate-200 dark:border-slate-800 pb-4 gap-4">
       <h2 class="text-lg font-bold text-slate-800 dark:text-white uppercase tracking-widest">Daftar Dokumen</h2>
-      <a href="/admin/documents/new" class="px-4 py-2 bg-[#E9582A] hover:bg-[#d04a1f] text-white font-bold rounded-xl shadow-md transition-all text-[10px] uppercase tracking-wider shrink-0">
-        + Upload Dokumen
+      <a href="/admin/documents/new" class="px-4 py-2 bg-[#E9582A] hover:bg-[#d04a1f] text-white font-bold rounded-xl shadow-md transition-all text-[10px] uppercase tracking-wider shrink-0 flex items-center justify-center gap-1">
+        <span class="material-symbols-outlined text-[14px]">add</span> Upload Dokumen
       </a>
     </div>
 
@@ -38,11 +38,11 @@ const documents = await getAllFromTable(db, 'documents');
             <span id="selectedCount" class="text-xs font-bold text-slate-400 ml-2">(0 Terpilih)</span>
           </div>
           <div class="flex items-center gap-3">
-            <button id="bulkDownloadBtn" disabled class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold rounded-xl transition-all text-[10px] uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed">
-              ⬇️ Download Terpilih
+            <button id="bulkDownloadBtn" disabled class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold rounded-xl transition-all text-[10px] uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">download</span> Download Terpilih
             </button>
-            <button id="bulkDeleteBtn" disabled class="px-4 py-2.5 bg-red-100 dark:bg-red-900/30 text-red-400 font-bold rounded-xl transition-all text-[10px] uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed">
-              🗑️ Hapus Terpilih
+            <button id="bulkDeleteBtn" disabled class="px-4 py-2.5 bg-red-100 dark:bg-red-900/30 text-red-400 font-bold rounded-xl transition-all text-[10px] uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">delete</span> Hapus Terpilih
             </button>
           </div>
         </div>
@@ -59,7 +59,7 @@ const documents = await getAllFromTable(db, 'documents');
               <div>
                 <div class="flex items-center gap-3 mb-4 pr-8">
                   <div class="w-12 h-12 shrink-0 rounded-full neu-pressed flex items-center justify-center text-[#E9582A] text-xl">
-                    {doc.file_url?.toLowerCase().includes('.pdf') ? '📄' : '🖼️'}
+                    {doc.file_url?.toLowerCase().includes('.pdf') ? '<span class="material-symbols-outlined align-middle">description</span>' : '<span class="material-symbols-outlined align-middle">image</span>️'}
                   </div>
                   <div class="truncate">
                     <h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight truncate" title={doc.title}>{doc.title}</h3>
@@ -70,10 +70,12 @@ const documents = await getAllFromTable(db, 'documents');
               
               <div class="pt-6 mt-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-2 justify-between items-center">
                 <div class="flex gap-2">
-                  <a href={doc.file_url} target="_blank" class="px-3 py-2 neu-flat rounded-xl text-[10px] font-bold text-[#2a85ff] dark:text-[#60a5fa] hover:text-[#0056b3] dark:hover:text-[#93c5fd] neu-flat-hover transition-all uppercase tracking-wider">Preview</a>
+                  <a href={doc.file_url} target="_blank" class="px-3 py-2 neu-flat rounded-xl text-[10px] font-bold text-[#E9582A] dark:text-[#60a5fa] hover:text-[#0056b3] dark:hover:text-[#93c5fd] neu-flat-hover transition-all uppercase tracking-wider">Preview</a>
                   <a href={doc.file_url} download class="px-3 py-2 neu-flat rounded-xl text-[10px] font-bold text-green-500 hover:text-green-600 neu-flat-hover transition-all uppercase tracking-wider">Download</a>
                 </div>
-                <button data-id={doc.id} class="deleteBtn px-3 py-2 neu-pressed rounded-xl text-[10px] font-bold text-red-500 hover:text-red-600 transition-all uppercase tracking-wider">Hapus</button>
+                <button data-id={doc.id} title="Hapus Dokumen" class="deleteBtn w-8 h-8 flex items-center justify-center neu-pressed rounded-xl text-red-500 hover:text-red-600 transition-all">
+                  <span class="material-symbols-outlined text-[16px] pointer-events-none">delete</span>
+                </button>
               </div>
             </div>
           ))}
