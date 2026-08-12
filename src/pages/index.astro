@@ -4,6 +4,7 @@ import { getDB, getAllProjects, getProfile, getAllFromTable } from '../lib/d1';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
+const basePath = lang === 'en' ? '/en' : '';
 const t = useTranslations(lang);
 
 const db = getDB(Astro.locals);
@@ -263,7 +264,7 @@ const skillStyles = [
     
     <div class="grid grid-cols-1 gap-6 md:gap-12 w-full">
       {experiences.map((exp, index) => (
-        <a href={`/pengalaman/${exp.id}`} class={`group/card reveal-up flex flex-row md:flex-row ${index % 2 !== 0 ? 'md:flex-row-reverse' : ''} gap-3 md:gap-8 items-center neu-flat neu-flat-hover border-none rounded-2xl md:rounded-[2rem] p-2.5 md:p-4 transition-all duration-400 cursor-pointer`}>
+        <a href={`${basePath}/pengalaman/${exp.id}`} class={`group/card reveal-up flex flex-row md:flex-row ${index % 2 !== 0 ? 'md:flex-row-reverse' : ''} gap-3 md:gap-8 items-center neu-flat neu-flat-hover border-none rounded-2xl md:rounded-[2rem] p-2.5 md:p-4 transition-all duration-400 cursor-pointer`}>
           <!-- Image Section -->
           <div class="w-[110px] h-[110px] md:w-1/2 md:h-[300px] rounded-xl md:rounded-3xl overflow-hidden shrink-0 relative">
             {(() => {
@@ -306,7 +307,7 @@ const skillStyles = [
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-8">
       {certificates.map((cert) => (
-        <a href={`/certificates/${cert.id}`} class="block reveal-up group neu-flat neu-flat-hover border-none rounded-xl md:rounded-2xl p-3 md:p-6 flex flex-row gap-3 md:gap-6 transition-all duration-300 cursor-pointer">
+        <a href={`${basePath}/sertifikat/${cert.id}`} class="block reveal-up group neu-flat neu-flat-hover border-none rounded-xl md:rounded-2xl p-3 md:p-6 flex flex-row gap-3 md:gap-6 transition-all duration-300 cursor-pointer">
           <div class="w-14 h-14 md:w-32 md:h-32 rounded-lg md:rounded-xl neu-pressed border-none shrink-0 flex items-center justify-center text-[#10b981] dark:text-emerald-400 transition-colors duration-300">
             <svg class="w-7 h-7 md:w-12 md:h-12 opacity-80 transition-transform duration-500 ease-out group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           </div>
@@ -338,7 +339,7 @@ const skillStyles = [
     
     <div class="grid grid-cols-2 md:grid-cols-2 gap-3 md:gap-6 relative z-10">
       {achievements.map((achievement) => (
-        <a href={`/achievements/${achievement.id}`} class="block reveal-up group neu-pressed border-none rounded-xl md:rounded-2xl p-3 md:p-6 transition-all duration-300 cursor-pointer">
+        <a href={`${basePath}/pencapaian/${achievement.id}`} class="block reveal-up group neu-pressed border-none rounded-xl md:rounded-2xl p-3 md:p-6 transition-all duration-300 cursor-pointer">
           <div class="flex flex-col md:flex-row md:items-start gap-2 md:gap-4 h-full">
             <div class="w-9 h-9 md:w-12 md:h-12 rounded-full neu-flat text-orange-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
               <svg class="w-4 h-4 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
@@ -373,7 +374,7 @@ const skillStyles = [
       <div class="flex w-full relative">
         <div id="project-track" class="flex items-start gap-3 md:gap-8 w-max px-4 py-8 will-change-transform">
           {marqueeProjects.map((proj, index) => (
-            <a href={`/proyek/${proj.id}`} class="w-[170px] md:w-[420px] shrink-0 block group/card neu-flat neu-flat-hover border-none rounded-xl md:rounded-3xl overflow-hidden transition-all duration-500">
+            <a href={`${basePath}/proyek/${proj.id}`} class="w-[170px] md:w-[420px] shrink-0 block group/card neu-flat neu-flat-hover border-none rounded-xl md:rounded-3xl overflow-hidden transition-all duration-500">
               <div class="pointer-events-none">
                 <!-- Cover Image -->
                 <div class="w-full h-[100px] md:h-[200px] relative overflow-hidden bg-slate-200 dark:bg-[#222]">
