@@ -104,12 +104,18 @@ export async function updateProfile(db: any, data: any) {
   if (!db) return false;
   try {
     await db.prepare(`
-      UPDATE profiles 
-      SET name = ?, role = ?, role_en = ?, heroBadge = ?, heroBadge_en = ?, tagline = ?, tagline_en = ?, availabilityText = ?, availabilityText_en = ?, bio = ?, bio_en = ?, cvSummary = ?, cvSummary_en = ?, avatar = ?, location = ?, phone = ?, email = ?, linkedin = ?
-      WHERE id = 1
+      INSERT OR REPLACE INTO profiles 
+      (id, name, role, role_en, heroBadge, heroBadge_en, tagline, tagline_en, availabilityText, availabilityText_en, bio, bio_en, cvSummary, cvSummary_en, avatar, location, phone, email, linkedin)
+      VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
-      data.name || '', data.role || '', data.role_en || '', data.heroBadge || '', data.heroBadge_en || '', data.tagline || '', data.tagline_en || '', data.availabilityText || '', data.availabilityText_en || '',
-      data.bio || '', data.bio_en || '', data.cvSummary || '', data.cvSummary_en || '', data.avatar || '', data.location || '', data.phone || '', data.email || '', data.linkedin || ''
+      data.name || '', data.role || '', data.role_en || '', 
+      data.heroBadge || 'PEKERJAKAN SAYA', data.heroBadge_en || 'HIRE ME', 
+      data.tagline || 'Tersedia untuk peluang karier baru', data.tagline_en || 'Available for new career opportunities', 
+      data.availabilityText || 'Siap Bekerja', data.availabilityText_en || 'Ready to Work',
+      data.bio || '', data.bio_en || '', 
+      data.cvSummary || 'Berpengalaman 1+ tahun merancang, menganalisis, dan memperbaiki instrumen industri.', 
+      data.cvSummary_en || 'Experienced 1+ years designing, analyzing, and repairing industrial instruments.', 
+      data.avatar || '', data.location || '', data.phone || '', data.email || '', data.linkedin || ''
     ).run();
     return true;
   } catch (error) {
